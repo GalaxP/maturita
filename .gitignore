@@ -2,4 +2,7 @@
 /package-lock.json
 /package.json
 
+/backend/node_modules
+/frontend/node_modules
+
 .env
