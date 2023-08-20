@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { post_data } from "../../helpers/api";
 
 const Register = () => {

@@ -16,26 +16,70 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
         }
         return null;
     });
+    const [isAuthenticated, setIsAuthenticated] = useState(()=> {
+        if(user) return true
+        return false
+    })
+
     const cookies = new Cookies();
 
-    const login = async (credentials: IAuth) => {
-    post_data("/account/login", credentials, {withCredentials:false})
-    .then((res)=>{
-        if(res.status===200)
-        {
-            cookies.set('account', JSON.stringify(res.data.user), { 
-                path:"/",
-                sameSite: false,
-                httpOnly: false,
-                secure: false
+    const login = (credentials: IAuth) => {
+        return new Promise((resolve, reject) => {
+            post_data("/account/login", credentials, {withCredentials:false})
+            .then((res)=>{
+                if(res.status===200)
+                {
+                    let user = {
+                        user: res.data.user,
+                        refreshToken: res.data.refreshToken,
+                        accessToken: res.data.accessToken
+                    }
+
+                    cookies.set('account', JSON.stringify(user), { 
+                        path:"/",
+                        sameSite: "none",
+                        httpOnly: false,
+                        secure: false
+                    })
+                    setUser({user});
+                    setIsAuthenticated(true)
+                    return resolve(user);
+                }
+                else {
+                    setUser(null);
+                    setIsAuthenticated(false)
+                    return reject(res)
+                }
             })
-            setUser(res.data.user);
-        }
-    })
-    .catch((err)=>{})}
+            .catch((err)=>{setIsAuthenticated(false);return reject(err)})}
+    )}
+
+    const logout = () => {
+        return new Promise((resolve, reject) => {
+            if(!isAuthenticated || !user.refreshToken) return reject("Not Authenticated")
+
+            post_data("/account/logout", {refreshToken: user.refreshToken})
+            .then((res)=> {
+                if(res.status===204) {
+                    cookies.remove("account", { 
+                        path:"/",
+                        sameSite: "none",
+                        httpOnly: false,
+                        secure: false
+                    });
+                    setIsAuthenticated(false)
+                    setUser(null)
+                    return resolve("successfully logged out")
+                } else {
+                    return reject()
+                }
+            })
+            .catch((err)=>{reject(err)})
+        })
+    }
 
     return (  
-        <AuthContext.Provider value={{ user, login }}>
+        <AuthContext.Provider value={{ user, isAuthenticated, login, logout }}>
             {children}
         </AuthContext.Provider>
     );

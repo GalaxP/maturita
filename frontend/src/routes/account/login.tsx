@@ -1,20 +1,27 @@
-import { useContext, useState } from "react";
-import { useCookies } from "react-cookie";
-import { post_data } from "../../helpers/api";
-import Cookies from 'universal-cookie';
+import { useContext } from "react";
 import AuthContext from "../../components/shared/AuthContext"
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
     const auth = useContext(AuthContext);
+    const navigate = useNavigate();
 
-    const handleSubmit = (e:any) => {
+    const handleSubmit = async(e:any) => {
         e.preventDefault();
         const form = e.target;
         const formData = new FormData(form);
 
         const formJson = Object.fromEntries(formData.entries());
         
-        auth?.login({email: formJson.email.toString(), password: formJson.password.toString()});
+        auth?.login({email: formJson.email.toString(), password: formJson.password.toString()})
+        .then((res)=> {
+            //alert("successfully logged in as "+ res.user.email)
+            navigate("/")
+        })
+        .catch((res)=> {
+            if(res.response.status===401) alert("incorrect credentials")
+        })
+
         /*post_data("/account/login", formJson, {withCredentials:false}).then((res)=>{
         if(res.status===200)
         {
@@ -36,7 +43,7 @@ const Login = () => {
         }).catch((err)=>{if(err.response.status===401) alert('incorrect credentials')})*/
     }
 
-    return <div className="register">
+    return <div className="login">
         <form method="post" onSubmit={handleSubmit}>
             <label htmlFor="email">Email</label><br/>
             <input id="email" name="email"></input><br/>

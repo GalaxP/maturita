@@ -8,6 +8,8 @@ export type AuthContextProviderProps = {
 }
 
 export type AuthContextType = {
-    user: object
-    login: (credentials: IAuth) => void
+    user: any
+    isAuthenticated: boolean
+    login: (credentials: IAuth) => Promise<any>
+    logout: () => Promise<any>
 }

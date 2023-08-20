@@ -5,7 +5,8 @@ var { userSchema } = require('../helpers/validation')
 var User  = require('../schemas/user')
 const { HashPassword } = require('../helpers/hash')
 const { v4 } = require('uuid');
-const jwt = require('../helpers/jwt')
+const jwt = require('../helpers/jwt');
+const Token = require('../schemas/token');
 
 function pick(obj, ...props) {
     return props.reduce(function (result, prop) {
@@ -87,6 +88,21 @@ router.post("/refresh-token", async function (req, res, next) {
         next(err);
     }
 });
+
+router.post("/logout", async function (req, res, next) {
+    try {
+        const { refreshToken } = req.body;
+        if (!refreshToken) throw createError.BadRequest();
+        const userId = await jwt.verifyRefreshToken(refreshToken);
+        Token.deleteMany({ uid: userId }).catch((err) => {
+          console.log(err);
+          throw createError.InternalServerError();
+        });
+        res.sendStatus(204);
+    } catch (error) {
+        next(error);
+    }
+})
 
 router.get("/protected", jwt.verifyAccessToken, function (req, res, next) {
     res.send({ message: "You are authenticated", payload: req.payload });
