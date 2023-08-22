@@ -35,7 +35,7 @@ const Home = () => {
     // You can pass formData as a fetch body directly:
     //fetch('http://localhost:8080/post', { method: form.method});
 
-    post_data("/post", formJson).then((res)=>{
+    post_data("/post", formJson, {withCredentials: true, headers: {} }).then((res)=>{
       if(res.status===200)
       {
         alert("success")
@@ -49,10 +49,8 @@ const Home = () => {
   for (let i = 0; i < posts.length; i++) {
     posts_obj.push(<Post key={posts[i]._id} title={posts[i].title} body={posts[i].body} author={posts[i].author}/>);
   }
-  console.log(auth)
   return (loaded ? 
   <div>
-    { auth?.isAuthenticated ? <><p>logged in as {auth?.user.user.email}</p><Link to={"/account/logout"}>Logout</Link></>: <Link to={"/account/login"}>Login</Link>}
     <form method="post" onSubmit={handleSubmit}>
       <label htmlFor="title">Title</label><br/>
       <input id="title" name="title"></input><br/>

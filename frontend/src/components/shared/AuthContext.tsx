@@ -25,22 +25,21 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
 
     const login = (credentials: IAuth) => {
         return new Promise((resolve, reject) => {
-            post_data("/account/login", credentials, {withCredentials:false})
+            post_data("/account/login", credentials, {withCredentials:true})
             .then((res)=>{
                 if(res.status===200)
                 {
                     let user = {
                         user: res.data.user,
-                        refreshToken: res.data.refreshToken,
-                        accessToken: res.data.accessToken
                     }
 
                     cookies.set('account', JSON.stringify(user), { 
                         path:"/",
-                        sameSite: "none",
+                        sameSite: "lax",
                         httpOnly: false,
                         secure: false
                     })
+
                     setUser({user});
                     setIsAuthenticated(true)
                     return resolve(user);
@@ -56,17 +55,30 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
 
     const logout = () => {
         return new Promise((resolve, reject) => {
-            if(!isAuthenticated || !user.refreshToken) return reject("Not Authenticated")
+            const _user = getUser();
+            if(!isAuthenticated) return reject("Not Authenticated")
 
-            post_data("/account/logout", {refreshToken: user.refreshToken})
+            post_data("/account/logout", {}, {withCredentials:true})
             .then((res)=> {
                 if(res.status===204) {
                     cookies.remove("account", { 
                         path:"/",
-                        sameSite: "none",
+                        sameSite: "lax",
                         httpOnly: false,
                         secure: false
                     });
+                    cookies.remove('refreshToken', {
+                        path: "/",
+                        sameSite: "lax",
+                        httpOnly: false,
+                        secure: false
+                    })
+                    cookies.remove('accessToken', {
+                        path: "/",
+                        sameSite: "lax",
+                        httpOnly: false,
+                        secure: false
+                    })
                     setIsAuthenticated(false)
                     setUser(null)
                     return resolve("successfully logged out")
@@ -78,8 +90,17 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
         })
     }
 
+    const getUser = () => {
+        const cookies = new Cookies();
+        let user = cookies.get('account')
+        if (user) {
+            return user
+        }
+        return null;
+    }
+
     return (  
-        <AuthContext.Provider value={{ user, isAuthenticated, login, logout }}>
+        <AuthContext.Provider value={{ getUser, isAuthenticated, login, logout }}>
             {children}
         </AuthContext.Provider>
     );

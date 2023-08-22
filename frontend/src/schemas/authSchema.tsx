@@ -8,7 +8,7 @@ export type AuthContextProviderProps = {
 }
 
 export type AuthContextType = {
-    user: any
+    getUser: any
     isAuthenticated: boolean
     login: (credentials: IAuth) => Promise<any>
     logout: () => Promise<any>

@@ -63,11 +63,11 @@ router.post('/login', async function(req, res, next) {
     if(authResult) {
         const accessToken = await jwt.signAccessToken(user.uid)
         const refreshToken = await jwt.signRefreshToken(user.uid)
+        res.cookie("refreshToken", refreshToken, {httpOnly:true, sameSite:"lax"})
+        res.cookie("accessToken", accessToken, {httpOnly:true, sameSite:"lax"})
         res.send({
             message: "success",
             user: pick(user, "email", "uid"),
-            accessToken: accessToken,
-            refreshToken: refreshToken
         })
     }
     else {
@@ -80,7 +80,7 @@ router.post("/refresh-token", async function (req, res, next) {
         const { refreshToken } = req.body;
         if (!refreshToken) throw createError.BadRequest();
         const userId = await jwt.verifyRefreshToken(refreshToken);
-    
+        
         const accessToken = await jwt.signAccessToken(userId);
         const refreshToken_ = await jwt.signRefreshToken(userId);
         res.send({ accessToken: accessToken, refreshToken: refreshToken_ });
@@ -91,13 +91,15 @@ router.post("/refresh-token", async function (req, res, next) {
 
 router.post("/logout", async function (req, res, next) {
     try {
-        const { refreshToken } = req.body;
+        const refreshToken = req.cookies.refreshToken;
         if (!refreshToken) throw createError.BadRequest();
         const userId = await jwt.verifyRefreshToken(refreshToken);
         Token.deleteMany({ uid: userId }).catch((err) => {
           console.log(err);
           throw createError.InternalServerError();
         });
+        res.clearCookie("refreshToken")
+        res.clearCookie("accessToken")
         res.sendStatus(204);
     } catch (error) {
         next(error);

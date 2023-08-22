@@ -3,8 +3,10 @@ var express = require("express");
 var path = require("path");
 //var logger = require("morgan");
 var cors = require("cors");
+var cookieParser = require('cookie-parser');
 require("dotenv").config();
 require("./helpers/mongodb");
+
 
 const PORT = 8080;
 
@@ -16,9 +18,13 @@ app.set("view engine", "jade");
 
 
 
-app.use(cors());
+app.use(cors({ 
+  origin: ["http://localhost:3000", "http://localhost:8080"],
+  credentials: true
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 app.use("/", indexRouter);
 app.use("/account", accountRouter);

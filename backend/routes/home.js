@@ -3,7 +3,8 @@ var router = express.Router();
 const User = require('../schemas/user')
 var { postSchema } = require('../helpers/validation')
 var createError = require("http-errors");
-const Post = require('../schemas/post')
+const Post = require('../schemas/post');
+const { verifyAccessToken } = require('../helpers/jwt');
 
 /* GET home page. */
 router.get('/', async function(req, res, next) {
@@ -16,7 +17,7 @@ router.get('/', async function(req, res, next) {
   res.send("hello");
 });
 
-router.post('/post', async function (req, res, next) {
+router.post('/post', verifyAccessToken, async function (req, res, next) {
   try{
     const result = await postSchema.validateAsync(req.body).catch((err) => {
       err.status = 422;

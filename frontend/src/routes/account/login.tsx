@@ -2,7 +2,7 @@ import { useContext } from "react";
 import AuthContext from "../../components/shared/AuthContext"
 import { useNavigate } from "react-router-dom";
 
-const Login = () => {
+const Login = ({layout}: any) => {
     const auth = useContext(AuthContext);
     const navigate = useNavigate();
 
