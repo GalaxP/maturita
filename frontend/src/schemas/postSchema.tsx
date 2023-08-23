@@ -4,5 +4,5 @@ export interface PostSchema {
     title: string
     body: string
     author: string
-    createdAt?: Date
+    createdAt: Date
 }

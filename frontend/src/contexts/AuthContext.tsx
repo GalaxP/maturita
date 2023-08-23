@@ -1,8 +1,8 @@
 import axios from "axios";
 import { FunctionComponent, createContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { post_data } from "../../helpers/api";
-import { AuthContextProviderProps, AuthContextType, IAuth } from "../../schemas/authSchema";
+import { post_data, setAccessToken, getAccessToken } from "../helpers/api";
+import { AuthContextProviderProps, AuthContextType, IAuth } from "../schemas/authSchema";
 import Cookies from 'universal-cookie';
  
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -23,6 +23,27 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
 
     const cookies = new Cookies();
 
+    const refresh_token = function() {
+        return new Promise((resolve, reject) => {
+            if(!isAuthenticated || getAccessToken() === "" || getAccessToken() == null) reject()
+
+            post_data("/refresh-token", {}, {withCredentials:true})
+            .then((res)=> {
+                if(res.status===200) {
+                    setAccessToken(res.data.accessToken)
+                    resolve(res.data.accessToken)
+                }
+                else {
+                    reject()
+                }
+            })
+            .catch((err)=>{
+                //TODO: FIGURE OUT WHAT TO DO IF THIS FAILS
+                reject(err)
+            })
+        })
+    }
+
     const login = (credentials: IAuth) => {
         return new Promise((resolve, reject) => {
             post_data("/account/login", credentials, {withCredentials:true})
@@ -42,15 +63,17 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
 
                     setUser({user});
                     setIsAuthenticated(true)
+                    setAccessToken(res.data.accessToken)
                     return resolve(user);
                 }
                 else {
                     setUser(null);
                     setIsAuthenticated(false)
+                    setAccessToken("")
                     return reject(res)
                 }
             })
-            .catch((err)=>{setIsAuthenticated(false);return reject(err)})}
+            .catch((err)=>{setIsAuthenticated(false);setAccessToken("");return reject(err)})}
     )}
 
     const logout = () => {
@@ -81,6 +104,7 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
                     })
                     setIsAuthenticated(false)
                     setUser(null)
+                    setAccessToken("")
                     return resolve("successfully logged out")
                 } else {
                     return reject()

@@ -50,8 +50,8 @@ const signRefreshToken = (userId) => {
 }
 
 const verifyAccessToken = (req, res, next) => {
-    if(!req.cookies.accessToken) return next(createError.Unauthorized())
-    const token = req.cookies.accessToken
+    if(!req.headers["authorization"]) return next(createError.Unauthorized())
+    const token = req.headers["authorization"].split(" ")[1]
     
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, payload) => {
         if (err) {

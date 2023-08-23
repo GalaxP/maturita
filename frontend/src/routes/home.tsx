@@ -2,12 +2,12 @@ import { useContext, useEffect, useState } from "react";
 import { post_data, get_data } from "../helpers/api"
 import { Post } from "../components/post"
 import { PostSchema } from "../schemas/postSchema";
-import AuthContext from "../components/shared/AuthContext";
+import AuthContext from "../contexts/AuthContext";
 import { Link } from "react-router-dom";
 
 const Home = () => {
   const [loaded, setLoaded] = useState(false);
-  const [posts, setPosts] = useState<PostSchema[]>([{author:"", title:"", body:"", _id:""}]);
+  const [posts, setPosts] = useState<PostSchema[]>([{author:"", title:"", createdAt: new Date, body:"", _id:""}]);
   const auth = useContext(AuthContext);
 
   useEffect(() => {
@@ -35,19 +35,19 @@ const Home = () => {
     // You can pass formData as a fetch body directly:
     //fetch('http://localhost:8080/post', { method: form.method});
 
-    post_data("/post", formJson, {withCredentials: true, headers: {} }).then((res)=>{
+    console.log(post_data("/post", formJson, {}, true).then((res)=>{
       if(res.status===200)
       {
         alert("success")
         getAllPosts();
-      }
-    }).catch((err)=>{console.log(err)})
+      }})
+      .catch((err)=>{console.log(err)}))
     
     //console.log(formJson.data);
   }
   const posts_obj = [];
   for (let i = 0; i < posts.length; i++) {
-    posts_obj.push(<Post key={posts[i]._id} title={posts[i].title} body={posts[i].body} author={posts[i].author}/>);
+    posts_obj.push(<Post key={posts[i]._id} title={posts[i].title} createdAt={posts[i].createdAt} body={posts[i].body} author={posts[i].author}/>);
   }
   return (loaded ? 
   <div>

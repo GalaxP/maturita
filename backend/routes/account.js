@@ -63,11 +63,11 @@ router.post('/login', async function(req, res, next) {
     if(authResult) {
         const accessToken = await jwt.signAccessToken(user.uid)
         const refreshToken = await jwt.signRefreshToken(user.uid)
-        res.cookie("refreshToken", refreshToken, {httpOnly:true, sameSite:"lax"})
-        res.cookie("accessToken", accessToken, {httpOnly:true, sameSite:"lax"})
+        res.cookie("refreshToken", refreshToken, {httpOnly:true, sameSite:"lax", maxAge: 30 * 24 * 60 * 60 * 1000}) //30days
         res.send({
             message: "success",
             user: pick(user, "email", "uid"),
+            accessToken: accessToken
         })
     }
     else {
@@ -77,13 +77,19 @@ router.post('/login', async function(req, res, next) {
 
 router.post("/refresh-token", async function (req, res, next) {
     try {
-        const { refreshToken } = req.body;
+        const refreshToken = req.cookies.refreshToken;
         if (!refreshToken) throw createError.BadRequest();
         const userId = await jwt.verifyRefreshToken(refreshToken);
         
         const accessToken = await jwt.signAccessToken(userId);
         const refreshToken_ = await jwt.signRefreshToken(userId);
-        res.send({ accessToken: accessToken, refreshToken: refreshToken_ });
+        res.cookie("refreshToken", refreshToken_, {httpOnly:true, sameSite:"lax"})
+        //res.cookie("accessToken", accessToken, {httpOnly:true, sameSite:"lax"})
+        
+        res.send({
+            message: "success",
+            accessToken: accessToken
+        })
     } catch (err) {
         next(err);
     }
