@@ -8,6 +8,7 @@ import Logout from './routes/account/logout';
 import Layout from "./components/shared/layout";
 import Edit from "./routes/account/edit";
 import ProtectedRoute from "./helpers/protectedRoute";
+import { PostId } from "./components/postId";
 
 function App() {
   return (
@@ -23,6 +24,8 @@ function App() {
               <Route path='logout' element={<Logout/> } ></Route>
               <Route path='edit' element={ <ProtectedRoute><Edit/></ProtectedRoute>} ></Route>
             </Route>
+            <Route path="/post/:postId" element={<PostId/>}></Route>
+
             <Route path='*' element={<h1>404</h1>}></Route>
           </Routes>
           </Layout>

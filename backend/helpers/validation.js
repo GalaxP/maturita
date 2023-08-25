@@ -3,7 +3,6 @@ const Joi = require('joi')
 const postSchema = Joi.object({
     title: Joi.string().required().min(5),
     body: Joi.string().required(),
-    author: Joi.string().required(),
 })
 
 const userSchema = Joi.object({

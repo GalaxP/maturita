@@ -1,6 +1,6 @@
 import axios from "axios";
 import { FunctionComponent, createContext, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { post_data, setAccessToken, getAccessToken } from "../helpers/api";
 import { AuthContextProviderProps, AuthContextType, IAuth } from "../schemas/authSchema";
 import Cookies from 'universal-cookie';
@@ -23,25 +23,9 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
 
     const cookies = new Cookies();
 
-    const refresh_token = function() {
-        return new Promise((resolve, reject) => {
-            if(!isAuthenticated || getAccessToken() === "" || getAccessToken() == null) reject()
-
-            post_data("/refresh-token", {}, {withCredentials:true})
-            .then((res)=> {
-                if(res.status===200) {
-                    setAccessToken(res.data.accessToken)
-                    resolve(res.data.accessToken)
-                }
-                else {
-                    reject()
-                }
-            })
-            .catch((err)=>{
-                //TODO: FIGURE OUT WHAT TO DO IF THIS FAILS
-                reject(err)
-            })
-        })
+    const protectedAction = (action: Function, onFail?:Function) => {
+        if(isAuthenticated) return action()
+        return onFail ? onFail() : null
     }
 
     const login = (credentials: IAuth) => {
@@ -124,7 +108,7 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
     }
 
     return (  
-        <AuthContext.Provider value={{ getUser, isAuthenticated, login, logout }}>
+        <AuthContext.Provider value={{ getUser, isAuthenticated, protectedAction, login, logout }}>
             {children}
         </AuthContext.Provider>
     );

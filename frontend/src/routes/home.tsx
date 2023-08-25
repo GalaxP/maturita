@@ -2,24 +2,31 @@ import { useContext, useEffect, useState } from "react";
 import { post_data, get_data } from "../helpers/api"
 import { Post } from "../components/post"
 import { PostSchema } from "../schemas/postSchema";
+import { Link, useNavigate } from "react-router-dom";
 import AuthContext from "../contexts/AuthContext";
-import { Link } from "react-router-dom";
+
 
 const Home = () => {
   const [loaded, setLoaded] = useState(false);
-  const [posts, setPosts] = useState<PostSchema[]>([{author:"", title:"", createdAt: new Date, body:"", _id:""}]);
-  const auth = useContext(AuthContext);
+  const [posts, setPosts] = useState<PostSchema[]>([{author:"", title:"", createdAt: new Date(), body:"", _id:""}]);
+  const auth = useContext(AuthContext)
+  const navigate = useNavigate()
 
   useEffect(() => {
     setLoaded(false)
-    getAllPosts();
+    const controller = new AbortController();
+    getAllPosts(controller);
+
+    return () => {
+      controller.abort()
+    }
   }, []);
 
-  function getAllPosts() {
-    get_data("/postslist").then((res)=>{
+  function getAllPosts(controller: AbortController) {
+    get_data("/postslist", {signal: controller.signal}).then((res)=>{
       setPosts(res.data);
       setLoaded(true)
-    }).catch((err)=>{setLoaded(true);console.log(err);})
+    }).catch((err)=>{setLoaded(true);})
   }
 
   async function handleSubmit(e:any) {
@@ -35,19 +42,21 @@ const Home = () => {
     // You can pass formData as a fetch body directly:
     //fetch('http://localhost:8080/post', { method: form.method});
 
-    console.log(post_data("/post", formJson, {}, true).then((res)=>{
+    auth?.protectedAction(()=> {
+      post_data("/post", formJson, {}, true).then((res)=>{
       if(res.status===200)
       {
+        const controller = new AbortController();
+        getAllPosts(controller);
         alert("success")
-        getAllPosts();
       }})
-      .catch((err)=>{console.log(err)}))
-    
+      .catch((err)=>{alert("something has gone wrong. try again")})
+    }, ()=> {navigate("/account/login")})
     //console.log(formJson.data);
   }
   const posts_obj = [];
   for (let i = 0; i < posts.length; i++) {
-    posts_obj.push(<Post key={posts[i]._id} title={posts[i].title} createdAt={posts[i].createdAt} body={posts[i].body} author={posts[i].author}/>);
+    posts_obj.push(<Link key={posts[i]._id} to={"/post/"+posts[i]._id} className="Link"><Post key={posts[i]._id} title={posts[i].title} createdAt={posts[i].createdAt} body={posts[i].body} author={posts[i].author}/></Link>);
   }
   return (loaded ? 
   <div>
@@ -56,12 +65,9 @@ const Home = () => {
       <input id="title" name="title"></input><br/>
       <label htmlFor="body">Body</label><br/>
       <input id="body" name="body"></input><br/>
-      <label htmlFor="author">Author</label><br/>
-      <input id="author" name="author"></input><br/>
 
       <input type="submit" value="submit"/>
     </form>
-
     {posts_obj}
   </div>
   : <div><p>loading...</p></div>);

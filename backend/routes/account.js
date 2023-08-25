@@ -7,13 +7,8 @@ const { HashPassword } = require('../helpers/hash')
 const { v4 } = require('uuid');
 const jwt = require('../helpers/jwt');
 const Token = require('../schemas/token');
+const pick = require('../helpers/pick')
 
-function pick(obj, ...props) {
-    return props.reduce(function (result, prop) {
-      result[prop] = obj[prop];
-      return result;
-    }, {});
-}
 
 router.post('/register', async function(req, res, next) {
     try {
@@ -83,7 +78,7 @@ router.post("/refresh-token", async function (req, res, next) {
         
         const accessToken = await jwt.signAccessToken(userId);
         const refreshToken_ = await jwt.signRefreshToken(userId);
-        res.cookie("refreshToken", refreshToken_, {httpOnly:true, sameSite:"lax"})
+        res.cookie("refreshToken", refreshToken_, {httpOnly:true, sameSite:"lax", maxAge: 30 * 24 * 60 * 60 * 1000})
         //res.cookie("accessToken", accessToken, {httpOnly:true, sameSite:"lax"})
         
         res.send({

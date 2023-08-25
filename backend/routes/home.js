@@ -5,15 +5,9 @@ var { postSchema } = require('../helpers/validation')
 var createError = require("http-errors");
 const Post = require('../schemas/post');
 const { verifyAccessToken } = require('../helpers/jwt');
+const pick = require('../helpers/pick')
 
-/* GET home page. */
 router.get('/', async function(req, res, next) {
-  /*const user = new User({
-    email: "test",
-    password: "test",
-    uid: 1
-  })
-  await user.save();*/
   res.send("hello");
 });
 
@@ -25,7 +19,7 @@ router.post('/post', verifyAccessToken, async function (req, res, next) {
     });
     
     const _post = new Post({
-      author: result.author,
+      author: req.payload.aud,
       body: result.body,
       title: result.title,
     })
@@ -44,8 +38,19 @@ router.post('/post', verifyAccessToken, async function (req, res, next) {
   }
 })
 
+router.get('/post/:postId', async function (req, res, next) {
+  Post.findById(req.params.postId)
+  .then((_post)=> {
+    res.send(pick(_post, "id", "title", "body", "author", "createdAt"))
+  })
+  .catch(()=>{
+    return next(createError(422))
+  })
+  
+})
+
 router.get('/postsList', async function(req, res, err){
-  res.send(await Post.find({}).sort('-createdAt'));
+  res.send((await Post.find({}).sort('-createdAt')));
 });
 
 

@@ -36,7 +36,10 @@
     transform: rotate(360deg);
   }
 }
-
+.Link {
+  color:black;
+  text-decoration: none;
+}
 #root {
   margin:20px;
 }
