@@ -9,6 +9,7 @@ import AuthContext from "../contexts/AuthContext";
 const Home = () => {
   const [loaded, setLoaded] = useState(false);
   const [posts, setPosts] = useState<PostSchema[]>([{author:"", title:"", createdAt: new Date(), body:"", _id:""}]);
+  const [error, setError] = useState();
   const auth = useContext(AuthContext)
   const navigate = useNavigate()
 
@@ -26,7 +27,7 @@ const Home = () => {
     get_data("/postslist", {signal: controller.signal}).then((res)=>{
       setPosts(res.data);
       setLoaded(true)
-    }).catch((err)=>{setLoaded(true);})
+    }).catch((err)=>{setError(err); setLoaded(true);})
   }
 
   async function handleSubmit(e:any) {
@@ -50,7 +51,7 @@ const Home = () => {
         getAllPosts(controller);
         alert("success")
       }})
-      .catch((err)=>{alert("something has gone wrong. try again")})
+      .catch((err)=>{setError(err); alert("something has gone wrong. try again")})
     }, ()=> {navigate("/account/login")})
     //console.log(formJson.data);
   }
