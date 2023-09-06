@@ -5,4 +5,7 @@ export interface PostSchema {
     body: string
     author: string
     createdAt: Date
+    votes_likes: number
+    votes_dislikes: number
+    user_vote?: number
 }

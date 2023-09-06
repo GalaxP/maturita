@@ -8,7 +8,7 @@ import AuthContext from "../contexts/AuthContext";
 
 const Home = () => {
   const [loaded, setLoaded] = useState(false);
-  const [posts, setPosts] = useState<PostSchema[]>([{author:"", title:"", createdAt: new Date(), body:"", _id:""}]);
+  const [posts, setPosts] = useState<PostSchema[]>([{author:"", title:"", createdAt: new Date(), body:"", _id:"", votes_likes:0, votes_dislikes:0, user_vote:0}]);
   const [error, setError] = useState();
   const auth = useContext(AuthContext)
   const navigate = useNavigate()
@@ -24,10 +24,10 @@ const Home = () => {
   }, []);
 
   function getAllPosts(controller: AbortController) {
-    get_data("/postslist", {signal: controller.signal}).then((res)=>{
+    get_data("/postslist", {/*signal: controller.signal*/}, auth?.isAuthenticated).then((res)=>{
       setPosts(res.data);
       setLoaded(true)
-    }).catch((err)=>{setError(err); setLoaded(true);})
+    }).catch((err)=>{setError(err);console.log(err); setLoaded(true);})
   }
 
   async function handleSubmit(e:any) {
@@ -57,7 +57,7 @@ const Home = () => {
   }
   const posts_obj = [];
   for (let i = 0; i < posts.length; i++) {
-    posts_obj.push(<Link key={posts[i]._id} to={"/post/"+posts[i]._id} className="Link"><Post key={posts[i]._id} title={posts[i].title} createdAt={posts[i].createdAt} body={posts[i].body} author={posts[i].author}/></Link>);
+    posts_obj.push(<Link key={posts[i]._id} to={"/post/"+posts[i]._id} className="Link"><Post key={posts[i]._id} _id={posts[i]._id} title={posts[i].title} createdAt={posts[i].createdAt} votes_likes={posts[i].votes_likes} votes_dislikes={posts[i].votes_dislikes} body={posts[i].body} author={posts[i].author} user_vote={posts[i].user_vote}/></Link>);
   }
   return (loaded ? 
   <div>

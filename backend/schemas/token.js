@@ -18,10 +18,11 @@ const TokenSchema = new Schema({
   },
 });
 
+
 TokenSchema.pre("save", async function (next) {
   try {
-    const previousToken = await Token.findOne({ uid: this.uid });
-    if (previousToken !== null) {
+    const previousToken = await Token.find({ uid: this.uid });
+    if (previousToken.length>0) {
       await Token.deleteMany({ uid: this.uid });
     }
     next();

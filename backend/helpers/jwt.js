@@ -2,12 +2,21 @@ require('dotenv').config()
 const jwt = require('jsonwebtoken')
 const tokenModel = require('../schemas/token.js')
 var createError = require("http-errors");
+const queue = require('async/queue.js')
 
+var q = queue(async function (task, callback) {
+    try {
+        await task.token.save();
+        callback();
+    } catch (err) {
+        callback(err);
+    }
+}, 1);
 
 const signAccessToken = (userId) => {
     return new Promise((resolve, reject)=>{
         const options = {
-            expiresIn: "15s",
+            expiresIn: "10m",
             issuer: "odporuc.sk",
             audience: userId,
         };
@@ -27,7 +36,7 @@ const signRefreshToken = (userId) => {
             issuer: "odporuc.sk",
             audience: userId,
         };
-
+        
         jwt.sign({}, process.env.REFRESH_TOKEN_SECRET, options, async (err, token) => {
             if(err) 
                 return reject(createError.InternalServerError());
@@ -37,13 +46,13 @@ const signRefreshToken = (userId) => {
                 uid: userId,
                 expireAt: Date.now() + 30 * 24 * 60 * 60 * 1000, //30 days
             })
-
+            q.push({token: _token }, (err) => {if(err){ return reject(err); }})
+            /*
             try {
                 await _token.save();
             } catch (err) {
-                console.log(err);
-                return reject(createError.InternalServerError());
-            }
+                return reject(err);
+            }*/
             resolve(token);
         })
     })
@@ -62,6 +71,7 @@ const verifyAccessToken = (req, res, next) => {
         next()
     });
 }
+
 
 const verifyRefreshToken = (refreshToken) => {
     return new Promise((resolve, reject) => {

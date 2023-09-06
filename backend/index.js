@@ -10,8 +10,9 @@ require("./helpers/mongodb");
 
 const PORT = 8080;
 
-indexRouter = require('./routes/home.js')
-accountRouter = require('./routes/account.js')
+const indexRouter = require('./routes/home.js')
+const accountRouter = require('./routes/account.js')
+const postRouter = require('./routes/post')
 
 var app = express();
 app.set("view engine", "jade");
@@ -28,6 +29,8 @@ app.use(cookieParser());
 
 app.use("/", indexRouter);
 app.use("/account", accountRouter);
+app.use("/post", postRouter);
+
 
 app.use(function (req, res, next) {
     next(createError(404));

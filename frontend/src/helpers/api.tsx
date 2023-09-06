@@ -15,7 +15,7 @@ const post_data = async function(path:string, data:any, options?:AxiosRequestCon
                     return resolve(res)
                 })
                 .catch((err)=> {
-                    if(err.response.status===401 && err.response.data.error.message === "jwt expired") {
+                    if(err.response?.status===401 && err.response.data.error.message === "jwt expired") {
                         refresh_token()
                         .then((token)=> {
                             axios.post(api_url+path, data, {...options, headers: {Authorization: "Bearer "+ token} })
@@ -87,7 +87,7 @@ const get_data = function(path:string, options?:AxiosRequestConfig, sendToken?:b
                     return resolve(res)
                 })
                 .catch((err)=> {
-                    if(err.response.status===401 && err.response.data.error.message === "jwt expired") {
+                    if(err.response?.status===401 && err.response.data.error.message === "jwt expired") {
                         refresh_token()
                         .then((token)=> {
                             axios.get(api_url+path, {...options, headers: {Authorization: "Bearer "+ token} })

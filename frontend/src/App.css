@@ -43,3 +43,10 @@
 #root {
   margin:20px;
 }
+
+.container {
+  display: grid;
+  align-items: center; 
+  grid-template-columns: 25px 50px 25px 25px;
+  column-gap: 5px;
+ }

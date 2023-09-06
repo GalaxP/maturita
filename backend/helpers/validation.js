@@ -13,7 +13,14 @@ const userSchema = Joi.object({
     uid: Joi.string()
 })
 
+const postActionSchema = Joi.object({
+    postId: Joi.string().required(),
+    type: Joi.string().required().lowercase(),
+    direction: Joi.number().min(-1).max(1).required()
+})
+
 module.exports = {
     postSchema,
-    userSchema
+    userSchema,
+    postActionSchema
 }
