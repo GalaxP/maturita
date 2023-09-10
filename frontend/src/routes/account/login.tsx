@@ -1,10 +1,18 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import AuthContext from "../../contexts/AuthContext"
 import { useNavigate } from "react-router-dom";
+import { GoogleLogin } from "@react-oauth/google";
 
 const Login = ({layout}: any) => {
     const auth = useContext(AuthContext);
     const navigate = useNavigate();
+
+    const responseMessage = (response:any) => {
+        alert("yay");
+    };
+    const errorMessage = () => {
+        console.log("error");
+    };
 
     const handleSubmit = async(e:any) => {
         e.preventDefault();
@@ -43,14 +51,20 @@ const Login = ({layout}: any) => {
         }).catch((err)=>{if(err.response.status===401) alert('incorrect credentials')})*/
     }
 
+    const googleSignIn = () => {
+        window.open("http://localhost:8080/account/google", "_self")
+    }
+
     return <div className="login">
         <form method="post" onSubmit={handleSubmit}>
             <label htmlFor="email">Email</label><br/>
             <input id="email" name="email"></input><br/>
             <label htmlFor="password">Password</label><br/>
-            <input id="password" name="password"></input><br/>
+            <input id="password" name="password" type="password"></input><br/>
             <input type="submit" value="submit"/>
         </form>
+
+        <GoogleLogin ux_mode="redirect" login_uri="http://localhost:8080/account/google/callback" onSuccess={responseMessage}/>
     </div>
 }
 

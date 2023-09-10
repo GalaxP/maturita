@@ -13,15 +13,15 @@ var q = queue(async function (task, callback) {
     }
 }, 1);
 
-const signAccessToken = (userId) => {
+const signAccessToken = (userId, provider) => {
     return new Promise((resolve, reject)=>{
         const options = {
             expiresIn: "10m",
             issuer: "odporuc.sk",
-            audience: userId,
+            audience: userId
         };
 
-        jwt.sign({}, process.env.ACCESS_TOKEN_SECRET, options, (err, token) => {
+        jwt.sign({provider: provider}, process.env.ACCESS_TOKEN_SECRET, options, (err, token) => {
             if(err) 
                 return reject(createError.InternalServerError());
             resolve(token);

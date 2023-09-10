@@ -4,6 +4,10 @@ const bcrypt = require('bcrypt')
 const Schema = mongoose.Schema
 
 const UserSchema = new Schema({
+    provider: {
+        type: String,
+        required: true
+    },
     email: {
         type: String,
         required: true,
@@ -20,13 +24,27 @@ const UserSchema = new Schema({
     },
     password: {
         type: String,
-        required: true,
+        required: false,
+    },
+    google : {
+        name: String,
+        given_name: String,
+        family_name: String,
+        picture: String,
+        email: String,
+        email_verified: Boolean,
+        locale: String
     },
     uid: {
         type: String,
         required: true,
         unique: true,
     },
+    createdAt: {
+        type: Date,
+        default: Date.now,
+        required: true
+    }
 })
 UserSchema.methods.isValidPassword = async function (password) {
     try {

@@ -1,7 +1,5 @@
-import axios from "axios";
-import { FunctionComponent, createContext, useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
-import { post_data, setAccessToken, getAccessToken } from "../helpers/api";
+import { createContext, useState } from "react";
+import { post_data, setAccessToken } from "../helpers/api";
 import { AuthContextProviderProps, AuthContextType, IAuth } from "../schemas/authSchema";
 import Cookies from 'universal-cookie';
  
@@ -91,11 +89,42 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
                     setAccessToken("")
                     return resolve("successfully logged out")
                 } else {
+                    cookies.remove("account", { 
+                        path:"/",
+                        sameSite: "lax",
+                        httpOnly: false,
+                        secure: false
+                    });
+                    cookies.remove('refreshToken', {
+                        path: "/",
+                        sameSite: "lax",
+                        httpOnly: false,
+                        secure: false
+                    })
+                    cookies.remove('accessToken', {
+                        path: "/",
+                        sameSite: "lax",
+                        httpOnly: false,
+                        secure: false
+                    })
                     return reject()
                 }
             })
             .catch((err)=>{reject(err)})
         })
+    }
+
+    const googleLogin = (user:string, accessToken: string) => {
+        cookies.set('account', user, { 
+            path:"/",
+            sameSite: "lax",
+            httpOnly: false,
+            secure: false
+        })
+
+        setUser({user});
+        setIsAuthenticated(true)
+        setAccessToken(accessToken)
     }
 
     const getUser = () => {
@@ -108,7 +137,7 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
     }
 
     return (  
-        <AuthContext.Provider value={{ getUser, isAuthenticated, protectedAction, login, logout }}>
+        <AuthContext.Provider value={{ getUser, isAuthenticated, protectedAction, login, googleLogin, logout }}>
             {children}
         </AuthContext.Provider>
     );
