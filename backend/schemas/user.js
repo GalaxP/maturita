@@ -40,6 +40,7 @@ const UserSchema = new Schema({
         required: true,
         unique: true,
     },
+    roles: [String],
     createdAt: {
         type: Date,
         default: Date.now,

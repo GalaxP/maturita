@@ -29,7 +29,7 @@ const signAccessToken = (userId, provider) => {
     })
 }
 
-const signRefreshToken = (userId) => {
+const signRefreshToken = (userId, provider) => {
     return new Promise((resolve, reject)=>{
         const options = {
             expiresIn: "30d",
@@ -37,7 +37,7 @@ const signRefreshToken = (userId) => {
             audience: userId,
         };
         
-        jwt.sign({}, process.env.REFRESH_TOKEN_SECRET, options, async (err, token) => {
+        jwt.sign({provider: provider}, process.env.REFRESH_TOKEN_SECRET, options, async (err, token) => {
             if(err) 
                 return reject(createError.InternalServerError());
 
@@ -91,7 +91,7 @@ const verifyRefreshToken = (refreshToken) => {
             if (refreshTokenDb === null)
               return reject(createError.Unauthorized());
   
-            if (refreshTokenDb.token === refreshToken) return resolve(userId);
+            if (refreshTokenDb.token === refreshToken) return resolve(payload);
             else return reject(createError.Unauthorized());
           }
         );

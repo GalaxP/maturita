@@ -34,13 +34,15 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
                 {
                     let user = {
                         user: res.data.user,
+                        provider: "local"
                     }
 
                     cookies.set('account', JSON.stringify(user), { 
                         path:"/",
                         sameSite: "lax",
                         httpOnly: false,
-                        secure: false
+                        secure: false,
+                        maxAge: 30*24*60*60
                     })
 
                     setUser({user});
@@ -119,7 +121,8 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
             path:"/",
             sameSite: "lax",
             httpOnly: false,
-            secure: false
+            secure: false,
+            maxAge: 30*24*60*60
         })
 
         setUser({user});

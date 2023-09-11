@@ -14,7 +14,7 @@ const Layout = ({children}: LayoutProps) => {
     const auth = useContext(AuthContext);
     const [loaded, setLoaded] = useState(false)
     return <>
-        {auth?.isAuthenticated ? <><p>logged in as {auth?.getUser().user.email}</p><Link to={"/account/logout"}>Logout</Link></>: <Link to={"/account/login"}>Login</Link>}
+        {auth?.isAuthenticated ? <><p>logged in as {auth?.getUser().user.email} ({auth?.getUser().provider})</p><Link to={"/account/logout"}>Logout</Link></>: <Link to={"/account/login"}>Login</Link>}
         {children}
     </>
 }

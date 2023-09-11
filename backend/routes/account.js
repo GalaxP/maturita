@@ -69,12 +69,14 @@ router.post('/login', async function(req, res, next) {
 
     const authResult  = await user.isValidPassword(body.password);
     if(authResult) {
-        const accessToken = await jwt.signAccessToken(user.uid)
-        const refreshToken = await jwt.signRefreshToken(user.uid)
+        if(user.roles.length>0) console.log("user has roles")
+        const accessToken = await jwt.signAccessToken(user.uid, "local")
+        const refreshToken = await jwt.signRefreshToken(user.uid, "local")
         res.cookie("refreshToken", refreshToken, {httpOnly:true, sameSite:"lax", maxAge: 30 * 24 * 60 * 60 * 1000}) //30days
         res.send({
             message: "success",
             user: pick(user, "email", "uid"),
+            provider: "local",
             accessToken: accessToken
         })
     }
@@ -87,10 +89,9 @@ router.post("/refresh-token"/*, rateLimiterUsingThirdParty*/, async function (re
     try {
         const refreshToken = req.cookies.refreshToken;
         if (!refreshToken) throw createError.BadRequest();
-        const userId = await jwt.verifyRefreshToken(refreshToken);
-        
-        const accessToken = await jwt.signAccessToken(userId);
-        const refreshToken_ = await jwt.signRefreshToken(userId).catch((err)=>{next(createError.InternalServerError())});
+        const token = await jwt.verifyRefreshToken(refreshToken);
+        const accessToken = await jwt.signAccessToken(token.aud, token.provider);
+        const refreshToken_ = await jwt.signRefreshToken(token.aud, token.provider).catch((err)=>{next(createError.InternalServerError())});
         res.cookie("refreshToken", refreshToken_, {httpOnly:true, sameSite:"lax", maxAge: 30 * 24 * 60 * 60 * 1000})
         //res.cookie("accessToken", accessToken, {httpOnly:true, sameSite:"lax"})
         
@@ -107,8 +108,8 @@ router.post("/logout", async function (req, res, next) {
     try {
         const refreshToken = req.cookies.refreshToken;
         if (!refreshToken) throw createError.BadRequest();
-        const userId = await jwt.verifyRefreshToken(refreshToken);
-        Token.deleteMany({ uid: userId }).catch((err) => {
+        const token = await jwt.verifyRefreshToken(refreshToken);
+        Token.deleteMany({ uid: token.aud }).catch((err) => {
           console.log(err);
           throw createError.InternalServerError();
         });
@@ -193,13 +194,33 @@ router.get('/google/logout', function(req, res, next) {
 router.post('/google/callback', async (req,res)=> {
     const payload = await verify(req.body.credential);
     //console.log(payload);
-    const accessToken = await jwt.signAccessToken(payload.sub)
-    const user = await User.findOne({uid: payload.sub});
-    const user_json = JSON.stringify({user: pick(user, "email", "uid", "gmail")})
+    
 
-    const refreshToken = await jwt.signRefreshToken(payload.sub).catch((err)=>{next(createError.InternalServerError())});
+    const doesExist = await User.findOne({uid: payload.sub});
+    if (!doesExist) {
+        const google_user = new User({
+            provider: "google",
+            email: payload.email,
+            firstName: payload.given_name,
+            lastName: payload.family_name,
+            uid: payload.sub,
+            google: payload
+        }) 
+
+        await google_user.save().catch((err)=>{
+            console.log(err)
+            return redirect(process.env.CLIENT_DOMAIN)
+        });
+    }
+
+    const user = await User.findOne({uid: payload.sub});
+    const user_json = JSON.stringify({user: pick(user, "email", "uid"), provider:"google"})
+
+    const accessToken = await jwt.signAccessToken(payload.sub, "google")
+    const refreshToken = await jwt.signRefreshToken(payload.sub, "google").catch((err)=>{next(createError.InternalServerError())});
+    
     res.cookie("refreshToken", refreshToken, {httpOnly:true, sameSite:"lax", maxAge: 30 * 24 * 60 * 60 * 1000})
-    res.redirect("http://localhost:3000/google/callback?user=" + encodeURIComponent(user_json) + "&token="+accessToken)
+    res.redirect(process.env.CLIENT_DOMAIN+"google/callback?user=" + encodeURIComponent(user_json) + "&token="+accessToken)
 })
 
 module.exports = router;
