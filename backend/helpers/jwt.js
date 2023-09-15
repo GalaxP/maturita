@@ -2,7 +2,8 @@ require('dotenv').config()
 const jwt = require('jsonwebtoken')
 const tokenModel = require('../schemas/token.js')
 var createError = require("http-errors");
-const queue = require('async/queue.js')
+const queue = require('async/queue.js');
+const User = require('../schemas/user.js');
 
 var q = queue(async function (task, callback) {
     try {
@@ -14,14 +15,21 @@ var q = queue(async function (task, callback) {
 }, 1);
 
 const signAccessToken = (userId, provider) => {
-    return new Promise((resolve, reject)=>{
+    return new Promise(async (resolve, reject)=>{
         const options = {
             expiresIn: "10m",
             issuer: "odporuc.sk",
             audience: userId
         };
+        const user = await User.findOne({uid: userId})
 
-        jwt.sign({provider: provider}, process.env.ACCESS_TOKEN_SECRET, options, (err, token) => {
+        const payload = {
+            provider: provider,
+        }
+
+        if(user.roles.length>0) payload.roles = user.roles
+        
+        jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, options, (err, token) => {
             if(err) 
                 return reject(createError.InternalServerError());
             resolve(token);
@@ -84,7 +92,7 @@ const verifyRefreshToken = (refreshToken) => {
   
             const refreshTokenDb = await tokenModel.findOne({ uid: userId }).catch(
               (err) => {
-                console.log(err);
+                //console.log(err);
                 return reject(createError.InternalServerError());
               }
             );
@@ -98,9 +106,19 @@ const verifyRefreshToken = (refreshToken) => {
     });
 }
 
+const isAuthorized = (role) => {
+    return (req, res, next) => {
+        if(!req.payload || !req.payload.roles) return next(createError.Forbidden())
+        console.log(req.payload.roles.indexOf(role))
+        if(req.payload.roles.indexOf(role) === -1) return next(createError.Forbidden())
+        return next()
+    }
+}
+
 module.exports = {
     signAccessToken,
     signRefreshToken,
     verifyAccessToken,
-    verifyRefreshToken
+    verifyRefreshToken,
+    isAuthorized
 }

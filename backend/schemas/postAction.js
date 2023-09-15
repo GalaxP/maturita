@@ -13,7 +13,8 @@ const postActionSchema = new Schema({
     },
     type: {
         type: String,
-        required: true
+        enum: ["vote", "comment"],
+        required: true,
     },
     direction: {
         type: Number,

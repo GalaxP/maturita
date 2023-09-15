@@ -14,10 +14,11 @@ const userSchema = Joi.object({
 })
 
 const postActionSchema = Joi.object({
-    postId: Joi.string().required(),
+    postId: Joi.string(),
+    commentId: Joi.string(),
     type: Joi.string().required().lowercase(),
     direction: Joi.number().min(-1).max(1).required()
-})
+}).xor('postId', 'commentId')
 
 module.exports = {
     postSchema,

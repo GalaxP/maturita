@@ -69,7 +69,6 @@ router.post('/login', async function(req, res, next) {
 
     const authResult  = await user.isValidPassword(body.password);
     if(authResult) {
-        if(user.roles.length>0) console.log("user has roles")
         const accessToken = await jwt.signAccessToken(user.uid, "local")
         const refreshToken = await jwt.signRefreshToken(user.uid, "local")
         res.cookie("refreshToken", refreshToken, {httpOnly:true, sameSite:"lax", maxAge: 30 * 24 * 60 * 60 * 1000}) //30days
@@ -121,8 +120,8 @@ router.post("/logout", async function (req, res, next) {
     }
 })
 
-router.get("/protected", jwt.verifyAccessToken, function (req, res, next) {
-    res.send({ message: "You are authenticated", payload: req.payload });
+router.get("/protected", jwt.verifyAccessToken, jwt.isAuthorized('admin'), function (req, res, next) {
+    res.send({ message: "You are authenticated and authorized", payload: req.payload });
 });
 
 
@@ -193,8 +192,6 @@ router.get('/google/logout', function(req, res, next) {
 });*/
 router.post('/google/callback', async (req,res)=> {
     const payload = await verify(req.body.credential);
-    //console.log(payload);
-    
 
     const doesExist = await User.findOne({uid: payload.sub});
     if (!doesExist) {
