@@ -2,6 +2,10 @@ import { useContext, useEffect, useState } from "react";
 import { PostSchema } from "../schemas/postSchema";
 import AuthContext from "../contexts/AuthContext";
 import { post_data } from "../helpers/api";
+import { Button } from "./ui/button"
+import { Input } from "@components/input"
+import { ChevronRight, Loader2, Mail } from "lucide-react";
+
 
 const Post = ({_id ,title, body, author, createdAt, votes_likes, votes_dislikes, user_vote}: PostSchema) => {
     const auth = useContext(AuthContext)
@@ -10,6 +14,7 @@ const Post = ({_id ,title, body, author, createdAt, votes_likes, votes_dislikes,
     const [error, setError] = useState()
     const [post, setPost] = useState<PostSchema>({_id: _id, author: author, body: body, createdAt: createdAt, title: title, votes_dislikes: votes_dislikes, votes_likes: votes_likes, user_vote: user_vote})
     const [votes, setVotes] = useState<any>({votes_likes: votes_likes, votes_dislikes: votes_dislikes, user_vote: user_vote})
+    const [isLoading, setIsLoading] = useState(false)
     
     const vote = (direction: number) => {
         auth?.protectedAction(()=> {
@@ -68,6 +73,13 @@ const Post = ({_id ,title, body, author, createdAt, votes_likes, votes_dislikes,
         }, ()=> {alert("you must be logged in to vote")})
     }
 
+    const handleClick = () => {
+        setIsLoading(true)
+        setTimeout(()=> {
+            setIsLoading(false)
+        },2000)
+    }
+
     return <>
         <h1>{title}</h1>
         <div className="container">
@@ -79,6 +91,12 @@ const Post = ({_id ,title, body, author, createdAt, votes_likes, votes_dislikes,
         <p>{new Date(createdAt).toLocaleDateString() + " " + new Date(createdAt).toLocaleTimeString()}</p>
         <p>{body}</p>
         <p>Submitted by: {author}</p>
+        <p>Test</p>
+        <Button disabled={isLoading} onClick={handleClick}>
+            {isLoading &&<Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {!isLoading && <Mail className="mr-2 h-4 w-4" />}
+            Login with Email
+        </Button>
         <hr/>
     </>
 }

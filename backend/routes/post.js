@@ -22,7 +22,7 @@ router.post("/action", verifyAccessToken, async (req, res, next) => {
                 throw createError.UnprocessableEntity()
             })
         } else {
-            post = await Comment.findById(result.postId)
+            post = await Post.findById(result.postId)
             .catch(()=> {
                 throw createError.UnprocessableEntity()
             })

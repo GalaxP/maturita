@@ -5,7 +5,6 @@ import { PostSchema } from "../schemas/postSchema";
 import { Link, useNavigate } from "react-router-dom";
 import AuthContext from "../contexts/AuthContext";
 
-
 const Home = () => {
   const [loaded, setLoaded] = useState(false);
   const [posts, setPosts] = useState<PostSchema[]>([{author:"", title:"", createdAt: new Date(), body:"", _id:"", votes_likes:0, votes_dislikes:0, user_vote:0}]);
@@ -66,7 +65,6 @@ const Home = () => {
       <input id="title" name="title"></input><br/>
       <label htmlFor="body">Body</label><br/>
       <input id="body" name="body"></input><br/>
-
       <input type="submit" value="submit"/>
     </form>
     {posts_obj}
