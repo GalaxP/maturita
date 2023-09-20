@@ -11,13 +11,16 @@ import ProtectedRoute from "./helpers/protectedRoute";
 import { PostId } from "./components/postId";
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import Callback from "./routes/account/google/callback";
+import { Toaster } from "./components/ui/toaster";
 
 function App() {
   return (
+    <>
       <GoogleOAuthProvider clientId="203110807748-0f7t1473amk5f0j3nhtq8aas8v5c2coq.apps.googleusercontent.com">
         <AuthContextProvider>
           <Router>
             <Layout>
+
             <Routes>
               <Route path='/' element={<Home />}></Route>
               <Route path='account'>
@@ -34,9 +37,12 @@ function App() {
               <Route path='*' element={<h1>404</h1>}></Route>
             </Routes>
             </Layout>
+            
           </Router>
         </AuthContextProvider>
       </GoogleOAuthProvider>
+      <Toaster/>
+      </>
   );
 }
 

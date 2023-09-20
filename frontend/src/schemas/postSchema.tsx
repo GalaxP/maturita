@@ -1,4 +1,13 @@
-
+interface Comment {
+    id: string
+    body: string
+    author: string
+    createdAt: Date
+    votes_likes: number
+    votes_dislikes: number
+    user_vote? : number
+    comments: Comment[]
+}
 export interface PostSchema {
     _id?: string
     title: string
@@ -8,4 +17,5 @@ export interface PostSchema {
     votes_likes: number
     votes_dislikes: number
     user_vote?: number
+    comments: Comment[]
 }

@@ -5,14 +5,16 @@ import { post_data } from "../helpers/api";
 import { Button } from "./ui/button"
 import { Input } from "@components/input"
 import { ChevronRight, Loader2, Mail } from "lucide-react";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../components/ui/card";
+import { AiFillDislike, AiFillLike, AiOutlineDislike, AiOutlineLike } from "react-icons/ai";
 
 
-const Post = ({_id ,title, body, author, createdAt, votes_likes, votes_dislikes, user_vote}: PostSchema) => {
+const Post = ({_id ,title, body, author, createdAt, votes_likes, votes_dislikes, user_vote, comments}: PostSchema) => {
     const auth = useContext(AuthContext)
     //const [likes, setLikes] = useState(0)
     //const [dislikes, setDislikes] = useState(0)
     const [error, setError] = useState()
-    const [post, setPost] = useState<PostSchema>({_id: _id, author: author, body: body, createdAt: createdAt, title: title, votes_dislikes: votes_dislikes, votes_likes: votes_likes, user_vote: user_vote})
+    const [post, setPost] = useState<PostSchema>({_id: _id, author: author, body: body, createdAt: createdAt, title: title, votes_dislikes: votes_dislikes, votes_likes: votes_likes, user_vote: user_vote, comments: comments})
     const [votes, setVotes] = useState<any>({votes_likes: votes_likes, votes_dislikes: votes_dislikes, user_vote: user_vote})
     const [isLoading, setIsLoading] = useState(false)
     
@@ -81,6 +83,7 @@ const Post = ({_id ,title, body, author, createdAt, votes_likes, votes_dislikes,
     }
 
     return <>
+        {/*
         <h1>{title}</h1>
         <div className="container">
             {votes.user_vote === 1 ?  <img onClick={()=>{vote(0)}} width="24" height="24" src="https://img.icons8.com/material/24/thumb-up--v1.png" alt="thumb-up--v1"/> : <img onClick={()=>{vote(1)}} width="24" height="24" src="https://img.icons8.com/material-outlined/24/thumb-up.png" alt="thumb-up"/>}  
@@ -98,6 +101,26 @@ const Post = ({_id ,title, body, author, createdAt, votes_likes, votes_dislikes,
             Login with Email
         </Button>
         <hr/>
+        */}
+        <Card className="w-3/5 mx-auto">
+            <CardHeader>
+                <CardTitle>{title}</CardTitle>
+                <CardDescription>{author} 
+                <span className="dot-separator mx-1"></span>
+                 {new Date(createdAt).toLocaleDateString() + " " + new Date(createdAt).toLocaleTimeString()}
+                 </CardDescription>
+                 <div className="flex flex-row content-center space-x-1">
+                    { votes.user_vote === 1 ? <AiFillLike onClick={()=>vote(0)} size={20} className="mt-0.5"/> : <AiOutlineLike onClick={()=>vote(1)} size={20} className="mt-0.5"/> }
+                    <p>{votes.votes_likes}</p>
+                    { votes.user_vote === -1 ? <AiFillDislike onClick={()=>vote(0)} size={20} className="mt-0.5"/> : <AiOutlineDislike onClick={()=>vote(-1)} size={20} className="mt-0.5 space-x-3"/> }
+                    <p>{votes.votes_dislikes}</p>
+                 </div>
+                  
+            </CardHeader>
+            <CardContent>
+                <p>{body}</p>
+            </CardContent>
+        </Card>
     </>
 }
 

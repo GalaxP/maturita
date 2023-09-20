@@ -1,7 +1,7 @@
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import AuthContext from "../../contexts/AuthContext"
 import { useNavigate } from "react-router-dom";
-import { GoogleLogin } from "@react-oauth/google";
+import { GoogleLogin, useGoogleLogin } from "@react-oauth/google";
 import { ProfileForm } from "../../components/ui/profileSchema"
 
 import { Button } from "../../components/ui/button"
@@ -22,10 +22,12 @@ import {
     SelectTrigger,
     SelectValue,
   } from "../../components/ui/select"
+import { LoginForm } from "components/forms/loginForm";
 
 const Login = ({layout}: any) => {
     const auth = useContext(AuthContext);
     const navigate = useNavigate();
+    const [isLoading, setIsLoading] = useState(false)
 
     const responseMessage = (response:any) => {
         alert("yay");
@@ -70,12 +72,25 @@ const Login = ({layout}: any) => {
         }
         }).catch((err)=>{if(err.response.status===401) alert('incorrect credentials')})*/
     }
+    const googleLogin = useGoogleLogin({ux_mode:"redirect", redirect_uri:"http://localhost:8080/account/google/callback", flow: 'auth-code'});
 
-    const googleSignIn = () => {
-        window.open("http://localhost:8080/account/google", "_self")
+    const onSubmit = (values:any) => {
+        setIsLoading(true)
+        auth?.login({email: values.email, password: values.password})
+        .then((res)=> {
+            //alert("successfully logged in as "+ res.user.email)
+            navigate("/")
+            setIsLoading(false)
+        })
+        .catch((res)=> {
+            if(res.response.status===401) alert("incorrect credentials")
+            setIsLoading(false)
+        })
     }
 
-    return <div className="login">
+    return <div className="m-0 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+        {
+        /*
         <form method="post" onSubmit={handleSubmit} className="text">
             <label htmlFor="email">Email</label><br/>
             <input id="email" name="email"></input><br/>
@@ -84,43 +99,63 @@ const Login = ({layout}: any) => {
             <input type="submit" value="submit"/>
         </form>
         <ProfileForm></ProfileForm>
-        <GoogleLogin ux_mode="redirect" login_uri="http://localhost:8080/account/google/callback" onSuccess={responseMessage}/>
 
-
-        <Card className="w-[350px]">
+        <Card className="max-w-[350px]">
         <CardHeader>
-            <CardTitle>Create project</CardTitle>
-            <CardDescription>Deploy your new project in one-click.</CardDescription>
+        <CardTitle>Sign In</CardTitle>
+        <CardDescription>Deploy your new project in one-click.</CardDescription>
         </CardHeader>
         <CardContent>
-            <form>
-            <div className="grid w-full items-center gap-4">
-                <div className="flex flex-col space-y-1.5">
-                <Label htmlFor="name">Name</Label>
-                <Input id="name" placeholder="Name of your project" />
+        <form>
+        <div className="grid w-full items-center gap-4">
+        <div className="flex flex-col space-y-1.5">
+        <Label htmlFor="email">Email</Label>
+        <Input id="email" placeholder="email" />
+        </div>
+        <div className="flex flex-col space-y-1.5">
+                <Label htmlFor="password">Password</Label>
+                <Input id="password" type="password"/>
                 </div>
                 <div className="flex flex-col space-y-1.5">
                 <Label htmlFor="framework">Framework</Label>
                 <Select>
-                    <SelectTrigger id="framework">
-                    <SelectValue placeholder="Select" />
-                    </SelectTrigger>
-                    <SelectContent position="popper">
-                    <SelectItem value="next">Next.js</SelectItem>
-                    <SelectItem value="sveltekit">SvelteKit</SelectItem>
-                    <SelectItem value="astro">Astro</SelectItem>
-                    <SelectItem value="nuxt">Nuxt.js</SelectItem>
-                    </SelectContent>
+                <SelectTrigger id="framework">
+                <SelectValue placeholder="Select" />
+                </SelectTrigger>
+                <SelectContent position="popper">
+                <SelectItem value="next">Next.js</SelectItem>
+                <SelectItem value="sveltekit">SvelteKit</SelectItem>
+                <SelectItem value="astro">Astro</SelectItem>
+                <SelectItem value="nuxt">Nuxt.js</SelectItem>
+                </SelectContent>
                 </Select>
                 </div>
-            </div>
-            </form>
-        </CardContent>
-        <CardFooter className="flex justify-between">
-            <Button variant="outline">Cancel</Button>
-            <Button>Deploy</Button>
-        </CardFooter>
+                
+                </div>
+                </form>
+                </CardContent>
+                <CardFooter className="flex justify-between">
+                <Button variant="outline">Cancel</Button>
+                <Button>Login</Button>
+                </CardFooter>
         </Card>
+        */
+        }
+        {/*<Button onClick={()=>googleLogin()}>LogIn</Button>*/}
+        {}
+        
+        <div className="mx-auto w-[350px] ">
+            <LoginForm handleSubmit={onSubmit} isLoading={isLoading} googleSignIn={googleLogin}/>
+            {/*<GoogleLogin shape="rectangular" ux_mode="redirect" login_uri="http://localhost:8080/account/google/callback" onSuccess={responseMessage}/>*/}
+        </div>
+        {/* <Card className="max-w-[350px]">
+            <CardHeader>
+                <CardTitle>Sign In</CardTitle>
+                <CardDescription>Deploy your new project in one-click.</CardDescription>
+            </CardHeader>
+            <CardContent>
+            </CardContent>
+        </Card> */}
     </div>
 }
 

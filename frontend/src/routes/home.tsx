@@ -7,7 +7,7 @@ import AuthContext from "../contexts/AuthContext";
 
 const Home = () => {
   const [loaded, setLoaded] = useState(false);
-  const [posts, setPosts] = useState<PostSchema[]>([{author:"", title:"", createdAt: new Date(), body:"", _id:"", votes_likes:0, votes_dislikes:0, user_vote:0}]);
+  const [posts, setPosts] = useState<PostSchema[]>([{author:"", title:"", createdAt: new Date(), body:"", _id:"", votes_likes:0, votes_dislikes:0, user_vote:0, comments:[]}]);
   const [error, setError] = useState();
   const auth = useContext(AuthContext)
   const navigate = useNavigate()
@@ -56,7 +56,7 @@ const Home = () => {
   }
   const posts_obj = [];
   for (let i = 0; i < posts.length; i++) {
-    posts_obj.push(<Link key={posts[i]._id} to={"/post/"+posts[i]._id} className="Link"><Post key={posts[i]._id} _id={posts[i]._id} title={posts[i].title} createdAt={posts[i].createdAt} votes_likes={posts[i].votes_likes} votes_dislikes={posts[i].votes_dislikes} body={posts[i].body} author={posts[i].author} user_vote={posts[i].user_vote}/></Link>);
+    posts_obj.push(<li key={posts[i]._id} className="w-full"><Link key={posts[i]._id} to={"/post/"+posts[i]._id} className="Link mx-auto"><Post key={posts[i]._id} _id={posts[i]._id} title={posts[i].title} createdAt={posts[i].createdAt} votes_likes={posts[i].votes_likes} votes_dislikes={posts[i].votes_dislikes} body={posts[i].body} author={posts[i].author} user_vote={posts[i].user_vote} comments={posts[i].comments}/></Link> </li>);
   }
   return (loaded ? 
   <div>
@@ -67,7 +67,9 @@ const Home = () => {
       <input id="body" name="body"></input><br/>
       <input type="submit" value="submit"/>
     </form>
-    {posts_obj}
+    <ul className="flex flex-col space-y-3 justify-center items-center w-full">
+      {posts_obj}
+    </ul>
   </div>
   : <div><p>loading...</p></div>);
 }
