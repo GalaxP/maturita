@@ -56,7 +56,7 @@ const Home = () => {
   }
   const posts_obj = [];
   for (let i = 0; i < posts.length; i++) {
-    posts_obj.push(<li key={posts[i]._id} className="w-full"><Link key={posts[i]._id} to={"/post/"+posts[i]._id} className="Link mx-auto"><Post key={posts[i]._id} _id={posts[i]._id} title={posts[i].title} createdAt={posts[i].createdAt} votes_likes={posts[i].votes_likes} votes_dislikes={posts[i].votes_dislikes} body={posts[i].body} author={posts[i].author} user_vote={posts[i].user_vote} comments={posts[i].comments}/></Link> </li>);
+    posts_obj.push(<li key={posts[i]._id} className="w-3/5"><Link key={posts[i]._id} to={"/post/"+posts[i]._id} className="Link mx-auto block"><Post key={posts[i]._id} width="w-full" _id={posts[i]._id} title={posts[i].title} createdAt={posts[i].createdAt} votes_likes={posts[i].votes_likes} votes_dislikes={posts[i].votes_dislikes} body={posts[i].body} author={posts[i].author} user_vote={posts[i].user_vote} comments={posts[i].comments}/></Link> </li>);
   }
   return (loaded ? 
   <div>

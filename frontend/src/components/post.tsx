@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { AiFillDislike, AiFillLike, AiOutlineDislike, AiOutlineLike } from "react-icons/ai";
 
 
-const Post = ({_id ,title, body, author, createdAt, votes_likes, votes_dislikes, user_vote, comments}: PostSchema) => {
+const Post = ({_id ,title, body, author, createdAt, votes_likes, votes_dislikes, user_vote, comments, width}: PostSchema) => {
     const auth = useContext(AuthContext)
     //const [likes, setLikes] = useState(0)
     //const [dislikes, setDislikes] = useState(0)
@@ -81,7 +81,7 @@ const Post = ({_id ,title, body, author, createdAt, votes_likes, votes_dislikes,
             setIsLoading(false)
         },2000)
     }
-
+    var width_class = `${width ? width : "w-3/5"} mx-auto`;
     return <>
         {/*
         <h1>{title}</h1>
@@ -102,7 +102,8 @@ const Post = ({_id ,title, body, author, createdAt, votes_likes, votes_dislikes,
         </Button>
         <hr/>
         */}
-        <Card className="w-3/5 mx-auto">
+        
+        <Card className={width_class}>
             <CardHeader>
                 <CardTitle>{title}</CardTitle>
                 <CardDescription>{author} 
@@ -110,9 +111,9 @@ const Post = ({_id ,title, body, author, createdAt, votes_likes, votes_dislikes,
                  {new Date(createdAt).toLocaleDateString() + " " + new Date(createdAt).toLocaleTimeString()}
                  </CardDescription>
                  <div className="flex flex-row content-center space-x-1">
-                    { votes.user_vote === 1 ? <AiFillLike onClick={()=>vote(0)} size={20} className="mt-0.5"/> : <AiOutlineLike onClick={()=>vote(1)} size={20} className="mt-0.5"/> }
+                    { votes.user_vote === 1 ? <AiFillLike onClick={()=>vote(0)} size={20} className="mt-0.5 cursor-pointer"/> : <AiOutlineLike onClick={()=>vote(1)} size={20} className="mt-0.5 cursor-pointer"/> }
                     <p>{votes.votes_likes}</p>
-                    { votes.user_vote === -1 ? <AiFillDislike onClick={()=>vote(0)} size={20} className="mt-0.5"/> : <AiOutlineDislike onClick={()=>vote(-1)} size={20} className="mt-0.5 space-x-3"/> }
+                    { votes.user_vote === -1 ? <AiFillDislike onClick={()=>vote(0)} size={20} className="mt-0.5 cursor-pointer"/> : <AiOutlineDislike onClick={()=>vote(-1)} size={20} className="mt-0.5 cursor-pointer"/> }
                     <p>{votes.votes_dislikes}</p>
                  </div>
                   

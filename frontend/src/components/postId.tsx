@@ -8,6 +8,7 @@ import { Textarea } from "../components/ui/textarea";
 import { Button } from "../components/ui/button";
 import { useToast } from "../components/ui/use-toast"
 import { ToastAction } from "../components/ui/toast";
+import Comment from "../components/comment"
 
 const PostId = () => {
     const [post, setPost] = useState<PostSchema>({author:"", title:"", createdAt: new Date(), body:"", _id:"", votes_likes:0, votes_dislikes: 0, user_vote: 0, comments: []})
@@ -46,27 +47,27 @@ const PostId = () => {
     const submitComment = () => {
         post_data("/post/"+post._id+"/comment", {body: comment}, {withCredentials: true}, true)
         .then((res)=> {
-            
             toast({
                 description: "Your comment has been sent.",
             })
             
         })
         .catch((err)=> {
-                toast({
-                    variant: "destructive",
-                    title: "Uh oh! Something went wrong.",
-                    description: "There was a problem with your request."+err,
-                    action: <ToastAction altText="Try again">Try again</ToastAction>,
-                  })
+            toast({
+                variant: "destructive",
+                title: "Uh oh! Something went wrong.",
+                description: "There was a problem with your request.",
+            })
         })
     }
     return <>
     {isLoading ? "" : <> 
     <Post _id={post._id} author={post.author} body={post.body} createdAt={post.createdAt} title={post.title} votes_likes={post.votes_likes} votes_dislikes={post.votes_dislikes} user_vote={post.user_vote} comments={post.comments}/>
-    <div className="w-3/5 h-10 mx-auto mt-5 grid gap-2" >
+    <div className="w-3/5 mx-auto mt-5 grid gap-2" >
         <Textarea value={comment} onChange={e => setComment(e.target.value)} placeholder={authContext?.isAuthenticated ? "Type your comment here." : "You need to log in to comment."} disabled={!authContext?.isAuthenticated}/>
-        {authContext?.isAuthenticated && <Button onClick={submitComment}>Comment</Button> }
+        {authContext?.isAuthenticated && <Button className="w-20 ml-auto" onClick={submitComment}>Comment</Button> }
+        <Comment author="GalaxP" createdAt={new Date()} body="Lorem ipsum dolor sit amet consectetur, adipisicing elit. Doloremque quidem" votes_dislikes={2} votes_likes={1} user_vote={0}/>
+        
     </div>
     </>
     

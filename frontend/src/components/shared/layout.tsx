@@ -37,14 +37,11 @@ const Layout = ({children}: LayoutProps) => {
                         </Link>
                     </NavigationMenuItem>
                     <NavigationMenuItem>
-
                         <Link to={auth?.isAuthenticated ? "/account/logout" : "/account/login"}>
                             <NavigationMenuLink className={navigationMenuTriggerStyle()}>
                             {auth?.isAuthenticated ? "Logout" :  "Login" }
                             </NavigationMenuLink>
                         </Link>
-                       
-                        
                     </NavigationMenuItem>
                 </NavigationMenuList>
             </NavigationMenu>
