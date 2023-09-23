@@ -14,6 +14,10 @@ const UserSchema = new Schema({
         lowercase: true,
         unique: true,
     },
+    displayName: {
+        type: String,
+        minLenght: 3
+    },
     firstName: {
         type: String,
         required: true,

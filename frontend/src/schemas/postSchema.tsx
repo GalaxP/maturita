@@ -1,4 +1,4 @@
-interface Comment {
+export interface IComment {
     id: string
     body: string
     author: string
@@ -6,7 +6,7 @@ interface Comment {
     votes_likes: number
     votes_dislikes: number
     user_vote? : number
-    comments: Comment[]
+    comments: IComment[]
 }
 export interface PostSchema {
     _id?: string
@@ -18,5 +18,5 @@ export interface PostSchema {
     votes_dislikes: number
     user_vote?: number
     width?: string
-    comments: Comment[]
+    comments: IComment[]
 }

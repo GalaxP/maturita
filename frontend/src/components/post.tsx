@@ -1,12 +1,9 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { PostSchema } from "../schemas/postSchema";
 import AuthContext from "../contexts/AuthContext";
 import { post_data } from "../helpers/api";
-import { Button } from "./ui/button"
-import { Input } from "@components/input"
-import { ChevronRight, Loader2, Mail } from "lucide-react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../components/ui/card";
-import { AiFillDislike, AiFillLike, AiOutlineDislike, AiOutlineLike } from "react-icons/ai";
+import { VoteButton } from "./voteButton";
 
 
 const Post = ({_id ,title, body, author, createdAt, votes_likes, votes_dislikes, user_vote, comments, width}: PostSchema) => {
@@ -16,7 +13,6 @@ const Post = ({_id ,title, body, author, createdAt, votes_likes, votes_dislikes,
     const [error, setError] = useState()
     const [post, setPost] = useState<PostSchema>({_id: _id, author: author, body: body, createdAt: createdAt, title: title, votes_dislikes: votes_dislikes, votes_likes: votes_likes, user_vote: user_vote, comments: comments})
     const [votes, setVotes] = useState<any>({votes_likes: votes_likes, votes_dislikes: votes_dislikes, user_vote: user_vote})
-    const [isLoading, setIsLoading] = useState(false)
     
     const vote = (direction: number) => {
         auth?.protectedAction(()=> {
@@ -75,12 +71,6 @@ const Post = ({_id ,title, body, author, createdAt, votes_likes, votes_dislikes,
         }, ()=> {alert("you must be logged in to vote")})
     }
 
-    const handleClick = () => {
-        setIsLoading(true)
-        setTimeout(()=> {
-            setIsLoading(false)
-        },2000)
-    }
     var width_class = `${width ? width : "w-3/5"} mx-auto`;
     return <>
         {/*
@@ -100,21 +90,18 @@ const Post = ({_id ,title, body, author, createdAt, votes_likes, votes_dislikes,
             {!isLoading && <Mail className="mr-2 h-4 w-4" />}
             Login with Email
         </Button>
-        <hr/>
         */}
         
         <Card className={width_class}>
-            <CardHeader>
+            <CardHeader className="pb-0">
                 <CardTitle>{title}</CardTitle>
                 <CardDescription>{author} 
                 <span className="dot-separator mx-1"></span>
                  {new Date(createdAt).toLocaleDateString() + " " + new Date(createdAt).toLocaleTimeString()}
                  </CardDescription>
                  <div className="flex flex-row content-center space-x-1">
-                    { votes.user_vote === 1 ? <AiFillLike onClick={()=>vote(0)} size={20} className="mt-0.5 cursor-pointer"/> : <AiOutlineLike onClick={()=>vote(1)} size={20} className="mt-0.5 cursor-pointer"/> }
-                    <p>{votes.votes_likes}</p>
-                    { votes.user_vote === -1 ? <AiFillDislike onClick={()=>vote(0)} size={20} className="mt-0.5 cursor-pointer"/> : <AiOutlineDislike onClick={()=>vote(-1)} size={20} className="mt-0.5 cursor-pointer"/> }
-                    <p>{votes.votes_dislikes}</p>
+                    <VoteButton type="like" votes={votes.votes_likes} current_vote={votes.user_vote} onClick={vote}/>
+                    <VoteButton type="dislike" votes={votes.votes_dislikes} current_vote={votes.user_vote} onClick={vote}/>
                  </div>
                   
             </CardHeader>
