@@ -52,7 +52,7 @@ const getAllComments = async (commentId, authorized, userId) => {
         const votes_likes = await PostAction.find({postId: comment._id, direction: 1})
         const votes_dislikes = await PostAction.find({postId: comment._id, direction: -1})
 
-        var child_comments = await getAllComments(comment._id)
+        var child_comments = await getAllComments(comment._id, authorized, userId)
         var result = { id: comment._id.toString(), body: comment.body, author: comment.author, votes_likes: votes_likes.length, votes_dislikes: votes_dislikes.length, createdAt: comment.createdAt, comments: child_comments }
 
         if(authorized) {

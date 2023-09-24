@@ -25,6 +25,8 @@ const Register = () => {
             <input id="lastName" name="lastName"></input><br/>
             <label htmlFor="email">Email</label><br/>
             <input id="email" name="email" type="email"></input><br/>
+            <label htmlFor="displayName">User Name</label><br/>
+            <input id="displayName" name="displayName"></input><br/>
             <label htmlFor="password">Password</label><br/>
             <input id="password" name="password" type="password"></input><br/>
 

@@ -31,16 +31,16 @@ const Layout = ({children}: LayoutProps) => {
                 <NavigationMenuList>
                     <NavigationMenuItem>
                         <Link to={"/"}>
-                            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                            <NavigationMenu className={navigationMenuTriggerStyle()}>
                             Home
-                            </NavigationMenuLink>
+                            </NavigationMenu>
                         </Link>
                     </NavigationMenuItem>
                     <NavigationMenuItem>
                         <Link to={auth?.isAuthenticated ? "/account/logout" : "/account/login"}>
-                            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                            <NavigationMenu className={navigationMenuTriggerStyle()}>
                             {auth?.isAuthenticated ? "Logout" :  "Login" }
-                            </NavigationMenuLink>
+                            </NavigationMenu>
                         </Link>
                     </NavigationMenuItem>
                 </NavigationMenuList>

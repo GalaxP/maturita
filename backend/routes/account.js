@@ -33,6 +33,10 @@ router.post('/register', async function(req, res, next) {
     if (doesExist)
       return next(createError.Conflict(`${result.email} has already been registered`));
 
+    const doesDisplayNameExist = await User.findOne({displayName: result.displayName})
+    if (doesDisplayNameExist)
+        return next(createError.Conflict(`${result.displayName} has already been registered`));
+
     const hashedPassword = await HashPassword(result.password)
     const _user = new User(
     {
@@ -40,6 +44,7 @@ router.post('/register', async function(req, res, next) {
         email: result.email,
         firstName: result.firstName,
         lastName: result.lastName,
+        displayName: result.displayName,
         password: hashedPassword,
         uid: v4()
     })
