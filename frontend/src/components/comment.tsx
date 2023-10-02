@@ -5,13 +5,14 @@ import { VoteButton } from "./voteButton";
 import { Reply } from "./reply";
 import { useContext, useState } from "react";
 import AuthContext from "contexts/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { post_data } from "helpers/api";
 import { useToast } from "./ui/use-toast";
+import { AiOutlineDelete } from "react-icons/ai";
 
 export interface IComment {
     _id: string,
-    author: string,
+    author: {id: string, displayName:string, avatar:string},
     body: string,
     votes_likes: number,
     votes_dislikes: number,
@@ -36,10 +37,11 @@ const Comment = (comment: IComment) => {
     const { toast } = useToast()
     
     const vote = (dir: number) => {
+        if(!auth?.isAuthenticated) return navigate("/account/login")
         if(votes.user_vote===undefined || votes.user_vote === 0) {
             post_data("/post/action", {postId: comment._id, type:"comment", direction: dir}, {}, true)
             .then(()=> {
-                if(dir === 1) setVotes({...votes, votes_likes: votes.votes_dislikes+1, user_vote: dir})
+                if(dir === 1) setVotes({...votes, votes_likes: votes.votes_likes+1, user_vote: dir})
                 if(dir === -1) setVotes({...votes, votes_dislikes: votes.votes_dislikes+1, user_vote: dir})
             })
             .catch(()=>{
@@ -77,16 +79,16 @@ const Comment = (comment: IComment) => {
             })
         }
     }
-
     return <>
     <div className="flex flex-row mt-2" style={{paddingLeft: comment.offset*3.5+"rem"}}>
-        <Avatar className="mt-2">
-            <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+        <Avatar className="mt-2 shadow-md cursor-pointer">
+            <AvatarImage src={comment.author.avatar===null ? "http://localhost:8080/avatar.png" : comment.author.avatar} alt="@shadcn" />
             <AvatarFallback>CN</AvatarFallback>
         </Avatar>
-        <div className="ml-2">
-            <span className="text-sm pl-2">{comment.author}</span>
-            <div className="inline-block"><span className="text-sm text-muted-foreground pl-2">{comment.createdAt.toString()}</span></div>
+        <div className="ml-2 w-full">
+            <Link to={"/user/"+comment.author.id}><span className="text-sm pl-2">{comment.author.displayName}</span></Link>
+            
+            <div className="inline-block"><span className="text-sm text-muted-foreground pl-2">{new Date(comment.createdAt.toString()).toLocaleString()}</span></div>
             
             <span className="text-sm pl-2 block">{comment.body}</span>
             <div className="flex flex-row content-center space-x-1 pl-2 items-center">
@@ -96,6 +98,12 @@ const Comment = (comment: IComment) => {
                     <MessageSquare strokeWidth={1.5} size={20} className="mr-1"/>
                     Reply
                 </Button>
+                {/*
+                <Button variant="ghost" className="m-1">
+                    <AiOutlineDelete fill="red" size={20} className="mr-1"/>
+                    <p className="text-red-600">Delete</p>
+                </Button>
+                */}
             </div>
             {showReply && <Reply submitReply={(e)=>comment.onReply(comment._id, e)}/>}
         </div>

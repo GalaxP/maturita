@@ -4,13 +4,15 @@ import { Post } from "../components/post"
 import { PostSchema } from "../schemas/postSchema";
 import { Link, useNavigate } from "react-router-dom";
 import AuthContext from "../contexts/AuthContext";
+import { useDocumentTitle } from "hooks/setDocuemntTitle";
 
 const Home = () => {
   const [loaded, setLoaded] = useState(false);
-  const [posts, setPosts] = useState<PostSchema[]>([{author:"", title:"", createdAt: new Date(), body:"", _id:"", votes_likes:0, votes_dislikes:0, user_vote:0, comments:[]}]);
+  const [posts, setPosts] = useState<PostSchema[]>([{author:{id:"",displayName:"", avatar:""}, title:"", createdAt: new Date(), body:"", _id:"", votes_likes:0, votes_dislikes:0, user_vote:0, comments:[]}]);
   const [error, setError] = useState();
   const auth = useContext(AuthContext)
   const navigate = useNavigate()
+  const [documentTitle, setDocumentTitle] = useDocumentTitle("Home")
 
   useEffect(() => {
     setLoaded(false)
@@ -53,10 +55,12 @@ const Home = () => {
       .catch((err)=>{setError(err); alert("something has gone wrong. try again")})
     }, ()=> {navigate("/account/login")})
     //console.log(formJson.data);
+    //<Link key={posts[i]._id} to={"/post/"+posts[i]._id} className="Link mx-auto block">
+    //
   }
   const posts_obj = [];
   for (let i = 0; i < posts.length; i++) {
-    posts_obj.push(<li key={posts[i]._id} className="w-3/5"><Link key={posts[i]._id} to={"/post/"+posts[i]._id} className="Link mx-auto block"><Post key={posts[i]._id} width="w-full" _id={posts[i]._id} title={posts[i].title} createdAt={posts[i].createdAt} votes_likes={posts[i].votes_likes} votes_dislikes={posts[i].votes_dislikes} body={posts[i].body} author={posts[i].author} user_vote={posts[i].user_vote} comments={posts[i].comments}/></Link> </li>);
+    posts_obj.push(<li key={posts[i]._id} className="lg:w-3/5 sm:w-3/4 w-[90%]"><Post key={posts[i]._id} showLinkToPost={true} width="w-full" _id={posts[i]._id} title={posts[i].title} createdAt={posts[i].createdAt} votes_likes={posts[i].votes_likes} votes_dislikes={posts[i].votes_dislikes} body={posts[i].body} author={posts[i].author} user_vote={posts[i].user_vote} comments={posts[i].comments}/> </li>);
   }
   return (loaded ? 
   <div>

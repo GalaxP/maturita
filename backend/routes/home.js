@@ -6,7 +6,7 @@ var createError = require("http-errors");
 const Post = require('../schemas/post');
 const { verifyAccessToken } = require('../helpers/jwt');
 const getPostById = require('../helpers/post')
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
 
 //const { createAvatar } = require('@dicebear/core');
 //const { identicon } = require('@dicebear/collection');
@@ -110,8 +110,14 @@ router.get('/avatar.png', async function(req, res) {
 
   const avatar = createAvatar.createAvatar(identicon.identicon, {
     seed:"felix",
+    size: 64,
+    scale: 70
   });
-  const avatar_buffer = await avatar.png().toDataUri()
-  res.send("<img src='"+avatar_buffer+"' />")
+  const avatar_buffer = await avatar.png().toArrayBuffer()
+  res.setHeader('Content-type', 'image/png')
+  
+  res.send(Buffer.from(avatar_buffer))
 })
+
+
 module.exports = router;

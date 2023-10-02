@@ -4,16 +4,19 @@ import AuthContext from "../contexts/AuthContext";
 import { post_data } from "../helpers/api";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../components/ui/card";
 import { VoteButton } from "./voteButton";
+import { AiOutlineDelete } from "react-icons/ai";
+import { Button } from "../components/ui/button";
+import { Link, useNavigate } from "react-router-dom";
 
-
-const Post = ({_id ,title, body, author, createdAt, votes_likes, votes_dislikes, user_vote, comments, width}: PostSchema) => {
+const Post = ({_id ,title, body, author, createdAt, votes_likes, votes_dislikes, user_vote, comments, width, showLinkToPost}: PostSchema) => {
     const auth = useContext(AuthContext)
     //const [likes, setLikes] = useState(0)
     //const [dislikes, setDislikes] = useState(0)
     const [error, setError] = useState()
     const [post, setPost] = useState<PostSchema>({_id: _id, author: author, body: body, createdAt: createdAt, title: title, votes_dislikes: votes_dislikes, votes_likes: votes_likes, user_vote: user_vote, comments: comments})
     const [votes, setVotes] = useState<any>({votes_likes: votes_likes, votes_dislikes: votes_dislikes, user_vote: user_vote})
-    
+    const navigate = useNavigate()
+
     const vote = (direction: number) => {
         auth?.protectedAction(()=> {
             if(direction === 0 && votes.user_vote !== 0) {
@@ -71,37 +74,29 @@ const Post = ({_id ,title, body, author, createdAt, votes_likes, votes_dislikes,
         }, ()=> {alert("you must be logged in to vote")})
     }
 
-    var width_class = `${width ? width : "w-3/5"} mx-auto`;
+    const redirect = (e:any) => {
+        if(e.target.localName!=="path" && e.target.localName!=="svg" && e.target.localName!=="button" && showLinkToPost) navigate("/post/"+_id)
+    }
+
+    var width_class = `${width ? width : "lg:w-3/5 sm:w-3/4 w-[90%]"} mx-auto`;
     return <>
-        {/*
-        <h1>{title}</h1>
-        <div className="container">
-            {votes.user_vote === 1 ?  <img onClick={()=>{vote(0)}} width="24" height="24" src="https://img.icons8.com/material/24/thumb-up--v1.png" alt="thumb-up--v1"/> : <img onClick={()=>{vote(1)}} width="24" height="24" src="https://img.icons8.com/material-outlined/24/thumb-up.png" alt="thumb-up"/>}  
-            <p>{votes.votes_likes}</p>
-            {votes.user_vote === -1 ? <img onClick={()=>{vote(0)}} width="24" height="24" src="https://img.icons8.com/material/24/thumbs-down--v1.png" alt="thumbs-down--v1"/> : <img onClick={()=>{vote(-1)}} width="24" height="24" src="https://img.icons8.com/material-outlined/24/thumbs-down.png" alt="thumbs-down"/>}
-            <p>{votes.votes_dislikes}</p>
-        </div>
-        <p>{new Date(createdAt).toLocaleDateString() + " " + new Date(createdAt).toLocaleTimeString()}</p>
-        <p>{body}</p>
-        <p>Submitted by: {author}</p>
-        <p>Test</p>
-        <Button disabled={isLoading} onClick={handleClick}>
-            {isLoading &&<Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {!isLoading && <Mail className="mr-2 h-4 w-4" />}
-            Login with Email
-        </Button>
-        */}
-        
-        <Card className={width_class}>
+        <Card className={width_class+" cursor-pointer"} onClick={redirect}>
             <CardHeader className="pb-0">
                 <CardTitle>{title}</CardTitle>
-                <CardDescription>{author} 
+                <CardDescription>{author.displayName} 
                 <span className="dot-separator mx-1"></span>
                  {new Date(createdAt).toLocaleDateString() + " " + new Date(createdAt).toLocaleTimeString()}
                  </CardDescription>
                  <div className="flex flex-row content-center space-x-1">
                     <VoteButton type="like" votes={votes.votes_likes} current_vote={votes.user_vote} onClick={vote}/>
                     <VoteButton type="dislike" votes={votes.votes_dislikes} current_vote={votes.user_vote} onClick={vote}/>
+                    { auth?.isAuthenticated && auth?.getUser().user.uid === author.id &&
+                    <Button variant="ghost" className="px-2">
+                        <AiOutlineDelete size={20} className="mr-1"/>
+                        Delete
+                    </Button>
+                    }
+
                  </div>
                   
             </CardHeader>

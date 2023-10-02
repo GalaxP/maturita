@@ -14,6 +14,7 @@ const PORT = 8080;
 const indexRouter = require('./routes/home.js')
 const accountRouter = require('./routes/account.js')
 const postRouter = require('./routes/post')
+const deleteRouter = require('./routes/delete')
 
 var app = express();
 app.set("view engine", "jade");
@@ -32,6 +33,7 @@ app.use(passport.initialize())
 app.use("/", indexRouter);
 app.use("/account", accountRouter);
 app.use("/post", postRouter);
+app.use("/delete", deleteRouter);
 
 app.use(function (req, res, next) {
     next(createError(404));

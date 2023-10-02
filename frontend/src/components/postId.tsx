@@ -8,9 +8,12 @@ import { Textarea } from "../components/ui/textarea";
 import { Button } from "../components/ui/button";
 import { useToast } from "../components/ui/use-toast"
 import Comment from "../components/comment"
+import { Skeleton } from "../components/ui/skeleton";
+import { useDocumentTitle } from "../hooks/setDocuemntTitle"
 
 const PostId = () => {
-    const [post, setPost] = useState<PostSchema>({author:"", title:"", createdAt: new Date(), body:"", _id:"", votes_likes:0, votes_dislikes: 0, user_vote: 0, comments: []})
+    const [post, setPost] = useState<PostSchema>({author:{id:"", displayName:"", avatar:""}, title:"", createdAt: new Date(), body:"", _id:"", votes_likes:0, votes_dislikes: 0, user_vote: 0, comments: []})
+    const [documentTitle, setDocumentTitle] = useDocumentTitle("")
     const [isLoading, setIsLoading] = useState(false)
     const id = useParams().postId;
     const authContext = useContext(AuthContext)
@@ -25,6 +28,7 @@ const PostId = () => {
         get_data("/post/"+id, {}, authContext?.isAuthenticated)
         .then((res)=> {
             setPost(res.data)
+            setDocumentTitle(res.data.title)
             setIsLoading(false)
         })
         .catch((err)=> {
@@ -70,7 +74,6 @@ const PostId = () => {
     }
 
     const vote = (id:string, type: "like" | "dislike", self:any, vote?:number) => {
-        console.log(self)
         /*
         if(vote===undefined) {
             post_data("/post/action", {postId: id, type:"comment", direction: type==="like" ? 1 : -1}, {}, true)
@@ -101,10 +104,13 @@ const PostId = () => {
     }
     
     return <>
-    {isLoading ? "" : <>
+    {isLoading ? <div className=" mt-12 flex justify-center items-center space-x-4 w-full flex-col space-y-2">
+        <Skeleton className="h-40 w-3/5" />
+        <Skeleton className="mx-0 h-10 w-3/5 " />
+    </div> : <>
     <Post _id={post._id} author={post.author} body={post.body} createdAt={post.createdAt} title={post.title} votes_likes={post.votes_likes} votes_dislikes={post.votes_dislikes} user_vote={post.user_vote} comments={post.comments}/>
-    <div className="w-3/5 mx-auto mt-5 grid gap-2" >
-        <Textarea value={comment} onChange={e => setComment(e.target.value)} placeholder={authContext?.isAuthenticated ? "Type your comment here." : "You need to log in to comment."} disabled={!authContext?.isAuthenticated}/>
+    <div className="lg:w-3/5 sm:w-3/4 w-[90%] mx-auto mt-5" >
+        <Textarea className="w-full inline max-w-full" value={comment} onChange={e => setComment(e.target.value)} placeholder={authContext?.isAuthenticated ? "Type your comment here." : "You need to log in to comment."} disabled={!authContext?.isAuthenticated}/>
         {authContext?.isAuthenticated && <Button className="w-20 ml-auto" onClick={submitComment}>Comment</Button> }
         {comments}
     </div>

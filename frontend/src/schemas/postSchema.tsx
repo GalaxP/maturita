@@ -1,7 +1,7 @@
 export interface IComment {
     id: string
     body: string
-    author: string
+    author: {id: string, displayName:string, avatar:string}
     createdAt: Date
     votes_likes: number
     votes_dislikes: number
@@ -12,11 +12,16 @@ export interface PostSchema {
     _id?: string
     title: string
     body: string
-    author: string
+    author: {
+        id: string,
+        displayName: string,
+        avatar: string
+    }
     createdAt: Date
     votes_likes: number
     votes_dislikes: number
     user_vote?: number
     width?: string
+    showLinkToPost?: boolean
     comments: IComment[]
 }

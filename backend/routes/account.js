@@ -222,7 +222,7 @@ router.post('/google/callback', async (req,res)=> {
     const refreshToken = await jwt.signRefreshToken(payload.sub, "google").catch((err)=>{next(createError.InternalServerError())});
     
     res.cookie("refreshToken", refreshToken, {httpOnly:true, sameSite:"lax", maxAge: 30 * 24 * 60 * 60 * 1000})
-    res.redirect(process.env.CLIENT_DOMAIN+"google/callback?user=" + encodeURIComponent(user_json) + "&token="+accessToken)
+    res.redirect(process.env.CLIENT_DOMAIN + "google/callback?user=" + encodeURIComponent(user_json) + "&token="+accessToken)
 })
 
 module.exports = router;
