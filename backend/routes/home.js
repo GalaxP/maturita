@@ -14,7 +14,6 @@ const jwt = require('jsonwebtoken');
 router.get('/', async function(req, res, next) {
   res.send("hello");
 });
-
 router.post('/post', verifyAccessToken, async function (req, res, next) {
   try{
     const result = await postSchema.validateAsync(req.body).catch((err) => {

@@ -1,4 +1,5 @@
 import { post_data } from "../../helpers/api";
+declare var grecaptcha:any
 
 const Register = () => {
 
@@ -8,13 +9,16 @@ const Register = () => {
         const formData = new FormData(form);
 
         const formJson = Object.fromEntries(formData.entries());
-
-        post_data("/account/register", formJson).then((res)=>{
-        if(res.status===200)
-        {
-            alert("successfully registered")
-        }
-        }).catch((err)=>{console.log(err)})
+        grecaptcha.ready(function() {
+            grecaptcha.execute('6Ld0mW4oAAAAAMQH12Drl2kwd1x3uwQ9yKCJIO5o', {action: 'register'}).then(function(token:string) {
+                post_data("/account/register", {formJson, token:token}).then((res)=>{
+                if(res.status===200)
+                {
+                    alert("successfully registered")
+                }
+                }).catch((err)=>{console.log(err)})
+            });
+        });
     }
 
     return <div className="register">

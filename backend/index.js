@@ -4,7 +4,6 @@ var path = require("path");
 //var logger = require("morgan");
 var cors = require("cors");
 var cookieParser = require('cookie-parser');
-const passport = require('passport');
 require("dotenv").config();
 require("./helpers/mongodb");
 
@@ -26,9 +25,8 @@ app.use(cors({
   credentials: true
 }));
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+//app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use(passport.initialize())
 
 app.use("/", indexRouter);
 app.use("/account", accountRouter);

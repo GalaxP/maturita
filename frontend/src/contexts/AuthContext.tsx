@@ -26,9 +26,11 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
         return onFail ? onFail() : null
     }
 
-    const login = (credentials: IAuth) => {
+    const login = (credentials: IAuth, token?: string) => {
         return new Promise((resolve, reject) => {
-            post_data("/account/login", credentials, {withCredentials:true})
+            var requestBody = credentials
+            if(token) requestBody = {...requestBody, token: token}
+            post_data("/account/login", requestBody, {withCredentials:true})
             .then((res)=>{
                 if(res.status===200)
                 {
