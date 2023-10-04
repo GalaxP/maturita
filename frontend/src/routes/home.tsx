@@ -5,6 +5,7 @@ import { PostSchema } from "../schemas/postSchema";
 import { Link, useNavigate } from "react-router-dom";
 import AuthContext from "../contexts/AuthContext";
 import { useDocumentTitle } from "hooks/setDocuemntTitle";
+declare var grecaptcha:any
 
 const Home = () => {
   const [loaded, setLoaded] = useState(false);
@@ -43,17 +44,20 @@ const Home = () => {
     const formJson = Object.fromEntries(formData.entries());
     // You can pass formData as a fetch body directly:
     //fetch('http://localhost:8080/post', { method: form.method});
-
-    auth?.protectedAction(()=> {
-      post_data("/post", formJson, {}, true).then((res)=>{
-      if(res.status===200)
-      {
-        const controller = new AbortController();
-        getAllPosts(controller);
-        alert("success")
-      }})
-      .catch((err)=>{setError(err); alert("something has gone wrong. try again")})
-    }, ()=> {navigate("/account/login")})
+    grecaptcha.ready(function() {
+      grecaptcha.execute('6Ld0mW4oAAAAAMQH12Drl2kwd1x3uwQ9yKCJIO5o', {action: 'post'}).then(function(token:string) {
+        auth?.protectedAction(()=> {
+          post_data("/post", {...formJson, token: token}, {}, true).then((res)=>{
+          if(res.status===200)
+          {
+            const controller = new AbortController();
+            getAllPosts(controller);
+            alert("success")
+          }})
+          .catch((err)=>{setError(err); alert("something has gone wrong. try again")})
+        }, ()=> {navigate("/account/login")})
+      })
+    })
     //console.log(formJson.data);
     //<Link key={posts[i]._id} to={"/post/"+posts[i]._id} className="Link mx-auto block">
     //

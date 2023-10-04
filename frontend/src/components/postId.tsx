@@ -11,6 +11,8 @@ import Comment from "../components/comment"
 import { Skeleton } from "../components/ui/skeleton";
 import { useDocumentTitle } from "../hooks/setDocuemntTitle"
 
+declare var grecaptcha:any
+
 const PostId = () => {
     const [post, setPost] = useState<PostSchema>({author:{id:"", displayName:"", avatar:""}, title:"", createdAt: new Date(), body:"", _id:"", votes_likes:0, votes_dislikes: 0, user_vote: 0, comments: []})
     const [documentTitle, setDocumentTitle] = useDocumentTitle("")
@@ -43,62 +45,53 @@ const PostId = () => {
         }
     },[id, submitted])
     const submitComment = () => {
-        post_data("/post/"+post._id+"/comment", {body: comment}, {}, true)
-        .then((res)=> {
-            toast({
-                description: "Your comment has been sent.",
-            })
-            setSubmitted(true)
-        })
-        .catch((err)=> {
-            toast({
-                variant: "destructive",
-                title: "Uh oh! Something went wrong.",
-                description: "There was a problem with your request.",
+        grecaptcha.ready(function() {
+            grecaptcha.execute('6Ld0mW4oAAAAAMQH12Drl2kwd1x3uwQ9yKCJIO5o', {action: 'comment'}).then(function(token:string) {
+                post_data("/post/"+post._id+"/comment", {body: comment, token:token}, {}, true)
+                .then((res)=> {
+                    toast({
+                        description: "Your comment has been sent.",
+                    })
+                    setSubmitted(true)
+                })
+                .catch((err)=> {
+                    toast({
+                        variant: "destructive",
+                        title: "Uh oh! Something went wrong.",
+                        description: "There was a problem with your request.",
+                    })
+                })
             })
         })
     }
 
     const reply = (commentId: string, replyBody: string) => {
-        post_data("/post/"+post._id+"/comment/"+commentId, {body: replyBody}, {}, true)
-        .then(()=> {
-            setSubmitted(true)
-        })
-        .catch(()=>{
-            toast({
-                variant: "destructive",
-                title: "Uh oh! Something went wrong.",
-                description: "There was a problem with your request.",
-            })
-        })
-    }
-
-    const vote = (id:string, type: "like" | "dislike", self:any, vote?:number) => {
-        /*
-        if(vote===undefined) {
-            post_data("/post/action", {postId: id, type:"comment", direction: type==="like" ? 1 : -1}, {}, true)
-            .then(()=> {
-                setSubmitted(true)
-            })
-            .catch(()=>{
-                toast({
-                    variant: "destructive",
-                    title: "Uh oh! Something went wrong.",
-                    description: "There was a problem with your request.",
+        grecaptcha.ready(function() {
+            grecaptcha.execute('6Ld0mW4oAAAAAMQH12Drl2kwd1x3uwQ9yKCJIO5o', {action: 'reply'}).then(function(token:string) {
+                post_data("/post/"+post._id+"/comment/"+commentId, {body: replyBody, token: token}, {}, true)
+                .then(()=> {
+                    setSubmitted(true)
+                })
+                .catch(()=>{
+                    toast({
+                        variant: "destructive",
+                        title: "Uh oh! Something went wrong.",
+                        description: "There was a problem with your request.",
+                    })
                 })
             })
-        }*/
+        })
     }
 
     const recursiveComment = (_comment: IComment[], depth: number) => {
         _comment.map((comm: IComment) => {
-            comments.push(<Comment onClick={(t, v)=>vote(comm.id, t, this, v)} onReply={(id, body)=>reply(comm.id, body)} _id={comm.id} author={comm.author} body={comm.body} createdAt={comm.createdAt} offset={depth} votes_dislikes={comm.votes_dislikes} votes_likes={comm.votes_likes} user_vote={comm.user_vote} key={comm.id} />)
+            comments.push(<Comment onReply={(id, body)=>reply(comm.id, body)} _id={comm.id} author={comm.author} body={comm.body} createdAt={comm.createdAt} offset={depth} votes_dislikes={comm.votes_dislikes} votes_likes={comm.votes_likes} user_vote={comm.user_vote} key={comm.id} />)
             if(comm.comments && comm.comments.length > 0) recursiveComment(comm.comments, depth+1);
         })
     }
     if(post.comments.length>0) {
         post.comments.map((comm:IComment)=>{
-            comments.push(<Comment onClick={(t, v)=>vote(comm.id, t, this, v)} onReply={(id, body)=>reply(comm.id, body)} _id={comm.id} author={comm.author} body={comm.body} createdAt={comm.createdAt} offset={0} votes_dislikes={comm.votes_dislikes} votes_likes={comm.votes_likes} user_vote={comm.user_vote} key={comm.id}/>)
+            comments.push(<Comment onReply={(id, body)=>reply(comm.id, body)} _id={comm.id} author={comm.author} body={comm.body} createdAt={comm.createdAt} offset={0} votes_dislikes={comm.votes_dislikes} votes_likes={comm.votes_likes} user_vote={comm.user_vote} key={comm.id}/>)
             if(comm.comments && comm.comments.length > 0) recursiveComment(comm.comments, 1);
         })
     }

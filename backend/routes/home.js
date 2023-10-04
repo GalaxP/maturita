@@ -1,12 +1,13 @@
 var express = require('express');
 var router = express.Router();
 const User = require('../schemas/user')
-var { postSchema } = require('../helpers/validation')
+const { postSchema } = require('../helpers/validation')
 var createError = require("http-errors");
 const Post = require('../schemas/post');
 const { verifyAccessToken } = require('../helpers/jwt');
 const getPostById = require('../helpers/post')
 const jwt = require('jsonwebtoken');
+const verifyRecaptcha = require('../helpers/recaptcha');
 
 //const { createAvatar } = require('@dicebear/core');
 //const { identicon } = require('@dicebear/collection');
@@ -14,7 +15,7 @@ const jwt = require('jsonwebtoken');
 router.get('/', async function(req, res, next) {
   res.send("hello");
 });
-router.post('/post', verifyAccessToken, async function (req, res, next) {
+router.post('/post', verifyAccessToken, verifyRecaptcha("post"), async function (req, res, next) {
   try{
     const result = await postSchema.validateAsync(req.body).catch((err) => {
       err.status = 422;

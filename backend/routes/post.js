@@ -5,9 +5,10 @@ const PostAction = require('../schemas/postAction')
 const Post = require('../schemas/post');
 const Comment = require('../schemas/comment');
 var createError = require("http-errors");
+const verifyRecaptcha = require('../helpers/recaptcha');
 var router = express.Router();
 
-router.post("/action", verifyAccessToken, async (req, res, next) => {
+router.post("/action", verifyAccessToken, verifyRecaptcha("action"), async (req, res, next) => {
     try {
         const result = await postActionSchema.validateAsync(req.body)
         .catch(()=>{
@@ -58,7 +59,7 @@ router.post("/action", verifyAccessToken, async (req, res, next) => {
     }
 })
 
-router.post('/:postId/comment', verifyAccessToken, async (req, res, next)=> {
+router.post('/:postId/comment', verifyAccessToken, verifyRecaptcha("comment"), async (req, res, next)=> {
     if(!req.body.body) return next(createError.BadRequest())
     const id = req.params.postId
     if(!id) return next(createError.BadRequest())
@@ -76,7 +77,7 @@ router.post('/:postId/comment', verifyAccessToken, async (req, res, next)=> {
     res.send("success")
 })
 
-router.post('/:postId/comment/:commentId', verifyAccessToken, async (req, res, next)=> {
+router.post('/:postId/comment/:commentId', verifyAccessToken, verifyRecaptcha("reply"), async (req, res, next)=> {
     if(!req.body.body) return next(createError.BadRequest())
     const postId = req.params.postId
     const commentId = req.params.commentId

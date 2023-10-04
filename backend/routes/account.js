@@ -29,7 +29,7 @@ router.post('/register', verifyRecaptcha("register"), async function(req, res, n
     const result = await userSchema.validateAsync(req.body).catch((err) => {
         throw createError(400);
     });
-
+    if(!req.body.token) return next(createError.BadRequest())
     const doesExist = await User.findOne({ email: result.email });
 
     if (doesExist)
@@ -143,61 +143,12 @@ async function verify(token) {
   const payload = ticket.getPayload();
   const userid = payload['sub'];
   return payload;
-  // If request specified a G Suite domain:
-  // const domain = payload['hd'];
 }
 
-/*
-passport.use(new GoogleStrategy({
-    clientID: process.env.GOOGLE_CLIENT_ID,
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: "http://localhost:8080/account/google/callback"
-  },
-  async function(accessToken, refreshToken, profile, done) {
-      
-    userProfile=profile;
-    const profile_json = profile._json
-    const doesExist = await User.findOne({uid: profile_json.sub});
-    if (doesExist) return done(null, userProfile);
-    const google_user = new User({
-        provider: "google",
-        email: profile_json.email,
-        firstName: profile_json.given_name,
-        lastName: profile_json.family_name,
-        uid: profile_json.sub,
-        google: profile_json
-    }) 
 
-    google_user.save().then(() => {
-        return done(null, userProfile);
-    }).catch((err)=>{
-        console.log(err)
-        return done(err, null);
-    });
-  }
-  
-));*/
-/*
-router.get('/google', passport.authenticate('google', { scope:[ 'email', 'profile' ] }
-));
 
-router.get('/google/callback', passport.authenticate( 'google', {  failureRedirect: '/auth/google/failure', session:false }), async (req, res)=>
-{
-    //console.log(req)
-    const accessToken = await jwt.signAccessToken(req.user._json.sub, "google").catch((err)=>{console.log(err)})
-    const refreshToken = await jwt.signRefreshToken(req.user._json.sub, "google")
-    const user = await User.findOne({uid: req.user._json.sub});
-    
-    res.cookie("refreshToken", refreshToken, {httpOnly:true, sameSite:"lax", maxAge: 30 * 24 * 60 * 60 * 1000}) //30days
-    
-    const user_json =JSON.stringify({user: pick(user, "email", "uid", "google")})
-    res.redirect(process.env.CLIENT_DOMAIN +"?at="+ encodeURIComponent(accessToken) + "&u="+ encodeURIComponent(user_json))
-});
-
-router.get('/google/logout', function(req, res, next) {
-    
-});*/
 router.post('/google/callback', async (req,res)=> {
+    if(!req.body.credential) return res.redirect(process.env.CLIENT_DOMAIN)
     const payload = await verify(req.body.credential);
 
     const doesExist = await User.findOne({uid: payload.sub});

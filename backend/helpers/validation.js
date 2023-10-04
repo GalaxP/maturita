@@ -3,6 +3,7 @@ const Joi = require('joi')
 const postSchema = Joi.object({
     title: Joi.string().required().min(5),
     body: Joi.string().required(),
+    token: Joi.string().required()
 })
 
 const userSchema = Joi.object({
@@ -11,6 +12,7 @@ const userSchema = Joi.object({
     lastName: Joi.string().required(),
     displayName: Joi.string().required(),
     password: Joi.string().required().min(6),
+    token: Joi.string(),
     uid: Joi.string()
 })
 
@@ -18,7 +20,8 @@ const postActionSchema = Joi.object({
     postId: Joi.string(),
     commentId: Joi.string(),
     type: Joi.string().required().lowercase(),
-    direction: Joi.number().min(-1).max(1).required()
+    direction: Joi.number().min(-1).max(1).required(),
+    token: Joi.string()
 }).xor('postId', 'commentId')
 
 module.exports = {

@@ -10,6 +10,8 @@ import { post_data } from "helpers/api";
 import { useToast } from "./ui/use-toast";
 import { AiOutlineDelete } from "react-icons/ai";
 
+declare var grecaptcha:any
+
 export interface IComment {
     _id: string,
     author: {id: string, displayName:string, avatar:string},
@@ -20,7 +22,6 @@ export interface IComment {
     createdAt: Date,
     offset: number,
     onReply: (id:string, replyBody: string) => void,
-    onClick: (type: "like" | "dislike", user_vote?: number) => void
 }
 
 interface IVote {
@@ -38,46 +39,48 @@ const Comment = (comment: IComment) => {
     
     const vote = (dir: number) => {
         if(!auth?.isAuthenticated) return navigate("/account/login")
-        if(votes.user_vote===undefined || votes.user_vote === 0) {
-            post_data("/post/action", {postId: comment._id, type:"comment", direction: dir}, {}, true)
-            .then(()=> {
-                if(dir === 1) setVotes({...votes, votes_likes: votes.votes_likes+1, user_vote: dir})
-                if(dir === -1) setVotes({...votes, votes_dislikes: votes.votes_dislikes+1, user_vote: dir})
-            })
-            .catch(()=>{
-                toast({
-                    variant: "destructive",
-                    title: "Uh oh! Something went wrong.",
-                    description: "There was a problem with your request.",
-                })
-            })
-        } else if (votes.user_vote === dir) {
-            post_data("/post/action", {postId: comment._id, type:"comment", direction: 0}, {}, true)
-            .then(()=> {
-                if(votes.user_vote === 1) setVotes({...votes, votes_likes: votes.votes_likes-1, user_vote: 0})
-                else setVotes({...votes, votes_dislikes: votes.votes_dislikes-1, user_vote: 0})
-            })
-            .catch(()=>{
-                toast({
-                    variant: "destructive",
-                    title: "Uh oh! Something went wrong.",
-                    description: "There was a problem with your request.",
-                })
-            })
-        } else {
-            post_data("/post/action", {postId: comment._id, type:"comment", direction: dir}, {}, true)
-            .then(()=> {
-                if(dir === 1) setVotes({...votes, votes_likes: votes.votes_likes+1, votes_dislikes:votes.votes_dislikes-1, user_vote: dir})
-                else setVotes({...votes, votes_likes: votes.votes_likes-1, votes_dislikes:votes.votes_dislikes+1, user_vote: dir})
-            })
-            .catch(()=>{
-                toast({
-                    variant: "destructive",
-                    title: "Uh oh! Something went wrong.",
-                    description: "There was a problem with your request.",
-                })
-            })
-        }
+
+        grecaptcha.ready(function() {
+            grecaptcha.execute('6Ld0mW4oAAAAAMQH12Drl2kwd1x3uwQ9yKCJIO5o', {action: 'action'}).then(function(token:string) {
+                if(votes.user_vote===undefined || votes.user_vote === 0) {
+                    post_data("/post/action", {postId: comment._id, type:"comment", direction: dir, token: token}, {}, true)
+                    .then(()=> {
+                        if(dir === 1) setVotes({...votes, votes_likes: votes.votes_likes+1, user_vote: dir})
+                        if(dir === -1) setVotes({...votes, votes_dislikes: votes.votes_dislikes+1, user_vote: dir})
+                    })
+                    .catch(()=>{
+                        toast({
+                            variant: "destructive",
+                            title: "Uh oh! Something went wrong.",
+                        })
+                    })
+                } else if (votes.user_vote === dir) {
+                    post_data("/post/action", {postId: comment._id, type:"comment", direction: 0, token: token}, {}, true)
+                    .then(()=> {
+                        if(votes.user_vote === 1) setVotes({...votes, votes_likes: votes.votes_likes-1, user_vote: 0})
+                        else setVotes({...votes, votes_dislikes: votes.votes_dislikes-1, user_vote: 0})
+                    })
+                    .catch(()=>{
+                        toast({
+                            variant: "destructive",
+                            title: "Uh oh! Something went wrong.",
+                        })
+                    })
+                } else {
+                    post_data("/post/action", {postId: comment._id, type:"comment", direction: dir, token: token}, {}, true)
+                    .then(()=> {
+                        if(dir === 1) setVotes({...votes, votes_likes: votes.votes_likes+1, votes_dislikes:votes.votes_dislikes-1, user_vote: dir})
+                        else setVotes({...votes, votes_likes: votes.votes_likes-1, votes_dislikes:votes.votes_dislikes+1, user_vote: dir})
+                    })
+                    .catch(()=>{
+                        toast({
+                            variant: "destructive",
+                            title: "Uh oh! Something went wrong.",
+                        })
+                    })
+                }
+            });
+        });
     }
     return <>
     <div className="flex flex-row mt-2" style={{paddingLeft: comment.offset*3.5+"rem"}}>

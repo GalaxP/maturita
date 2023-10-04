@@ -1,8 +1,10 @@
+import { useDocumentTitle } from "hooks/setDocuemntTitle";
 import { post_data } from "../../helpers/api";
 declare var grecaptcha:any
 
 const Register = () => {
-
+    const [documentTitle, setDocumentTitle] = useDocumentTitle("Register")
+    
     const handleSubmit = (e:any) => {
         e.preventDefault();
         const form = e.target;
@@ -11,7 +13,7 @@ const Register = () => {
         const formJson = Object.fromEntries(formData.entries());
         grecaptcha.ready(function() {
             grecaptcha.execute('6Ld0mW4oAAAAAMQH12Drl2kwd1x3uwQ9yKCJIO5o', {action: 'register'}).then(function(token:string) {
-                post_data("/account/register", {formJson, token:token}).then((res)=>{
+                post_data("/account/register", {...formJson, token:token}).then((res)=>{
                 if(res.status===200)
                 {
                     alert("successfully registered")
