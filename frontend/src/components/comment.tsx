@@ -41,7 +41,7 @@ const Comment = (comment: IComment) => {
         if(!auth?.isAuthenticated) return navigate("/account/login")
 
         grecaptcha.ready(function() {
-            grecaptcha.execute('6Ld0mW4oAAAAAMQH12Drl2kwd1x3uwQ9yKCJIO5o', {action: 'action'}).then(function(token:string) {
+            grecaptcha.execute(process.env.REACT_APP_RECAPTCHA_SITE_KEY, {action: 'action'}).then(function(token:string) {
                 if(votes.user_vote===undefined || votes.user_vote === 0) {
                     post_data("/post/action", {postId: comment._id, type:"comment", direction: dir, token: token}, {}, true)
                     .then(()=> {

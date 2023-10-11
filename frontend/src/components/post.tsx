@@ -24,7 +24,7 @@ const Post = ({_id ,title, body, author, createdAt, votes_likes, votes_dislikes,
     const vote = (direction: number) => {
         var grecaptchaToken = ""
         grecaptcha.ready(function() {
-            grecaptcha.execute('6Ld0mW4oAAAAAMQH12Drl2kwd1x3uwQ9yKCJIO5o', {action: 'action'}).then(function(token:string) {
+            grecaptcha.execute(process.env.REACT_APP_RECAPTCHA_SITE_KEY, {action: 'action'}).then(function(token:string) {
                 grecaptchaToken = token
                 auth?.protectedAction(()=> {
                     if(direction === 0 && votes.user_vote !== 0) {

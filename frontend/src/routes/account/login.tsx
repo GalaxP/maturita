@@ -1,12 +1,13 @@
 import { useContext, useEffect, useState } from "react";
 import AuthContext from "../../contexts/AuthContext"
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { GoogleLogin, useGoogleLogin } from "@react-oauth/google";
 import { LoginForm } from "components/forms/loginForm";
 import { useDocumentTitle } from "hooks/setDocuemntTitle";
 import { post_data } from "helpers/api";
 import axios from "axios";
 declare var grecaptcha:any
+declare var google:any
 
 const Login = () => {
     const auth = useContext(AuthContext);
@@ -14,21 +15,31 @@ const Login = () => {
     const [isLoading, setIsLoading] = useState(false)
     const [documentTitle, setDocumentTitle] = useDocumentTitle("Login")
 
-    const responseMessage = (response:any) => {
-        alert("yay");
-    };
+    useEffect(()=>{
+        google.accounts.id.initialize({
+            client_id: "203110807748-0f7t1473amk5f0j3nhtq8aas8v5c2coq.apps.googleusercontent.com",
+            context:"signin", 
+            ux_mode: "redirect", 
+            login_uri: "http://localhost:8080/account/google/callback"
+        });
+        google.accounts.id.renderButton(
+            document.getElementById("buttonDiv"),
+            { theme: "outline", size: "large", width: "350" }  // customization attributes
+        );
+
+    }, [])
 
     useEffect(()=> {
         if(auth?.isAuthenticated) navigate(-1)
     }, [])
-    const googleLogin = useGoogleLogin({ux_mode:"redirect", redirect_uri:"http://localhost:8080/account/google/callback", flow: 'auth-code'});
-    
+
+    const googleLogin = () => {}
 
     const onSubmit = (values:any) => {
         setIsLoading(true)
         
         grecaptcha.ready(function() {
-            grecaptcha.execute('6Ld0mW4oAAAAAMQH12Drl2kwd1x3uwQ9yKCJIO5o', {action: 'login'}).then(function(token:string) {
+            grecaptcha.execute(process.env.REACT_APP_RECAPTCHA_SITE_KEY, {action: 'login'}).then(function(token:string) {
                 auth?.login({email: values.email, password: values.password}, token)
                 .then((res)=> {
                     //alert("successfully logged in as "+ res.user.email)
@@ -44,9 +55,11 @@ const Login = () => {
     }
 
     return <div className="m-0 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-        <div className="mx-auto w-[350px] ">
+        <div className="mx-auto w-[350px]">
             <LoginForm handleSubmit={onSubmit} isLoading={isLoading} googleSignIn={googleLogin}/>
-            {<GoogleLogin shape="rectangular" ux_mode="redirect" login_uri="http://localhost:8080/account/google/callback" onSuccess={responseMessage}/>}
+
+            <div id="buttonDiv" className="mt-3"></div>
+            <div className="text-center mt-3"><p>Don't have an account? <Link to={"/account/register"} className="text-blue-500">Register here.</Link></p></div>
         </div>
     </div>
 }

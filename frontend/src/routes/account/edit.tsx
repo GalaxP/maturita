@@ -17,7 +17,7 @@ const Edit = () => {
         // @ts-ignore
         grecaptcha.ready(function() {
             // @ts-ignore
-          grecaptcha.execute('6Ld0mW4oAAAAAMQH12Drl2kwd1x3uwQ9yKCJIO5o', {action: 'submit'}).then(function(token) {
+          grecaptcha.execute(process.env.REACT_APP_RECAPTCHA_SITE_KEY, {action: 'submit'}).then(function(token) {
               // Add your logic to submit to your backend server here.
           });
         });

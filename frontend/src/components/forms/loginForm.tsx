@@ -83,10 +83,10 @@ export function LoginForm({handleSubmit, googleSignIn , isLoading}: auth) {
             <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
           </div>
         </div>         
-        <Button variant="outline" type='button' className="w-full" onClick={onGoogleSignIn}>
+        {/* <Button variant="outline" type='button' className="w-full" onClick={onGoogleSignIn}>
           <AiOutlineGoogle size={25} className="mr-2"/>
           Google
-        </Button>
+        </Button> */}
       </form>
     </Form>
   )

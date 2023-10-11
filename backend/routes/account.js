@@ -33,11 +33,11 @@ router.post('/register', verifyRecaptcha("register"), async function(req, res, n
     const doesExist = await User.findOne({ email: result.email });
 
     if (doesExist)
-      return next(createError.Conflict(`${result.email} has already been registered`));
+      return next(createError.Conflict(`email ${result.email} has already been registered`));
 
     const doesDisplayNameExist = await User.findOne({displayName: result.displayName})
     if (doesDisplayNameExist)
-        return next(createError.Conflict(`${result.displayName} has already been registered`));
+        return next(createError.Conflict(`username ${result.displayName} has already been registered`));
 
     const hashedPassword = await HashPassword(result.password)
     const _user = new User(

@@ -46,7 +46,7 @@ const PostId = () => {
     },[id, submitted])
     const submitComment = () => {
         grecaptcha.ready(function() {
-            grecaptcha.execute('6Ld0mW4oAAAAAMQH12Drl2kwd1x3uwQ9yKCJIO5o', {action: 'comment'}).then(function(token:string) {
+            grecaptcha.execute(process.env.REACT_APP_RECAPTCHA_SITE_KEY, {action: 'comment'}).then(function(token:string) {
                 post_data("/post/"+post._id+"/comment", {body: comment, token:token}, {}, true)
                 .then((res)=> {
                     toast({
@@ -67,7 +67,7 @@ const PostId = () => {
 
     const reply = (commentId: string, replyBody: string) => {
         grecaptcha.ready(function() {
-            grecaptcha.execute('6Ld0mW4oAAAAAMQH12Drl2kwd1x3uwQ9yKCJIO5o', {action: 'reply'}).then(function(token:string) {
+            grecaptcha.execute(process.env.REACT_APP_RECAPTCHA_SITE_KEY, {action: 'reply'}).then(function(token:string) {
                 post_data("/post/"+post._id+"/comment/"+commentId, {body: replyBody, token: token}, {}, true)
                 .then(()=> {
                     setSubmitted(true)

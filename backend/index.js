@@ -18,10 +18,8 @@ const deleteRouter = require('./routes/delete')
 var app = express();
 app.set("view engine", "jade");
 
-
-
 app.use(cors({ 
-  origin: ["http://localhost:3000", "http://localhost:8080"],
+  origin: ["http://localhost:3000", "http://localhost:8080", "http://192.168.0.86", "http://192.168.0.86:8080"],
   credentials: true
 }));
 app.use(express.json());

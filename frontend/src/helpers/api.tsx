@@ -2,7 +2,7 @@ import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
 import { useContext } from "react";
 import AuthContext from "../contexts/AuthContext";
 
-const api_url = "http://localhost:8080";
+const api_url = process.env.REACT_APP_API_URL
 let accessToken = ""
 
 const post_data = async function(path:string, data:any, options?:AxiosRequestConfig, sendToken?:boolean) {

@@ -16,7 +16,6 @@ import { Toaster } from "./components/ui/toaster";
 function App() {
   return (
     <>
-      <GoogleOAuthProvider clientId="203110807748-0f7t1473amk5f0j3nhtq8aas8v5c2coq.apps.googleusercontent.com">
         <AuthContextProvider>
           <Router>
             <Layout>
@@ -40,7 +39,6 @@ function App() {
             
           </Router>
         </AuthContextProvider>
-      </GoogleOAuthProvider>
       <Toaster/>
       </>
   );
