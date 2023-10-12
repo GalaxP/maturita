@@ -14,13 +14,14 @@ const Login = () => {
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false)
     const [documentTitle, setDocumentTitle] = useDocumentTitle("Login")
+    //const [isInitialized, ]
 
     useEffect(()=>{
         google.accounts.id.initialize({
             client_id: "203110807748-0f7t1473amk5f0j3nhtq8aas8v5c2coq.apps.googleusercontent.com",
             context:"signin", 
             ux_mode: "redirect", 
-            login_uri: "http://localhost:8080/account/google/callback"
+            login_uri: process.env.REACT_APP_API_URL+"/account/google/callback"
         });
         google.accounts.id.renderButton(
             document.getElementById("buttonDiv"),

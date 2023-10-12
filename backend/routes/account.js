@@ -81,7 +81,7 @@ router.post('/login', verifyRecaptcha("login"), async function(req, res, next) {
         res.cookie("refreshToken", refreshToken, {httpOnly:true, sameSite:"lax", maxAge: 30 * 24 * 60 * 60 * 1000}) //30days
         res.send({
             message: "success",
-            user: pick(user, "email", "uid"),
+            user: pick(user, "email", "uid", "avatar"),
             provider: "local",
             accessToken: accessToken
         })

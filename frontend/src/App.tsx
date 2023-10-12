@@ -12,6 +12,7 @@ import { PostId } from "./components/postId";
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import Callback from "./routes/account/google/callback";
 import { Toaster } from "./components/ui/toaster";
+import Submit from "routes/submit";
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
                 <Route path='logout' element={<Logout/> } ></Route>
                 <Route path='edit' element={ <ProtectedRoute><Edit/></ProtectedRoute>} ></Route>
               </Route>
+              <Route path="submit" element={<Submit/>}></Route>
               <Route path="/post/:postId" element={<PostId/>}></Route>
 
               <Route path='google'>

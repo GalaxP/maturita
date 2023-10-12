@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { VoteButton } from "./voteButton";
 import { AiOutlineDelete } from "react-icons/ai";
 import { Button } from "../components/ui/button";
-import {  useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useToast } from "./ui/use-toast";
 
 declare var grecaptcha:any
@@ -18,14 +18,19 @@ const Post = ({_id ,title, body, author, createdAt, votes_likes, votes_dislikes,
     const [error, setError] = useState()
     const [post, setPost] = useState<PostSchema>({_id: _id, author: author, body: body, createdAt: createdAt, title: title, votes_dislikes: votes_dislikes, votes_likes: votes_likes, user_vote: user_vote, comments: comments})
     const [votes, setVotes] = useState<any>({votes_likes: votes_likes, votes_dislikes: votes_dislikes, user_vote: user_vote})
+    const [isVoting, setIsVoting] = useState(false)
     const navigate = useNavigate()
     const { toast } = useToast()
 
     const vote = (direction: number) => {
         var grecaptchaToken = ""
+        if(isVoting) return
+        setIsVoting(true)
         grecaptcha.ready(function() {
             grecaptcha.execute(process.env.REACT_APP_RECAPTCHA_SITE_KEY, {action: 'action'}).then(function(token:string) {
                 grecaptchaToken = token
+                
+                
                 auth?.protectedAction(()=> {
                     if(direction === 0 && votes.user_vote !== 0) {
                         post_data("/post/action", {postId: _id, type: "vote", direction: 0, token: grecaptchaToken}, {}, true)
@@ -40,9 +45,11 @@ const Post = ({_id ,title, body, author, createdAt, votes_likes, votes_dislikes,
                             } else {
                                 setError(res.data)
                             }
+                            setIsVoting(false)
                         })
                         .catch((err)=> {
                             setError(err)
+                            setIsVoting(false)
                         })
                     }
                     if(direction === -1) {
@@ -58,9 +65,11 @@ const Post = ({_id ,title, body, author, createdAt, votes_likes, votes_dislikes,
                             } else {
                                 setError(res.data)
                             }
+                            setIsVoting(false)
                         })
                         .catch((err)=> {
                             setError(err)
+                            setIsVoting(false)
                         })
                     } else if(direction === 1) {
                         post_data("/post/action", {postId: _id, type: "vote", direction: 1, token: grecaptchaToken}, {}, true)
@@ -74,9 +83,11 @@ const Post = ({_id ,title, body, author, createdAt, votes_likes, votes_dislikes,
                             } else {
                                 setError(res.data)
                             }
+                            setIsVoting(false)
                         })
                         .catch((err)=> {
                             setError(err)
+                            setIsVoting(false)
                         })
                     }
                 }, ()=> {alert("you must be logged in to vote")})

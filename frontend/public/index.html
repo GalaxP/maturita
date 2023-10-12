@@ -21,15 +21,5 @@
     <div id="root" class=""></div>
       <script src="https://accounts.google.com/gsi/client"></script>
       <script src="https://www.google.com/recaptcha/api.js?render=6Ld0mW4oAAAAAMQH12Drl2kwd1x3uwQ9yKCJIO5o"></script>
-      <script>
-        window.onload = function() {
-            google.accounts.id.initialize({
-              client_id: "203110807748-0f7t1473amk5f0j3nhtq8aas8v5c2coq.apps.googleusercontent.com",
-              context:"signin", 
-              ux_mode: "redirect", 
-              login_uri: "http://localhost:8080/account/google/callback"
-          });
-        }
-      </script>
   </body>
 </html>

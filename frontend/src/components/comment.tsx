@@ -85,7 +85,7 @@ const Comment = (comment: IComment) => {
     return <>
     <div className="flex flex-row mt-2" style={{paddingLeft: comment.offset*3.5+"rem"}}>
         <Avatar className="mt-2 shadow-md cursor-pointer">
-            <AvatarImage src={comment.author.avatar===null ? "http://localhost:8080/avatar.png" : comment.author.avatar} alt="@shadcn" />
+            <AvatarImage src={comment.author.avatar===null ? process.env.REACT_APP_API_URL+"/avatar.png" : comment.author.avatar} alt="@shadcn" />
             <AvatarFallback>CN</AvatarFallback>
         </Avatar>
         <div className="ml-2 w-full">
@@ -101,12 +101,6 @@ const Comment = (comment: IComment) => {
                     <MessageSquare strokeWidth={1.5} size={20} className="mr-1"/>
                     Reply
                 </Button>
-                {/*
-                <Button variant="ghost" className="m-1">
-                    <AiOutlineDelete fill="red" size={20} className="mr-1"/>
-                    <p className="text-red-600">Delete</p>
-                </Button>
-                */}
             </div>
             {showReply && <Reply submitReply={(e)=>comment.onReply(comment._id, e)}/>}
         </div>

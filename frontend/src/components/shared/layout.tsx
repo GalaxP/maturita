@@ -50,7 +50,7 @@ const Layout = ({children}: LayoutProps) => {
         
         {/*auth?.isAuthenticated ? <><p className="w-max">logged in as {auth?.getUser().user.email} ({auth?.getUser().provider})</p><Link to={"/account/logout"}>Logout</Link></>: <Link to={"/account/login"}>Login</Link>*/}
         {/* </div> */}
-        <div className="mt-12">
+        <div className="mt-8">
             {children}
         </div>
     </>
