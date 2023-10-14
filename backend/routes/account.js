@@ -159,7 +159,8 @@ router.post('/google/callback', async (req,res)=> {
             firstName: payload.given_name,
             lastName: payload.family_name,
             uid: payload.sub,
-            google: payload
+            google: payload,
+            displayName: payload.given_name + " " + payload.family_name
         }) 
 
         await google_user.save().catch((err)=>{

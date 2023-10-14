@@ -4,19 +4,19 @@ import AuthContext from "../contexts/AuthContext";
 import { post_data } from "../helpers/api";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../components/ui/card";
 import { VoteButton } from "./voteButton";
-import { AiOutlineDelete } from "react-icons/ai";
+import { AiOutlineComment, AiOutlineDelete } from "react-icons/ai";
 import { Button } from "../components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "./ui/use-toast";
 
 declare var grecaptcha:any
 
-const Post = ({_id ,title, body, author, createdAt, votes_likes, votes_dislikes, user_vote, comments, width, showLinkToPost}: PostSchema) => {
+const Post = ({_id ,title, body, author, createdAt, votes_likes, votes_dislikes, user_vote, comments, comment_length, width, showLinkToPost}: PostSchema) => {
     const auth = useContext(AuthContext)
     //const [likes, setLikes] = useState(0)
     //const [dislikes, setDislikes] = useState(0)
     const [error, setError] = useState()
-    const [post, setPost] = useState<PostSchema>({_id: _id, author: author, body: body, createdAt: createdAt, title: title, votes_dislikes: votes_dislikes, votes_likes: votes_likes, user_vote: user_vote, comments: comments})
+    const [post, setPost] = useState<PostSchema>({_id: _id, author: author, body: body, createdAt: createdAt, title: title, votes_dislikes: votes_dislikes, votes_likes: votes_likes, user_vote: user_vote, comments: comments, comment_length: comment_length})
     const [votes, setVotes] = useState<any>({votes_likes: votes_likes, votes_dislikes: votes_dislikes, user_vote: user_vote})
     const [isVoting, setIsVoting] = useState(false)
     const navigate = useNavigate()
@@ -120,6 +120,10 @@ const Post = ({_id ,title, body, author, createdAt, votes_likes, votes_dislikes,
                  <div className="flex flex-row content-center space-x-1">
                     <VoteButton type="like" votes={votes.votes_likes} current_vote={votes.user_vote} onClick={vote}/>
                     <VoteButton type="dislike" votes={votes.votes_dislikes} current_vote={votes.user_vote} onClick={vote}/>
+                    {showLinkToPost && <Button variant="ghost" className="px-2">
+                        <AiOutlineComment size={20} className="mr-1"/>
+                        {comment_length}
+                    </Button>}
                     { auth?.isAuthenticated && auth?.getUser().user.uid === author.id &&
                     <Button variant="ghost" className="px-2">
                         <AiOutlineDelete size={20} className="mr-1"/>

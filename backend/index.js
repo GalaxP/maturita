@@ -19,7 +19,7 @@ var app = express();
 app.set("view engine", "jade");
 
 app.use(cors({ 
-  origin: ["http://localhost:3000", "http://localhost:8080", "http://192.168.0.86", "http://192.168.0.86:8080"],
+  origin: ["http://localhost:3000", "http://localhost:8080", "http://192.168.0.86", "http://192.168.0.86:8080", "https://maturita-forum.sk:8000", "https://maturita-forum.sk", "https://www.maturita-forum.sk"],
   credentials: true
 }));
 app.use(express.json());

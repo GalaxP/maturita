@@ -1,7 +1,7 @@
 {
   "name": "frontend",
   "version": "0.1.0",
-  "homepage": "http://192.168.0.86/",
+  "homepage": "http://maturita-forum.sk/",
   "private": true,
   "dependencies": {
     "@craco/craco": "^7.1.0",

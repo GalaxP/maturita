@@ -9,7 +9,7 @@ import CreatePost from "../components/createPost"
 
 const Home = () => {
   const [loaded, setLoaded] = useState(false);
-  const [posts, setPosts] = useState<PostSchema[]>([{author:{id:"",displayName:"", avatar:""}, title:"", createdAt: new Date(), body:"", _id:"", votes_likes:0, votes_dislikes:0, user_vote:0, comments:[]}]);
+  const [posts, setPosts] = useState<PostSchema[]>([{author:{id:"",displayName:"", avatar:""}, title:"", createdAt: new Date(), body:"", _id:"", votes_likes:0, votes_dislikes:0, user_vote:0, comments:[], comment_length :0}]);
   const [error, setError] = useState();
   const auth = useContext(AuthContext)
   const navigate = useNavigate()
@@ -35,7 +35,7 @@ const Home = () => {
   
   const posts_obj = [];
   for (let i = 0; i < posts.length; i++) {
-    posts_obj.push(<li key={posts[i]._id} className="lg:w-3/5 sm:w-3/4 w-[90%]"><Post key={posts[i]._id} showLinkToPost={true} width="w-full" _id={posts[i]._id} title={posts[i].title} createdAt={posts[i].createdAt} votes_likes={posts[i].votes_likes} votes_dislikes={posts[i].votes_dislikes} body={posts[i].body} author={posts[i].author} user_vote={posts[i].user_vote} comments={posts[i].comments}/> </li>);
+    posts_obj.push(<li key={posts[i]._id} className="lg:w-3/5 sm:w-3/4 w-[90%]"><Post key={posts[i]._id} showLinkToPost={true} width="w-full" _id={posts[i]._id} title={posts[i].title} createdAt={posts[i].createdAt} votes_likes={posts[i].votes_likes} votes_dislikes={posts[i].votes_dislikes} body={posts[i].body} author={posts[i].author} user_vote={posts[i].user_vote} comment_length={posts[i].comment_length} comments={posts[i].comments}/> </li>);
   }
   return (loaded ? 
   <div>

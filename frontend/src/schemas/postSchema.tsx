@@ -23,5 +23,6 @@ export interface PostSchema {
     user_vote?: number
     width?: string
     showLinkToPost?: boolean
-    comments: IComment[]
+    comments?: IComment[]
+    comment_length?: number
 }

@@ -61,7 +61,7 @@ router.get('/post/:postId', async function (req, res, next) {
   }
   if(error) return
 
-  const _post = await getPostById(req.params.postId, isAuth, userId)
+  const _post = await getPostById(req.params.postId, isAuth, userId, true)
   if(!_post) return next(createError(422))
   res.send(_post)
 })
@@ -88,7 +88,9 @@ router.get('/postsList', async function(req, res, next){
   var index = 0
   let posts = await Post.find({}).sort('-createdAt')
   for(const _post of posts) {
-    returns[index] = await getPostById(_post._id, isAuth, userId)
+    const post = await getPostById(_post._id, isAuth, userId, false)
+    if(!post) continue
+    returns[index] = post
     index++
   }
   res.send(returns)
