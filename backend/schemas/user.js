@@ -39,6 +39,10 @@ const UserSchema = new Schema({
         email_verified: Boolean,
         locale: String
     },
+    avatar: {
+        type: String,
+        require: false,
+    },
     uid: {
         type: String,
         required: true,

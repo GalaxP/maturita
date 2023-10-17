@@ -105,7 +105,7 @@ const PostId = () => {
     <div className="lg:w-3/5 sm:w-3/4 w-[90%] mx-auto mt-5" >
         <Textarea className="w-full inline max-w-full" value={comment} onChange={e => setComment(e.target.value)} placeholder={authContext?.isAuthenticated ? "Type your comment here." : "You need to log in to comment."} disabled={!authContext?.isAuthenticated}/>
         {authContext?.isAuthenticated && <Button className="w-20 ml-auto" onClick={submitComment}>Comment</Button> }
-        <div className="text-lg font-semibold my-2">{post.comment_length} Comments</div>
+        <div className="text-lg font-semibold my-2">{post.comment_length} {post.comment_length !== 1 ? "Comments" : "Comment"}</div>
         {comments}
     </div>
     </>

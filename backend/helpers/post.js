@@ -20,7 +20,7 @@ const getPostById = async (postId, authorized, userId, getComments) => {
         const author = await User.findOne({uid:_post.author})
         if(!author) return null
         
-        result.author = {id: author.uid, displayName: author.displayName, avatar: author.provider==="google" ? author.google.picture : null}
+        result.author = {id: author.uid, displayName: author.displayName, avatar: author.provider==="google" ? author.google.picture : author.avatar}
         const comments_ids = _post.comments;
         var comments = [];
         var commentsLength = 0;
@@ -35,9 +35,9 @@ const getPostById = async (postId, authorized, userId, getComments) => {
                 const votes_dislikes = await PostAction.find({postId: comment._id, direction: -1})
                 var _result = { id: comment._id.toString(), body: comment.body, author: comment.author, votes_likes: votes_likes.length, votes_dislikes: votes_dislikes.length, createdAt: comment.createdAt, comments: await getAllComments(comment._id, authorized, userId, true) }
                 const author = await User.findOne({uid:comment.author})
-                if(!author) return null
+                if(!author) continue
                 
-                _result.author = {id: author.uid, displayName: author.displayName, avatar: author.provider==="google" ? author.google.picture : null}
+                _result.author = {id: author.uid, displayName: author.displayName, avatar: author.provider==="google" ? author.google.picture : author.avatar}
         
                 if(authorized) {
                     const _userVote = await PostAction.findOne({postId: comment._id, userId: userId})
@@ -72,9 +72,9 @@ const getAllComments = async (commentId, authorized, userId) => {
         var child_comments = await getAllComments(comment._id, authorized, userId)
         var result = { id: comment._id.toString(), body: comment.body, author: comment.author, votes_likes: votes_likes.length, votes_dislikes: votes_dislikes.length, createdAt: comment.createdAt, comments: child_comments }
         const author = await User.findOne({uid:comment.author})
-        if(!author) return null
+        if(!author) continue
         
-        result.author = {id: author.uid, displayName: author.displayName, avatar: author.provider==="google" ? author.google.picture : null}
+        result.author = {id: author.uid, displayName: author.displayName, avatar: author.provider==="google" ? author.google.picture : author.avatar}
 
         if(authorized) {
             const userVote = await PostAction.findOne({postId: comment._id, userId: userId})

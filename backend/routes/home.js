@@ -8,6 +8,7 @@ const { verifyAccessToken } = require('../helpers/jwt');
 const getPostById = require('../helpers/post')
 const jwt = require('jsonwebtoken');
 const verifyRecaptcha = require('../helpers/recaptcha');
+const createDefaultAvatar = require('../helpers/avatar')
 
 //const { createAvatar } = require('@dicebear/core');
 //const { identicon } = require('@dicebear/collection');
@@ -96,15 +97,13 @@ router.get('/postsList', async function(req, res, next){
   res.send(returns)
 });
 
-router.get('/avatar', async function (req, res) {
-  const createAvatar = await import('@dicebear/core');
-  const identicon = await import('@dicebear/collection');
-
-  const avatar = createAvatar.createAvatar(identicon.identicon, {
-    seed:"felix",
-  });
-  const avatar_buffer = await avatar.png().toDataUri()
-  res.send(avatar_buffer)
+router.get('/avatar/:uid', async function (req, res) {
+  try {
+    await createDefaultAvatar(req, res, req.params.uid)
+    res.send("ok")
+  } catch(err){
+    res.status(500).send(err.message)
+  }
 })
 router.get('/avatar.png', async function(req, res) {
   const createAvatar = await import('@dicebear/core');

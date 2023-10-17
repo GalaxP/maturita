@@ -7,13 +7,13 @@ var cookieParser = require('cookie-parser');
 require("dotenv").config();
 require("./helpers/mongodb");
 
-
-const PORT = 8080;
+const PORT = process.env.PORT;
 
 const indexRouter = require('./routes/home.js')
 const accountRouter = require('./routes/account.js')
 const postRouter = require('./routes/post')
 const deleteRouter = require('./routes/delete')
+const avatarsRouter = require('./routes/avatars')
 
 var app = express();
 app.set("view engine", "jade");
@@ -30,6 +30,7 @@ app.use("/", indexRouter);
 app.use("/account", accountRouter);
 app.use("/post", postRouter);
 app.use("/delete", deleteRouter);
+app.use("/avatars", avatarsRouter);
 
 app.use(function (req, res, next) {
     next(createError(404));

@@ -85,7 +85,7 @@ const Comment = (comment: IComment) => {
     return <>
     <div className="flex flex-row mt-2" style={{paddingLeft: comment.offset*3.5+"rem"}}>
         <Avatar className="mt-2 shadow-md cursor-pointer">
-            <AvatarImage src={comment.author.avatar===null ? process.env.REACT_APP_API_URL+"/avatar.png" : comment.author.avatar} alt="@shadcn" />
+            <AvatarImage src={comment.author.avatar===null ? process.env.REACT_APP_API_URL+"/avatar.png" : comment.author.avatar?.search("googleusercontent") !== -1 ? comment.author.avatar : process.env.REACT_APP_API_URL + comment.author.avatar} alt="@shadcn" />
             <AvatarFallback>CN</AvatarFallback>
         </Avatar>
         <div className="ml-2 w-full">

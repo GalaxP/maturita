@@ -12,6 +12,9 @@ const rateLimit = require('express-rate-limit');
 const {OAuth2Client} = require('google-auth-library');
 const verifyRecaptcha = require('../helpers/recaptcha');
 const { default: axios } = require('axios');
+const Avatar = require('../schemas/avatar')
+const path = require('node:path'); 
+const createDefaultAvatar = require('../helpers/avatar')
 require('dotenv').config()
 
 const rateLimiterUsingThirdParty = rateLimit({
@@ -21,6 +24,25 @@ const rateLimiterUsingThirdParty = rateLimit({
     standardHeaders: true,
     legacyHeaders: false,
 });
+
+
+const multer = require('multer');
+const storage = multer.diskStorage({
+  destination: function(req, file, callback) {
+    callback(null, process.env.AVATAR_PATH);
+  },
+  filename: function (req, file, callback) {
+    console.log(req.payload.aud)
+    callback(null, req.payload.aud+path.extname(file.originalname));
+  }
+});
+const upload = multer({storage: storage, fileFilter: function (req, file, callback) {
+    var ext = path.extname(file.originalname);
+    if(ext !== '.png' && ext !== '.jpg' && ext !== '.gif' && ext !== '.jpeg') {
+        return callback('Only images are allowed')
+    }
+    callback(null, true)
+}, limits: {fileSize: 1024*1024}}).single('avatar')
 
 
 
@@ -39,6 +61,9 @@ router.post('/register', verifyRecaptcha("register"), async function(req, res, n
     if (doesDisplayNameExist)
         return next(createError.Conflict(`username ${result.displayName} has already been registered`));
 
+    const uid = v4()
+    await createDefaultAvatar(uid).catch((err)=>{createError.InternalServerError(err.message)})
+
     const hashedPassword = await HashPassword(result.password)
     const _user = new User(
     {
@@ -48,7 +73,8 @@ router.post('/register', verifyRecaptcha("register"), async function(req, res, n
         lastName: result.lastName,
         displayName: result.displayName,
         password: hashedPassword,
-        uid: v4()
+        avatar: "/avatars/"+uid+".png",
+        uid: uid
     })
 
     _user.save().then(() => {
@@ -161,7 +187,7 @@ router.post('/google/callback', async (req,res)=> {
             uid: payload.sub,
             google: payload,
             displayName: payload.given_name + " " + payload.family_name
-        }) 
+        })
 
         await google_user.save().catch((err)=>{
             console.log(err)
@@ -179,4 +205,27 @@ router.post('/google/callback', async (req,res)=> {
     res.redirect(process.env.CLIENT_DOMAIN + "google/callback?user=" + encodeURIComponent(user_json) + "&token="+accessToken)
 })
 
+router.post ('/upload', jwt.verifyAccessToken, (req, res) => {
+    upload(req, res, async function (err) {
+        if (err instanceof multer.MulterError) {
+            if(err.code==='LIMIT_FILE_SIZE') return res.status(400).send("File must be under 1Mb")
+            else res.status(400).send('unknown error')
+        } else if (err) {
+            return res.status(400).send(err)
+        }
+
+        const avatar = new Avatar({
+            filename: req.file.filename,
+            path: req.file.path
+        });
+        
+        try {
+            await avatar.save();
+            res.status(200).send('Image uploaded and saved successfully');
+        } catch (error) {
+            res.status(500).send('Error saving image to the database');
+        }
+    })
+    // You can perform additional operations with the uploaded image here.
+});
 module.exports = router;
