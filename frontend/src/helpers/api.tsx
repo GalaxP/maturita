@@ -1,16 +1,16 @@
-import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
+import axios, { AxiosError, AxiosHeaderValue, AxiosHeaders, AxiosRequestConfig, AxiosResponse, RawAxiosRequestHeaders } from "axios";
 import { useContext } from "react";
 import AuthContext from "../contexts/AuthContext";
 
 const api_url = process.env.REACT_APP_API_URL
 let accessToken = ""
 
-const post_data = async function(path:string, data:any, options?:AxiosRequestConfig, sendToken?:boolean) {
+const post_data = async function(path:string, data:any, options?:AxiosRequestConfig, sendToken?:boolean, headers?:(RawAxiosRequestHeaders) | AxiosHeaders) {
     sendToken ||= false
     return new Promise<AxiosResponse<any, any>>((resolve, reject)=> {
         if(sendToken) {
             if(accessToken !== "") {
-                axios.post(api_url+path, data, {...options, headers: {Authorization: "Bearer "+ accessToken} })
+                axios.post(api_url+path, data, {...options, headers: {...headers, Authorization: "Bearer "+ accessToken} })
                 .then((res)=> {
                     return resolve(res)
                 })
@@ -18,7 +18,7 @@ const post_data = async function(path:string, data:any, options?:AxiosRequestCon
                     if(err.response?.status===401 && err.response.data.error.message === "jwt expired") {
                         refresh_token()
                         .then((token)=> {
-                            axios.post(api_url+path, data, {...options, headers: {Authorization: "Bearer "+ token} })
+                            axios.post(api_url+path, data, {...options, headers: {...headers, Authorization: "Bearer "+ token} })
                             .then((res2)=> {
                                 return resolve(res2)
                             })
@@ -30,7 +30,7 @@ const post_data = async function(path:string, data:any, options?:AxiosRequestCon
             } else {
                 refresh_token()
                 .then((token)=> {
-                    axios.post(api_url+path, data, {...options, headers: {Authorization: "Bearer "+ token} })
+                    axios.post(api_url+path, data, {...options, headers: {...headers, Authorization: "Bearer "+ token} })
                     .then((res2)=> {
                         return resolve(res2)
                     })

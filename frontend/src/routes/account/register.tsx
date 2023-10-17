@@ -14,24 +14,7 @@ const Register = () => {
     const { toast } = useToast()
     const navigate = useNavigate();
     const [error, setError] = useState({field: "", message: ""})
-    
-    const handleSubmit = (e:any) => {
-        e.preventDefault();
-        const form = e.target;
-        const formData = new FormData(form);
 
-        const formJson = Object.fromEntries(formData.entries());
-        grecaptcha.ready(function() {
-            grecaptcha.execute('6Ld0mW4oAAAAAMQH12Drl2kwd1x3uwQ9yKCJIO5o', {action: 'register'}).then(function(token:string) {
-                post_data("/account/register", {...formJson, token:token}).then((res)=>{
-                if(res.status===200)
-                {
-                    alert("successfully registered")
-                }
-                }).catch((err)=>{console.log(err)})
-            });
-        });
-    }
     const onSubmit = (values:any) => {
         grecaptcha.ready(function() {
             grecaptcha.execute(process.env.REACT_APP_RECAPTCHA_SITE_KEY, {action: 'register'}).then(function(token:string) {
@@ -71,9 +54,7 @@ const Register = () => {
         })
         console.log(values)
     }
-    const Error = (field:string, message: string) => {
 
-    }
     return <div className="m-0 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
          <div className="mx-auto w-[350px] ">
             <RegisterForm handleSubmit={onSubmit} isLoading={isLoading} setError={error}/>

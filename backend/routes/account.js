@@ -37,7 +37,7 @@ const storage = multer.diskStorage({
   }
 });
 const upload = multer({storage: storage, fileFilter: function (req, file, callback) {
-    var ext = path.extname(file.originalname);
+    var ext = path.extname(file.originalname).toLowerCase();
     if(ext !== '.png' && ext !== '.jpg' && ext !== '.gif' && ext !== '.jpeg') {
         return callback('Only images are allowed')
     }
@@ -107,7 +107,7 @@ router.post('/login', verifyRecaptcha("login"), async function(req, res, next) {
         res.cookie("refreshToken", refreshToken, {httpOnly:true, sameSite:"lax", maxAge: 30 * 24 * 60 * 60 * 1000}) //30days
         res.send({
             message: "success",
-            user: pick(user, "email", "uid", "avatar"),
+            user: pick(user, "email", "uid", "avatar", "displayName"),
             provider: "local",
             accessToken: accessToken
         })
@@ -196,7 +196,9 @@ router.post('/google/callback', async (req,res)=> {
     }
 
     const user = await User.findOne({uid: payload.sub});
-    const user_json = JSON.stringify({user: pick(user, "email", "uid"), provider:"google"})
+    var user_pick = pick(user, "email", "uid", "displayName")
+    user_pick.avatar = user.google.picture
+    const user_json = JSON.stringify({user: user_pick, provider:"google"})
 
     const accessToken = await jwt.signAccessToken(payload.sub, "google")
     const refreshToken = await jwt.signRefreshToken(payload.sub, "google").catch((err)=>{next(createError.InternalServerError())});
@@ -214,6 +216,7 @@ router.post ('/upload', jwt.verifyAccessToken, (req, res) => {
             return res.status(400).send(err)
         }
 
+        if(!req.file) return res.status(400).send("No file was sent")
         const avatar = new Avatar({
             filename: req.file.filename,
             path: req.file.path

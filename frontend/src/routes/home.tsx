@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import AuthContext from "../contexts/AuthContext";
 import { useDocumentTitle } from "hooks/setDocuemntTitle";
 import CreatePost from "../components/createPost"
+import GetAvatar from "helpers/getAvatar";
 
 const Home = () => {
   const [loaded, setLoaded] = useState(false);
@@ -19,7 +20,6 @@ const Home = () => {
     setLoaded(false)
     const controller = new AbortController();
     getAllPosts(controller);
-
     return () => {
       controller.abort()
     }
@@ -41,7 +41,7 @@ const Home = () => {
   <div>
     
     <ul className="flex flex-col space-y-3 justify-center items-center w-full">
-      <li key={"submit"} className="lg:w-3/5 sm:w-3/4 w-[90%]"><CreatePost/></li>
+      <li key={"submit"} className="lg:w-3/5 sm:w-3/4 w-[90%]">{auth?.isAuthenticated && <CreatePost/>}</li>
       {posts_obj}
     </ul>
   </div>

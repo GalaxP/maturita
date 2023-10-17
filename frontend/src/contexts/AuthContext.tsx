@@ -41,9 +41,9 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
 
                     cookies.set('account', JSON.stringify(user), { 
                         path:"/",
-                        sameSite: "lax",
+                        sameSite: "strict",
                         httpOnly: false,
-                        secure: false,
+                        secure: true,
                         maxAge: 30*24*60*60
                     })
 
@@ -72,9 +72,9 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
                 if(res.status===204) {
                     cookies.remove("account", { 
                         path:"/",
-                        sameSite: "lax",
+                        sameSite: "strict",
                         httpOnly: false,
-                        secure: false
+                        secure: true
                     });
                     cookies.remove('refreshToken', {
                         path: "/",
