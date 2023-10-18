@@ -19,6 +19,10 @@ const postSchema = new Schema({
         type: Date,
         default: Date.now
     },
+    community: {
+        type: Schema.Types.ObjectId,
+        required: true
+    },
     comments: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Comment'

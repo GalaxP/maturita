@@ -8,7 +8,8 @@ const { verifyAccessToken } = require('../helpers/jwt');
 const getPostById = require('../helpers/post')
 const jwt = require('jsonwebtoken');
 const verifyRecaptcha = require('../helpers/recaptcha');
-const createDefaultAvatar = require('../helpers/avatar')
+const createDefaultAvatar = require('../helpers/avatar');
+const Community = require('../schemas/community');
 
 //const { createAvatar } = require('@dicebear/core');
 //const { identicon } = require('@dicebear/collection');
@@ -22,17 +23,21 @@ router.post('/post', verifyAccessToken, verifyRecaptcha("post"), async function 
       err.status = 422;
       throw err;
     });
-    
+    const community = await Community.findOne({name: result.community})
+    if(!community) return next(createError.BadRequest("community does not exist or was not specified"))
+
     const _post = new Post({
       author: req.payload.aud,
       body: result.body,
       title: result.title,
+      community: community._id
     })
 
     _post.save().then(()=>{
       res.send("success");
     }).catch((err)=>{
       if(err) {
+        //console.log(err)
         err.status = 500;
         return next(createError.InternalServerError());
       }

@@ -3,6 +3,7 @@ const Joi = require('joi')
 const postSchema = Joi.object({
     title: Joi.string().required().min(5),
     body: Joi.string().required(),
+    community: Joi.string().required(),
     token: Joi.string().required()
 })
 
@@ -24,8 +25,14 @@ const postActionSchema = Joi.object({
     token: Joi.string()
 }).xor('postId', 'commentId')
 
+const createCommunitySchema = Joi.object({
+    name: Joi.string().required().max(40),
+    description: Joi.string().required(),
+})
+
 module.exports = {
     postSchema,
     userSchema,
-    postActionSchema
+    postActionSchema,
+    createCommunitySchema
 }

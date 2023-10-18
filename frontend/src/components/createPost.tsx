@@ -4,11 +4,13 @@ import { Input } from "../components/ui/input"
 import { useNavigate } from "react-router-dom";
 import GetAvatar from "helpers/getAvatar";
 import AuthContext from "contexts/AuthContext";
-import { useContext } from "react";
+import { useContext, useState } from "react";
+
 
 const CreatePost = () => {
     const navigate = useNavigate()
     const auth = useContext(AuthContext)
+
     return <>
         <Card className={"mx-auto cursor-pointer pt-6"}>
             <CardContent>
