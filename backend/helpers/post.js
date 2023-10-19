@@ -3,6 +3,7 @@ const PostAction = require("../schemas/postAction")
 const pick = require('../helpers/pick')
 const Comment = require("../schemas/comment")
 const User = require("../schemas/user")
+const mongoose = require('mongoose')
 
 const getPostById = async (postId, authorized, userId, getComments) => {
     try {
@@ -15,7 +16,7 @@ const getPostById = async (postId, authorized, userId, getComments) => {
             userVote = await PostAction.findOne({postId: postId, userId: userId})
         }
         
-        const result = pick(_post._doc, "_id", "title", "body", "createdAt")
+        const result = pick(_post._doc, "_id", "title", "body", "createdAt", "community")
         
         const author = await User.findOne({uid:_post.author})
         if(!author) return null

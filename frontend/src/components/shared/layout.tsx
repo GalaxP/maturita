@@ -17,6 +17,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
 import { Button } from "../ui/button"
 import GetAvatar from "helpers/getAvatar";
+import { useLocalization } from "hooks/useLocalization";
 type LayoutProps = {
     children: React.ReactNode
 }
@@ -26,6 +27,7 @@ const excludedFromLayout: string[] = []
 const Layout = ({children}: LayoutProps) => {
     const auth = useContext(AuthContext);
     const [loaded, setLoaded] = useState(false)
+    const local = useLocalization("sk");
 
     const navigate = useNavigate();
     return <>
@@ -61,7 +63,7 @@ const Layout = ({children}: LayoutProps) => {
                             <AvatarImage src={GetAvatar(auth?.getUser())} alt="@shadcn" />
                             <AvatarFallback>AVATAR</AvatarFallback>
                         </Avatar> }
-                            {auth?.isAuthenticated ? auth?.getUser().user.displayName :  "Login" }
+                            {auth?.isAuthenticated ? auth?.getUser().user.displayName :  local("LOGIN") }
                     </Button>
                 </div>
             </div>

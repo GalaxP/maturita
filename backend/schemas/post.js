@@ -20,7 +20,7 @@ const postSchema = new Schema({
         default: Date.now
     },
     community: {
-        type: Schema.Types.ObjectId,
+        type: String,
         required: true
     },
     comments: [{

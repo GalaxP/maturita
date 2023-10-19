@@ -30,7 +30,7 @@ router.post('/post', verifyAccessToken, verifyRecaptcha("post"), async function 
       author: req.payload.aud,
       body: result.body,
       title: result.title,
-      community: community._id
+      community: result.community
     })
 
     _post.save().then(()=>{

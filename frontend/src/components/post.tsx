@@ -6,18 +6,23 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { VoteButton } from "./voteButton";
 import { AiOutlineComment, AiOutlineDelete } from "react-icons/ai";
 import { Button } from "../components/ui/button";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useToast } from "./ui/use-toast";
 
 declare var grecaptcha:any
 
-const Post = ({_id ,title, body, author, createdAt, votes_likes, votes_dislikes, user_vote, comments, comment_length, width, showLinkToPost}: PostSchema) => {
+interface Iprop {
+    props: PostSchema,
+    showLinkToPost?: boolean,
+    width?: string
+}
+const Post = ({props, showLinkToPost, width}: Iprop) => {
     const auth = useContext(AuthContext)
     //const [likes, setLikes] = useState(0)
     //const [dislikes, setDislikes] = useState(0)
     const [error, setError] = useState()
-    const [post, setPost] = useState<PostSchema>({_id: _id, author: author, body: body, createdAt: createdAt, title: title, votes_dislikes: votes_dislikes, votes_likes: votes_likes, user_vote: user_vote, comments: comments, comment_length: comment_length})
-    const [votes, setVotes] = useState<any>({votes_likes: votes_likes, votes_dislikes: votes_dislikes, user_vote: user_vote})
+    const [post, setPost] = useState<PostSchema>({_id: props._id, community: props.community, author: props.author, body: props.body, createdAt: props.createdAt, title: props.title, votes_dislikes: props.votes_dislikes, votes_likes: props.votes_likes, user_vote: props.user_vote, comments: props.comments, comment_length: props.comment_length})
+    const [votes, setVotes] = useState<any>({votes_likes: props.votes_likes, votes_dislikes: props.votes_dislikes, user_vote: props.user_vote})
     const [isVoting, setIsVoting] = useState(false)
     const navigate = useNavigate()
     const { toast } = useToast()
@@ -33,7 +38,7 @@ const Post = ({_id ,title, body, author, createdAt, votes_likes, votes_dislikes,
                 
                 auth?.protectedAction(()=> {
                     if(direction === 0 && votes.user_vote !== 0) {
-                        post_data("/post/action", {postId: _id, type: "vote", direction: 0, token: grecaptchaToken}, {}, true)
+                        post_data("/post/action", {postId: props._id, type: "vote", direction: 0, token: grecaptchaToken}, {}, true)
                         .then((res) => {
                             if(res.status===200) {
                                 if(votes.user_vote === 1) {
@@ -53,7 +58,7 @@ const Post = ({_id ,title, body, author, createdAt, votes_likes, votes_dislikes,
                         })
                     }
                     if(direction === -1) {
-                        post_data("/post/action", {postId: _id, type: "vote", direction: -1, token: grecaptchaToken}, {}, true)
+                        post_data("/post/action", {postId: props._id, type: "vote", direction: -1, token: grecaptchaToken}, {}, true)
                         .then((res)=> {
                             if(res.status===200) {
                                 if(votes.user_vote === 1) {
@@ -72,7 +77,7 @@ const Post = ({_id ,title, body, author, createdAt, votes_likes, votes_dislikes,
                             setIsVoting(false)
                         })
                     } else if(direction === 1) {
-                        post_data("/post/action", {postId: _id, type: "vote", direction: 1, token: grecaptchaToken}, {}, true)
+                        post_data("/post/action", {postId: props._id, type: "vote", direction: 1, token: grecaptchaToken}, {}, true)
                         .then((res)=> {
                             if(res.status===200) {
                                 if(votes.user_vote===-1) {
@@ -96,7 +101,18 @@ const Post = ({_id ,title, body, author, createdAt, votes_likes, votes_dislikes,
     }
 
     const redirect = (e:any) => {
-        if(e.target.localName!=="path" && e.target.localName!=="svg" && e.target.localName!=="button" && showLinkToPost) navigate("/post/"+_id)
+        if(e.target.localName!=="path" && e.target.localName!=="svg" && showLinkToPost) {
+            switch(e.target.localName) {
+                case "button" :
+                    break;
+                case "a":
+                    //console.log(e.target)
+                    break;
+                default:
+                    navigate("/post/"+props._id)
+                    break;
+            }
+        }
     }
 
     useEffect(()=>{
@@ -112,19 +128,22 @@ const Post = ({_id ,title, body, author, createdAt, votes_likes, votes_dislikes,
     return <>
         <Card className={width_class+" cursor-pointer"} onClick={redirect}>
             <CardHeader className="pb-0">
-                <CardTitle>{title}</CardTitle>
-                <CardDescription>{author.displayName} 
+                <CardTitle>{props.title}</CardTitle>
+                <CardDescription>
+                    <Link to={"/community/"+props.community} className="hover:underline">r/{props.community}</Link> 
                 <span className="dot-separator mx-1"></span>
-                 {new Date(createdAt).toLocaleDateString() + " " + new Date(createdAt).toLocaleTimeString()}
+                    <Link to={"/user/"+props.author.id} className="hover:underline">{props.author.displayName}</Link> 
+                <span className="dot-separator mx-1"></span>
+                 {new Date(props.createdAt).toLocaleDateString() + " " + new Date(props.createdAt).toLocaleTimeString()}
                  </CardDescription>
                  <div className="flex flex-row content-center space-x-1">
                     <VoteButton type="like" votes={votes.votes_likes} current_vote={votes.user_vote} onClick={vote}/>
                     <VoteButton type="dislike" votes={votes.votes_dislikes} current_vote={votes.user_vote} onClick={vote}/>
                     {showLinkToPost && <Button variant="ghost" className="px-2">
                         <AiOutlineComment size={20} className="mr-1"/>
-                        {comment_length}
+                        {props.comment_length}
                     </Button>}
-                    { auth?.isAuthenticated && auth?.getUser().user.uid === author.id &&
+                    { auth?.isAuthenticated && auth?.getUser().user.uid === props.author.id &&
                     <Button variant="ghost" className="px-2">
                         <AiOutlineDelete size={20} className="mr-1"/>
                         Delete
@@ -135,7 +154,7 @@ const Post = ({_id ,title, body, author, createdAt, votes_likes, votes_dislikes,
                   
             </CardHeader>
             <CardContent>
-                <p>{body}</p>
+                <p>{props.body}</p>
             </CardContent>
         </Card>
     </>

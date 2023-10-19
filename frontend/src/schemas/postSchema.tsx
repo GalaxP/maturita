@@ -21,8 +21,7 @@ export interface PostSchema {
     votes_likes: number
     votes_dislikes: number
     user_vote?: number
-    width?: string
-    showLinkToPost?: boolean
+    community: ""
     comments?: IComment[]
     comment_length?: number
 }

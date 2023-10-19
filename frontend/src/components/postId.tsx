@@ -14,7 +14,7 @@ import { useDocumentTitle } from "../hooks/setDocuemntTitle"
 declare var grecaptcha:any
 
 const PostId = () => {
-    const [post, setPost] = useState<PostSchema>({author:{id:"", displayName:"", avatar:""}, title:"", createdAt: new Date(), body:"", _id:"", votes_likes:0, votes_dislikes: 0, user_vote: 0, comments: [], comment_length: 0})
+    const [post, setPost] = useState<PostSchema>({author:{id:"", displayName:"", avatar:""}, title:"", createdAt: new Date(), body:"", community: "", _id:"", votes_likes:0, votes_dislikes: 0, user_vote: 0, comments: [], comment_length: 0})
     const [documentTitle, setDocumentTitle] = useDocumentTitle("")
     const [isLoading, setIsLoading] = useState(false)
     const id = useParams().postId;
@@ -101,7 +101,7 @@ const PostId = () => {
         <Skeleton className="h-40 w-3/5" />
         <Skeleton className="mx-0 h-10 w-3/5 " />
     </div> : <>
-    <Post _id={post._id} author={post.author} body={post.body} createdAt={post.createdAt} title={post.title} votes_likes={post.votes_likes} votes_dislikes={post.votes_dislikes} user_vote={post.user_vote} comments={post.comments} comment_length={post.comment_length}/>
+    <Post props={post}/>
     <div className="lg:w-3/5 sm:w-3/4 w-[90%] mx-auto mt-5" >
         <Textarea className="w-full inline max-w-full" value={comment} onChange={e => setComment(e.target.value)} placeholder={authContext?.isAuthenticated ? "Type your comment here." : "You need to log in to comment."} disabled={!authContext?.isAuthenticated}/>
         {authContext?.isAuthenticated && <Button className="w-20 ml-auto" onClick={submitComment}>Comment</Button> }

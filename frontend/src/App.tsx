@@ -13,6 +13,7 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 import Callback from "./routes/account/google/callback";
 import { Toaster } from "./components/ui/toaster";
 import Submit from "routes/submit";
+import Community from "routes/community";
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
                 <Route path='edit' element={ <ProtectedRoute><Edit/></ProtectedRoute>} ></Route>
               </Route>
               <Route path="submit" element={<Submit/>}></Route>
+              <Route path="community/:community" element={<Community/>}></Route>
               <Route path="/post/:postId" element={<PostId/>}></Route>
 
               <Route path='google'>
