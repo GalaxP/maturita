@@ -17,7 +17,8 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
 import { Button } from "../ui/button"
 import GetAvatar from "helpers/getAvatar";
-import { useLocalization } from "hooks/useLocalization";
+import LocaleSwitcher from "components/localeSwitcher";
+import LocalizationContext from "contexts/LocalizationContext";
 type LayoutProps = {
     children: React.ReactNode
 }
@@ -27,44 +28,28 @@ const excludedFromLayout: string[] = []
 const Layout = ({children}: LayoutProps) => {
     const auth = useContext(AuthContext);
     const [loaded, setLoaded] = useState(false)
-    const local = useLocalization("sk");
+    const localeContext = useContext(LocalizationContext)
 
     const navigate = useNavigate();
     return <>
-        {/* <div className="py-2 border-b border-s-zin-200 fixed w-full z-10 top-0 bg-card h-10"> */}
         <header className="sticky top-0 z-50 w-full border-b px-2">
-
-            {/* <NavigationMenu className="py-2">
-                <NavigationMenuList>
-                    <NavigationMenuItem>
-                        <Link to={"/"}>
-                            <NavigationMenu className={navigationMenuTriggerStyle()}>
-                            Home
-                            </NavigationMenu>
-                        </Link>
-                    </NavigationMenuItem>
-                    <NavigationMenuItem>
-                        <Link to={auth?.isAuthenticated ? "/account/logout" : "/account/login"}>
-                            <NavigationMenu className={navigationMenuTriggerStyle()}>
-                            {auth?.isAuthenticated ? "Logout" :  "Login" }
-                            </NavigationMenu>
-                        </Link>
-                    </NavigationMenuItem>
-                </NavigationMenuList>
-            </NavigationMenu> */}
             <div className="h-full my-2 flex space-x-2">
                 <div className="flex">
                     <Button variant="ghost" onClick={()=>navigate("/")}>Home
                     </Button>
                 </div>
                 <div className="flex flex-1 justify-end">
+                    <div>
+                        <LocaleSwitcher/>
+                    </div>
                     <Button variant="ghost" className="" onClick={()=>navigate(auth?.isAuthenticated ? "/account/logout" : "/account/login")}>
                         {auth?.isAuthenticated &&<Avatar className="shadow-md cursor-pointer mr-2">
                             <AvatarImage src={GetAvatar(auth?.getUser())} alt="@shadcn" />
                             <AvatarFallback>AVATAR</AvatarFallback>
                         </Avatar> }
-                            {auth?.isAuthenticated ? auth?.getUser().user.displayName :  local("LOGIN") }
+                            {auth?.isAuthenticated ? auth?.getUser().user.displayName :  localeContext.localize("LOGIN") }
                     </Button>
+                    
                 </div>
             </div>
         </header>

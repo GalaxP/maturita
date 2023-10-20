@@ -14,34 +14,36 @@ import Callback from "./routes/account/google/callback";
 import { Toaster } from "./components/ui/toaster";
 import Submit from "routes/submit";
 import Community from "routes/community";
+import { LocalizationContextProvider } from "contexts/LocalizationContext";
 
 function App() {
   return (
     <>
         <AuthContextProvider>
-          <Router>
-            <Layout>
+          <LocalizationContextProvider>
+            <Router>
+              <Layout>
+              <Routes>
+                <Route path='/' element={<Home />}></Route>
+                <Route path='account'>
+                  <Route path='register' element={<Register/> }></Route>
+                  <Route path='login' element={<Login/> }></Route>
+                  <Route path='logout' element={<Logout/> } ></Route>
+                  <Route path='edit' element={ <ProtectedRoute><Edit/></ProtectedRoute>} ></Route>
+                </Route>
+                <Route path="submit" element={<Submit/>}></Route>
+                <Route path="community/:community" element={<Community/>}></Route>
+                <Route path="/post/:postId" element={<PostId/>}></Route>
 
-            <Routes>
-              <Route path='/' element={<Home />}></Route>
-              <Route path='account'>
-                <Route path='register' element={<Register/> }></Route>
-                <Route path='login' element={<Login/> }></Route>
-                <Route path='logout' element={<Logout/> } ></Route>
-                <Route path='edit' element={ <ProtectedRoute><Edit/></ProtectedRoute>} ></Route>
-              </Route>
-              <Route path="submit" element={<Submit/>}></Route>
-              <Route path="community/:community" element={<Community/>}></Route>
-              <Route path="/post/:postId" element={<PostId/>}></Route>
-
-              <Route path='google'>
-                <Route path='callback' element={<Callback/>}></Route>
-              </Route>
-              <Route path='*' element={<h1>404</h1>}></Route>
-            </Routes>
-            </Layout>
-            
-          </Router>
+                <Route path='google'>
+                  <Route path='callback' element={<Callback/>}></Route>
+                </Route>
+                <Route path='*' element={<h1>404</h1>}></Route>
+              </Routes>
+              </Layout>
+              
+            </Router>
+          </LocalizationContextProvider>
         </AuthContextProvider>
       <Toaster/>
       </>
