@@ -33,7 +33,7 @@ router.post("/create", verifyAccessToken, async (req, res, next)=> {
     }
 })
 
-router.post("/search", async (req, res, next)=> {
+router.post("/search", verifyAccessTokenIfProvided, async (req, res, next)=> {
     if(!req.body.query) return next(createError.BadRequest("No search query was provided"))
     var regexQuery = {
         name: new RegExp("^"+req.body.query)
@@ -43,6 +43,7 @@ router.post("/search", async (req, res, next)=> {
     var communities_result = []
     communities.map((community, index)=>{
         communities_result[index] = pick(community, "name")
+        if(req.payload.authenticated) communities_result[index].isMember = community.members.findIndex((mem)=>mem===req.payload.aud) !== -1
     })
     res.send(communities_result);
 })
@@ -52,7 +53,17 @@ router.get('/:communityName/posts', verifyAccessTokenIfProvided, async (req, res
     const community = await Community.findOne({name: req.params.communityName})
     if(!community) return next(createError.BadRequest("community does not exist"))
 
-    const posts = await Post.find({community: community.name})
+    var posts = [{}];
+    if(req.query.sort==="newest" || req.query.sort==="best") {
+        if(req.query.sort === "best") {
+            if(req.query.t==="alltime") { posts = await Post.find({community: community.name})}
+            else if(req.query.t==="day") { posts = await Post.find({community: community.name, createdAt: {$gte: new Date().setDate(new Date().getDate() -1) }})}
+            else if(req.query.t==="week") { posts = await Post.find({community: community.name, createdAt: {$gte: new Date().setDate(new Date().getDate() -7) }})}
+            else if(req.query.t==="month") { posts = await Post.find({community: community.name, createdAt: {$gte: new Date().setDate(new Date().getMonth() -1) }})}
+            else if(req.query.t==="year") { posts = await Post.find({community: community.name, createdAt: {$gte: new Date().setDate(new Date().getFullYear() -1) }})}
+            else return next(createError.BadRequest("incorrect sort"))
+        } else {posts = await Post.find({community: community.name}).sort({createdAt: 'desc'})}
+    } else {return next(createError.BadRequest("incorrect sort"))}
     if(!posts) return res.send("No posts yet")
     var returns = []
     var index = 0
@@ -62,6 +73,7 @@ router.get('/:communityName/posts', verifyAccessTokenIfProvided, async (req, res
         returns[index] = post
         index++
     }
+    if(req.query.sort=== "best") returns.sort((firstItem, secondItem) => secondItem.votes_likes - firstItem.votes_likes)
     if(req.payload.authenticated) return res.send({community:{description:community.description, members: community.members.length, isMember: community.members.findIndex((mem)=>mem===req.payload.aud)!==-1},post:returns})
     res.send({community:{description:community.description, members: community.members.length},post:returns})
 })
@@ -70,7 +82,7 @@ router.get('/:communityName', verifyAccessTokenIfProvided, async (req, res, next
     if(!req.params.communityName) return next(createError.BadRequest())
     const community = await Community.findOne({name: req.params.communityName})
     if(!community) return next(createError.BadRequest("community does not exist"))
-    if(payload.authenticated) return res.send({name: community.name, description: community.description, members: community.members.length, isMember: community.members.findIndex(req.payload.aud)!==-1})
+    if(req.payload.authenticated) return res.send({name: community.name, description: community.description, members: community.members.length, isMember: community.members.findIndex(req.payload.aud)!==-1})
     res.send({name: community.name, description:community.description, members: community.members.length})
 })
 

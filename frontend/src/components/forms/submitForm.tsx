@@ -104,7 +104,7 @@ export function SubmitForm({handleSubmit, isLoading}: props) {
 
   const searchCommunities = (query: string) => {
     if(!query) return setCommunities({communities: [{value: "", label: ""}], isEmpty: true})
-    post_data("/community/search", {query: query})
+    post_data("/community/search", {query: query}, {}, true)
     .then((res)=> {
       if(res.data.length === undefined || res.data.length === 0) return setCommunities({communities: [{value: "", label: ""}], isEmpty: true})
       setCommunities({communities: [{value: "", label: ""}], isEmpty: true})

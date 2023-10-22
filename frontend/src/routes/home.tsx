@@ -35,13 +35,13 @@ const Home = () => {
   
   const posts_obj = [];
   for (let i = 0; i < posts.length; i++) {
-    posts_obj.push(<li key={posts[i]._id} className="lg:w-3/5 sm:w-3/4 w-[90%]"><Post key={posts[i]._id} showLinkToPost={true} width="w-full" props={posts[i]}/> </li>);
+    posts_obj.push(<li key={posts[i]._id} className="w-11/12 lg:w-[700px] sm:w-11/12"><Post key={posts[i]._id} showLinkToPost={true} width="w-full" props={posts[i]}/> </li>);
   }
   return (loaded ? 
   <div className="mt-6">
     
-    <ul className="flex flex-col space-y-3 justify-center items-center w-full">
-      <li key={"submit"} className="lg:w-3/5 sm:w-3/4 w-[90%]">{auth?.isAuthenticated && <CreatePost/>}</li>
+    <ul className="flex flex-col space-y-2 justify-center items-center w-full">
+      <li key={"submit"} className="w-11/12 lg:w-[700px] sm:w-11/12">{auth?.isAuthenticated && <CreatePost/>}</li>
       {posts_obj}
     </ul>
   </div>
