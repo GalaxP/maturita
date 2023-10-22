@@ -18,6 +18,9 @@ const communitySchema = new Schema({
         type: Date,
         default: Date.now
     },
+    members: {
+        type: [String]
+    },
     createdBy: {
         type: String,
         required: true

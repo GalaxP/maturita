@@ -1,23 +1,27 @@
 import { Post } from "components/post";
 import AuthContext from "contexts/AuthContext";
-import { get_data } from "helpers/api";
+import { get_data, post_data } from "helpers/api";
 import { useDocumentTitle } from "hooks/setDocuemntTitle";
 import { useContext, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { PostSchema } from "schemas/postSchema";
 import { Button } from "../components/ui/button"
-import { Bell } from "lucide-react";
+import { Bell, Users } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import CreatePost from "components/createPost";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
+import { useToast } from "../components/ui/use-toast"
 
 const Community = () => {
     const community_name = useParams().community;
     const [loaded, setLoaded] = useState(false);
     const [posts, setPosts] = useState<PostSchema[]>([{author:{id:"",displayName:"", avatar:""}, title:"", createdAt: new Date(), body:"", _id:"", community: "", votes_likes:0, votes_dislikes:0, user_vote:0, comments:[], comment_length :0}]);
     const [error, setError] = useState("");
-    const [communityInfo, setCommunityInfo] = useState({description: ""})
+    const [communityInfo, setCommunityInfo] = useState({description: "", members: 0, isMember: false})
     const [documentTitle, setDocumentTitle] = useDocumentTitle("")
-    
+    const navigate = useNavigate();
+    const { toast } = useToast()
+
     const auth = useContext(AuthContext)
     useEffect(()=>{
         if(community_name) setDocumentTitle(community_name)
@@ -32,10 +36,40 @@ const Community = () => {
             setLoaded(true);
         })
     }, [])
-    return ( loaded ? <> 
-            <div className="w-full bg-slate-50 p-4" >
-                
 
+    const handleJoinButton = () => {
+        auth?.protectedAction(()=>{
+            if(communityInfo.isMember) {
+                post_data("/community/"+community_name+"/leave", {}, {}, true)
+                .then(()=>{
+                    toast({
+                        description: "Left "+community_name+" as a member!"
+                    })
+                    setCommunityInfo({...communityInfo, isMember : false})
+                })
+                .catch(()=>{
+                    alert("rip")
+                })
+            } else {
+                post_data("/community/"+community_name+"/join", {}, {}, true)
+                .then(()=>{
+                    toast({
+                        description: "Joined "+community_name+" as a member!",
+                        
+                    })
+                    setCommunityInfo({...communityInfo, isMember : true})
+                })
+                .catch(()=>{
+                    alert("rip")
+                })
+            }
+        }, ()=>navigate('/account/login'))
+    }
+    const handleNotiButton = () => {
+        alert('notied')
+    }
+    return ( loaded ? <> 
+            <div className="w-full bg-slate-50 p-4" > 
                 <div className="lg:w-3/5 sm:w-3/4 w-[90%] mx-auto">
                     <div className="flex text-center">
                         <Avatar className="shadow-md">
@@ -43,21 +77,43 @@ const Community = () => {
                             <AvatarFallback>CN</AvatarFallback>
                         </Avatar>
                         <h2 className="mb-0 scroll-m-20 text-3xl font-semibold tracking-tight first:mt-0 inline-block ml-2">{community_name}</h2>
-                        <Button variant={"outline"} className="rounded-full w-20 ml-2 my-auto">
-                            Join
+                        <Button variant={"outline"} className="rounded-full w-20 ml-2 my-auto" onClick={handleJoinButton}>
+                            {communityInfo.isMember ? "Leave" : "Join"}
                         </Button>
-                        <Button variant={"outline"} className="rounded-full ml-2 p-2">
+                        <Button variant={"outline"} className="rounded-full ml-2 p-2" onClick={handleNotiButton}>
                             <Bell size={22} strokeWidth={1.5}></Bell>
                         </Button>
                     </div>
                     <p>{communityInfo && communityInfo.description}</p>
                 </div>
             </div>
-            <div className="flex flex-col space-y-3 mt-6">
-                {auth?.isAuthenticated && <div className="lg:w-3/5 sm:w-3/4 w-[90%] mx-auto"><CreatePost/></div>}
-                {posts.length > 0 &&  error!=="community does not exist" && posts.map((_post)=>{
-                    return <Post key={_post._id} props={_post} showLinkToPost={true}/>
-                })}
+            <div className="mt-6">
+                <div className="flex flex-row w-full justify-center">
+                    
+                    <div className="w-3/5 lg:w-3/5 sm:w-3/4 space-y-2">
+
+                        {auth?.isAuthenticated && <div className="w-full"><CreatePost/></div>}
+                        {posts.length > 0 &&  error!=="community does not exist" && posts.map((_post)=>{
+                            return <Post key={_post._id} props={_post} showLinkToPost={true} showCommunity={false} width="w-full"/>
+                        })}
+                    </div>
+                    <div className="block w-1/5 sm:hidden md:block ml-6">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>About community</CardTitle>
+                            <CardDescription>
+                                {communityInfo.description} 
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="align-center flex">
+                                <Users className="inline-block pr-1"/>{communityInfo.members} member{communityInfo.members!==1 && "s"}
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    </div>
+                </div>
             </div>
             {posts.length === 0 && error!=="community does not exist" && "there are no posts yet"}
             {error==="community does not exist" && <p>Community does not exist</p>}

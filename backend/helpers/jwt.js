@@ -80,6 +80,20 @@ const verifyAccessToken = (req, res, next) => {
     });
 }
 
+const verifyAccessTokenIfProvided = (req, res, next) => {
+    req.payload = {};
+    if(!req.headers["authorization"]) {req.payload.authenticated = false; return next()}
+    const token = req.headers["authorization"].split(" ")[1]
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, payload) => {
+        if (err) {
+            req.payload.authenticated = false
+            return next(createError.Unauthorized(message));
+        }
+        req.payload = payload
+        req.payload.authenticated = true
+        next()
+    });
+}
 
 const verifyRefreshToken = (refreshToken) => {
     return new Promise((resolve, reject) => {
@@ -119,6 +133,7 @@ module.exports = {
     signAccessToken,
     signRefreshToken,
     verifyAccessToken,
+    verifyAccessTokenIfProvided,
     verifyRefreshToken,
     isAuthorized
 }
