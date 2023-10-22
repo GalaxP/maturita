@@ -56,7 +56,7 @@ const Community = () => {
             <div className="flex flex-col space-y-3 mt-6">
                 {auth?.isAuthenticated && <div className="lg:w-3/5 sm:w-3/4 w-[90%] mx-auto"><CreatePost/></div>}
                 {posts.length > 0 &&  error!=="community does not exist" && posts.map((_post)=>{
-                    return <Post key={_post._id} props={_post} showLinkToPost={true}/>
+                    return <Post key={_post._id} props={_post} showLinkToPost={true} showCommunity={false}/>
                 })}
             </div>
             {posts.length === 0 && error!=="community does not exist" && "there are no posts yet"}

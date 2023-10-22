@@ -15,6 +15,8 @@ router.post("/create", verifyAccessToken, async (req, res, next)=> {
     if(!result) return next(createError.BadRequest(err.details[0].message));
     const doesExist = await Community.findOne({name: result.name})
     if(doesExist) return next(createError.Conflict("community with the name " + result.name +" already exists."))
+    let regex = /^(?!_)[A-Za-z0-9_]+$/g
+    if(!regex.test(result.name)) return next(createError.BadRequest("Name must only contain numbers and letters or underscores and must not start with an underscore."))
     const community = new Community({
         createdBy: req.payload.aud,
         name: result.name,

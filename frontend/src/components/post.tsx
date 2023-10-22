@@ -14,9 +14,10 @@ declare var grecaptcha:any
 interface Iprop {
     props: PostSchema,
     showLinkToPost?: boolean,
-    width?: string
+    width?: string,
+    showCommunity?: boolean
 }
-const Post = ({props, showLinkToPost, width}: Iprop) => {
+const Post = ({props, showLinkToPost, width, showCommunity=true}: Iprop) => {
     const auth = useContext(AuthContext)
     //const [likes, setLikes] = useState(0)
     //const [dislikes, setDislikes] = useState(0)
@@ -129,8 +130,9 @@ const Post = ({props, showLinkToPost, width}: Iprop) => {
         <Card className={width_class+" cursor-pointer"} onClick={redirect}>
             <CardHeader className="pb-0">
                 <CardDescription>
-                    <Link to={"/community/"+props.community} className="hover:underline">r/{props.community}</Link> 
-                <span className="dot-separator mx-1"></span>
+                    {showCommunity&&
+                    <><Link to={"/community/"+props.community} className="hover:underline">r/{props.community}</Link> 
+                <span className="dot-separator mx-1"></span></>}
                     <Link to={"/user/"+props.author.id} className="hover:underline">{props.author.displayName}</Link> 
                 <span className="dot-separator mx-1"></span>
                  {new Date(props.createdAt).toLocaleDateString() + " " + new Date(props.createdAt).toLocaleTimeString()}
