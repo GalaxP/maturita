@@ -47,20 +47,29 @@ router.post("/search", verifyAccessTokenIfProvided, async (req, res, next)=> {
     })
     res.send(communities_result);
 })
-
+function getMonday(d) {
+    d = new Date(d);
+    var day = d.getDay(),
+        diff = d.getDate() - day + (day == 0 ? -6:1); // adjust when day is sunday
+    return new Date(d.setDate(diff)).setHours(0,0,0,0);
+}
+  
 router.get('/:communityName/posts', verifyAccessTokenIfProvided, async (req, res, next) => {
     if(!req.params.communityName) return next(createError.BadRequest())
     const community = await Community.findOne({name: req.params.communityName})
     if(!community) return next(createError.BadRequest("community does not exist"))
 
     var posts = [{}];
+    const _date = new Date()
+    //_date.setFullYear(_date.getFullYear(), _date.getMonth(), 1)
+
     if(req.query.sort==="newest" || req.query.sort==="best") {
         if(req.query.sort === "best") {
             if(req.query.t==="alltime") { posts = await Post.find({community: community.name})}
-            else if(req.query.t==="day") { posts = await Post.find({community: community.name, createdAt: {$gte: new Date().setDate(new Date().getDate() -1) }})}
-            else if(req.query.t==="week") { posts = await Post.find({community: community.name, createdAt: {$gte: new Date().setDate(new Date().getDate() -7) }})}
-            else if(req.query.t==="month") { posts = await Post.find({community: community.name, createdAt: {$gte: new Date().setDate(new Date().getMonth() -1) }})}
-            else if(req.query.t==="year") { posts = await Post.find({community: community.name, createdAt: {$gte: new Date().setDate(new Date().getFullYear() -1) }})}
+            else if(req.query.t==="day") { posts = await Post.find({community: community.name, createdAt: {$gte: new Date(_date.setHours(0,0,0,0)) }})}
+            else if(req.query.t==="week") { posts = await Post.find({community: community.name, createdAt: {$gte: new Date(getMonday(_date)) }})}
+            else if(req.query.t==="month") { posts = await Post.find({community: community.name, createdAt: {$gte: new Date(_date.getFullYear(), _date.getMonth(), 1) }})}
+            else if(req.query.t==="year") { posts = await Post.find({community: community.name, createdAt: {$gte: _date.setFullYear(_date.getFullYear(), 0, 1) }})}
             else return next(createError.BadRequest("incorrect sort"))
         } else {posts = await Post.find({community: community.name}).sort({createdAt: 'desc'})}
     } else {return next(createError.BadRequest("incorrect sort"))}

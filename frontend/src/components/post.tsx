@@ -125,7 +125,7 @@ const Post = ({props, showLinkToPost, width, showCommunity=true}: Iprop) => {
         }
     }, [error])
 
-    var width_class = `${width ? width : "w-11/12 lg:w-[650px] sm:w-11/12"} mx-auto`;
+    var width_class = `${width ? width : "w-11/12 lg:w-[700px] sm:w-11/12"} mx-auto`;
     return <>
         <Card className={width_class+" cursor-pointer"} onClick={redirect}>
             <CardHeader className="pb-0">
