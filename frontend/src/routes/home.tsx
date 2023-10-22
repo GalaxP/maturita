@@ -38,7 +38,7 @@ const Home = () => {
     posts_obj.push(<li key={posts[i]._id} className="lg:w-3/5 sm:w-3/4 w-[90%]"><Post key={posts[i]._id} showLinkToPost={true} width="w-full" props={posts[i]}/> </li>);
   }
   return (loaded ? 
-  <div>
+  <div className="mt-6">
     
     <ul className="flex flex-col space-y-3 justify-center items-center w-full">
       <li key={"submit"} className="lg:w-3/5 sm:w-3/4 w-[90%]">{auth?.isAuthenticated && <CreatePost/>}</li>

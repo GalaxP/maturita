@@ -16,7 +16,6 @@ export const LocalizationContextProvider = ({ children }: AuthContextProviderPro
 
     const localize = (property:textKey) => {
         const l:"sk"|"en" = getLocale()
-        console.log(l)
         if(l) return(table[l][property])
 
         return table[l][property] //default language

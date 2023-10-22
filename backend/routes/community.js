@@ -14,7 +14,7 @@ router.post("/create", verifyAccessToken, async (req, res, next)=> {
     const result = await createCommunitySchema.validateAsync(req.body).catch((_err)=>{err = _err})
     if(!result) return next(createError.BadRequest(err.details[0].message));
     const doesExist = await Community.findOne({name: result.name})
-    if(doesExist) next(createError.Conflict("community with the name " + result.name +" already exists."))
+    if(doesExist) return next(createError.Conflict("community with the name " + result.name +" already exists."))
     const community = new Community({
         createdBy: req.payload.aud,
         name: result.name,
@@ -79,6 +79,13 @@ router.get('/:communityName/posts', async (req, res, next) => {
         index++
     }
     res.send({community:{description:community.description},post:returns})
+})
+
+router.get('/:communityName', async (req, res, next) => {
+    if(!req.params.communityName) return next(createError.BadRequest())
+    const community = await Community.findOne({name: req.params.communityName})
+    if(!community) return next(createError.BadRequest("community does not exist"))
+    res.send({name: community.name, description:community.description})
 })
 
 module.exports = router

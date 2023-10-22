@@ -1,5 +1,4 @@
 import { useContext, useEffect, useState } from "react";
-import { useLocalization } from "hooks/useLocalization";
 import LocalizationContext from "contexts/LocalizationContext";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { locales } from "helpers/localTable";

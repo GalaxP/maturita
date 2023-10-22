@@ -31,7 +31,7 @@ function App() {
                   <Route path='logout' element={<Logout/> } ></Route>
                   <Route path='edit' element={ <ProtectedRoute><Edit/></ProtectedRoute>} ></Route>
                 </Route>
-                <Route path="submit" element={<Submit/>}></Route>
+                <Route path="submit" element={<ProtectedRoute><Submit/></ProtectedRoute>}></Route>
                 <Route path="community/:community" element={<Community/>}></Route>
                 <Route path="/post/:postId" element={<PostId/>}></Route>
 

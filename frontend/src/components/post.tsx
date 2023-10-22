@@ -128,15 +128,15 @@ const Post = ({props, showLinkToPost, width}: Iprop) => {
     return <>
         <Card className={width_class+" cursor-pointer"} onClick={redirect}>
             <CardHeader className="pb-0">
-                <CardTitle>{props.title}</CardTitle>
                 <CardDescription>
                     <Link to={"/community/"+props.community} className="hover:underline">r/{props.community}</Link> 
                 <span className="dot-separator mx-1"></span>
                     <Link to={"/user/"+props.author.id} className="hover:underline">{props.author.displayName}</Link> 
                 <span className="dot-separator mx-1"></span>
                  {new Date(props.createdAt).toLocaleDateString() + " " + new Date(props.createdAt).toLocaleTimeString()}
-                 </CardDescription>
-                 <div className="flex flex-row content-center space-x-1">
+                </CardDescription>
+                <CardTitle>{props.title}</CardTitle>
+                <div className="flex flex-row content-center space-x-1">
                     <VoteButton type="like" votes={votes.votes_likes} current_vote={votes.user_vote} onClick={vote}/>
                     <VoteButton type="dislike" votes={votes.votes_dislikes} current_vote={votes.user_vote} onClick={vote}/>
                     {showLinkToPost && <Button variant="ghost" className="px-2">
@@ -150,7 +150,7 @@ const Post = ({props, showLinkToPost, width}: Iprop) => {
                     </Button>
                     }
 
-                 </div>
+                </div>
                   
             </CardHeader>
             <CardContent>
