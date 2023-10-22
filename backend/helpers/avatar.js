@@ -22,7 +22,8 @@ const createDefaultAvatar = async(uid) => {
 
     const avatarDb = new Avatar({
         filename: uid+".png",
-        path: process.env.AVATAR_PATH+"/"+uid+".png"
+        path: process.env.AVATAR_PATH+"/"+uid+".png",
+        type: "user"
     });
     
     try {
@@ -32,4 +33,29 @@ const createDefaultAvatar = async(uid) => {
     }
 }
 
-module.exports = createDefaultAvatar
+const createDefaultCommunityAvatar = async(name) => {
+    const createAvatar = await import('@dicebear/core');
+    const identicon = await import('@dicebear/collection');
+
+    const avatar = createAvatar.createAvatar(identicon.identicon, {
+        seed: name,
+        size: 40,
+        scale: 70
+    });
+    await avatar.png().toFile(process.env.COMMUNITY_AVATAR_PATH+"/"+name+".png").catch(()=>{throw new AvatarError("Unknown error occured.")})
+
+    const avatarDb = new Avatar({
+        filename: name+".png",
+        path: process.env.COMMUNITY_AVATAR_PATH+"/"+name+".png",
+        type: "community"
+    });
+    
+    try {
+        await avatarDb.save();
+        return process.env.COMMUNITY_AVATAR_PATH+"/"+name+".png"
+    } catch (error) {
+        throw new AvatarError('Error saving avatar to the database.');
+    }
+}
+
+module.exports = {createDefaultAvatar, createDefaultCommunityAvatar}

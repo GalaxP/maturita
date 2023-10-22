@@ -8,6 +8,8 @@ import { AiOutlineComment, AiOutlineDelete } from "react-icons/ai";
 import { Button } from "../components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
 import { useToast } from "./ui/use-toast";
+import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
+import { GetCommunityAvatar } from "helpers/getAvatar";
 
 declare var grecaptcha:any
 
@@ -96,7 +98,7 @@ const Post = ({props, showLinkToPost, width, showCommunity=true}: Iprop) => {
                             setIsVoting(false)
                         })
                     }
-                }, ()=> {alert("you must be logged in to vote")})
+                }, ()=> {setIsVoting(false);alert("you must be logged in to vote")})
             })
         })
     }
@@ -125,13 +127,17 @@ const Post = ({props, showLinkToPost, width, showCommunity=true}: Iprop) => {
         }
     }, [error])
 
-    var width_class = `${width ? width : "w-11/12 lg:w-[650px] sm:w-11/12"} mx-auto`;
+    var width_class = `${width ? width : "w-11/12 lg:w-[700px] sm:w-11/12"} mx-auto`;
     return <>
         <Card className={width_class+" cursor-pointer"} onClick={redirect}>
             <CardHeader className="pb-0">
-                <CardDescription>
-                    {showCommunity&&
-                    <><Link to={"/community/"+props.community} className="hover:underline">r/{props.community}</Link> 
+                <CardDescription className="flex flex-row text-center align-middle">
+                    {showCommunity&& <><Avatar className="shadow-md cursor-pointer w-[20px] h-[20px] inline-block mr-1">
+                            <AvatarImage src={GetCommunityAvatar(props.community.avatar)} alt="@shadcn" />
+                            <AvatarFallback>AVATAR</AvatarFallback>
+                        </Avatar>
+                        <Link to={"/community/"+props.community.name} className="hover:underline py-auto text-black flex-inline flex-row">
+                    {props.community.name}</Link>
                 <span className="dot-separator mx-1"></span></>}
                     <Link to={"/user/"+props.author.id} className="hover:underline">{props.author.displayName}</Link> 
                 <span className="dot-separator mx-1"></span>

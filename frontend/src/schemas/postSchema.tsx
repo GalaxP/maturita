@@ -21,7 +21,10 @@ export interface PostSchema {
     votes_likes: number
     votes_dislikes: number
     user_vote?: number
-    community: ""
+    community: {
+        name: string,
+        avatar: string
+    }
     comments?: IComment[]
     comment_length?: number
 }

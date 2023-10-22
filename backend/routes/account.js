@@ -62,7 +62,7 @@ router.post('/register', verifyRecaptcha("register"), async function(req, res, n
         return next(createError.Conflict(`username ${result.displayName} has already been registered`));
 
     const uid = v4()
-    await createDefaultAvatar(uid).catch((err)=>{createError.InternalServerError(err.message)})
+    await createDefaultAvatar(uid).catch((err)=>{return next(createError.InternalServerError(err.message))})
 
     const hashedPassword = await HashPassword(result.password)
     const _user = new User(

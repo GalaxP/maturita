@@ -28,6 +28,6 @@ const postSchema = new Schema({
         ref: 'Comment'
     }]
 })
-
+postSchema.index({title: 'text', body: 'text'})
 const Post = mongoose.model("post", postSchema);
 module.exports = Post;

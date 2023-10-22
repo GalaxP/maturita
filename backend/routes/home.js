@@ -4,12 +4,13 @@ const User = require('../schemas/user')
 const { postSchema } = require('../helpers/validation')
 var createError = require("http-errors");
 const Post = require('../schemas/post');
-const { verifyAccessToken } = require('../helpers/jwt');
+const { verifyAccessToken, verifyAccessTokenIfProvided } = require('../helpers/jwt');
 const getPostById = require('../helpers/post')
 const jwt = require('jsonwebtoken');
 const verifyRecaptcha = require('../helpers/recaptcha');
 const createDefaultAvatar = require('../helpers/avatar');
 const Community = require('../schemas/community');
+const pick = require('../helpers/pick');
 
 //const { createAvatar } = require('@dicebear/core');
 //const { identicon } = require('@dicebear/collection');
@@ -123,6 +124,55 @@ router.get('/avatar.png', async function(req, res) {
   res.setHeader('Content-type', 'image/png')
   
   res.send(Buffer.from(avatar_buffer))
+})
+
+router.post('/search', /*verifyRecaptcha('search'),*/ verifyAccessTokenIfProvided, async function(req, res, next) {
+  if(!req.body.query || !req.body.type) return next(createError.BadRequest("No search query was provided"))
+  
+  var result = []
+  switch (req.body.type) {
+    case "community":
+      try {
+      var regexQuery = {
+        name: new RegExp("^"+req.body.query)
+      } } catch(err) {return next(createError.BadRequest())}
+
+      const communities = await Community.find(regexQuery).limit(8)
+      if(communities.length === 0) return res.send({})
+      communities.map((community, index)=>{
+        result[index] = pick(community, "name", "description")
+        result[index].members = community.members.length
+        if(req.payload.authenticated) result[index].isMember = community.members.findIndex((mem)=>mem===req.payload.aud) !== -1
+      })
+
+      return res.send(result)
+      case "post":
+        const posts = await Post.find({$text: {$search: req.body.query}}).limit(8)
+        var returns = [];
+        var index = 0;
+        for(const _post of posts) {
+          const post = await getPostById(_post._id, req.payload.authenticated, req.payload.aud, false)
+          if(!post) continue
+          returns[index] = post
+          index++
+        }
+        return res.send(returns)
+    case "user":
+      try {
+      var regexQuery = {
+        displayName: new RegExp(req.body.query)
+      } } catch(err) {return next(createError.BadRequest())}
+      const users = await User.find(regexQuery).select('uid displayName avatar provider').limit(10)
+      let results = []
+      for (let index = 0; index < users.length; index++) {
+        results[index] = {...users[index]._doc, posts: (await Post.find({author: users[index].uid})).length}
+        
+      }
+
+      return res.send(results)
+    default:
+      return next(createError.BadRequest("No search type was provided"))
+  }
 })
 
 

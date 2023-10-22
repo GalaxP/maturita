@@ -15,6 +15,7 @@ import { Toaster } from "./components/ui/toaster";
 import Submit from "routes/submit";
 import Community from "routes/community";
 import { LocalizationContextProvider } from "contexts/LocalizationContext";
+import { Search } from "routes/search";
 
 function App() {
   return (
@@ -34,6 +35,7 @@ function App() {
                 <Route path="submit" element={<ProtectedRoute><Submit/></ProtectedRoute>}></Route>
                 <Route path="community/:community" element={<Community/>}></Route>
                 <Route path="/post/:postId" element={<PostId/>}></Route>
+                <Route path="/search" element={<Search/>}></Route>
 
                 <Route path='google'>
                   <Route path='callback' element={<Callback/>}></Route>
