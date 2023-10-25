@@ -126,6 +126,8 @@ const Community = () => {
                             </div>
                             </CardContent>
                         </Card>
+                        {posts.length === 0 && error!=="community does not exist" && "there are no posts yet"}
+                        {error==="community does not exist" && <p>Community does not exist</p>}
 
                         {posts.length > 0 &&  error!=="community does not exist" && posts.map((_post)=>{
                             return <Post key={_post._id} props={_post} showLinkToPost={true} showCommunity={false} width="w-full"/>
@@ -169,8 +171,6 @@ const Community = () => {
                     </div>
                 </div>
             </div>
-            {posts.length === 0 && error!=="community does not exist" && "there are no posts yet"}
-            {error==="community does not exist" && <p>Community does not exist</p>}
             </>
         : <div><p>loading...</p></div>);
     

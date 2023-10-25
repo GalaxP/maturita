@@ -25,8 +25,8 @@ const Layout = ({children}: LayoutProps) => {
 
     const navigate = useNavigate();
     return <>
-        <header className="sticky top-0 z-50 w-full border-b px-2">
-            <div className="h-full my-2 flex justify-between">
+        <header className="sticky top-0 z-50 w-full border-b px-2 bg-white">
+            <div className="h-full py-2 flex justify-between">
                 <div className="flex flex-grow mr-2">
                     <Button key="home" variant="ghost" onClick={()=>navigate("/")}>Home
                     </Button>

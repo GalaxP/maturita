@@ -52,7 +52,7 @@ import { HiOutlineUserGroup } from "react-icons/hi";
             Search
         </Button> */}
         <div className="">
-            <Search className="absolute top-[10px] ml-3 h-5 w-5" strokeWidth={1.3}></Search>
+            <Search className="absolute top-[18px] ml-3 h-5 w-5" strokeWidth={1.3}></Search>
             <Input placeholder="Search" className="w-full pl-9" onBlur={()=>setOpen(false)} onMouseDown={()=>setOpen(true)} value={searchQuery} onChange={(e)=>{setSearchQuery(e.target.value)}}/>
         </div>
 
