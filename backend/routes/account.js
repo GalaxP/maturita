@@ -186,6 +186,7 @@ router.post('/google/callback', async (req,res)=> {
             lastName: payload.family_name,
             uid: payload.sub,
             google: payload,
+            avatar: payload.picture,
             displayName: payload.given_name + " " + payload.family_name
         })
 

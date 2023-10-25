@@ -23,7 +23,7 @@ const Home = () => {
     return () => {
       controller.abort()
     }
-  }, []);
+  }, [auth?.isAuthenticated]);
 
   function getAllPosts(controller: AbortController) {
     get_data("/postslist", {/*signal: controller.signal*/}, auth?.isAuthenticated).then((res)=>{

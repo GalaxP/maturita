@@ -6,7 +6,7 @@ import { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { PostSchema } from "schemas/postSchema";
 import { Button } from "../components/ui/button"
-import {  ArrowBigUp, ArrowDownWideNarrowIcon, BadgePlus, Bell, Users } from "lucide-react";
+import {  ArrowBigUp, ArrowDownWideNarrowIcon, BadgePlus, Bell, Shield, Users } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import CreatePost from "components/createPost";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
@@ -18,7 +18,7 @@ const Community = () => {
     const [loaded, setLoaded] = useState(false);
     const [posts, setPosts] = useState<PostSchema[]>([{author:{id:"",displayName:"", avatar:""}, title:"", createdAt: new Date(), body:"", _id:"", community: {name:"", avatar:""}, votes_likes:0, votes_dislikes:0, user_vote:0, comments:[], comment_length :0}]);
     const [error, setError] = useState("");
-    const [communityInfo, setCommunityInfo] = useState({description: "", members: 0, isMember: false, avatar: ""})
+    const [communityInfo, setCommunityInfo] = useState({description: "", members: 0, moderators: [{uid: "", displayName:"", avatar: "", provider: ""}], isMember: false, avatar: ""})
     const [documentTitle, setDocumentTitle] = useDocumentTitle("")
     const [sortBy, setSortBy] = useState<{type:"newest" | "best", timeFrame: "alltime" | "day" | "week" | "month" | "year"}>({type: "newest", timeFrame: "day"})
     const navigate = useNavigate();
@@ -145,7 +145,27 @@ const Community = () => {
                             </div>
                         </CardContent>
                     </Card>
-
+                    <Card className="my-2">
+                        <CardHeader>
+                            <CardTitle>Moderators <Shield className="inline w-6 h-6"/></CardTitle>
+                            <CardDescription>
+                                These are the people that enforce the rules of this community
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            {communityInfo.moderators.map((mod)=>{
+                                return <>
+                                    <div className="flex items-center cursor-pointer hover:underline text-sm" onClick={()=>navigate("/user/"+mod.uid)}>
+                                        <Avatar className="shadow-md inline-block h-7 w-7 mr-1 mt-1">
+                                            <AvatarImage src={GetAvatar({user: mod, provider: mod.provider})} />
+                                            <AvatarFallback>MOD</AvatarFallback>
+                                        </Avatar>
+                                        <span>{mod.displayName}</span>
+                                    </div>
+                                </> 
+                            })}
+                        </CardContent>
+                    </Card>
                     </div>
                 </div>
             </div>

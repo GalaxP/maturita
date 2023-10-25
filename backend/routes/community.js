@@ -8,7 +8,8 @@ const jwt = require('jsonwebtoken')
 const pick = require('../helpers/pick');
 const Post = require('../schemas/post');
 const getPostById = require('../helpers/post');
-const { createDefaultCommunityAvatar } = require('../helpers/avatar')
+const { createDefaultCommunityAvatar } = require('../helpers/avatar');
+const User = require('../schemas/user');
 
 router.post("/create", verifyAccessToken, async (req, res, next)=> {
     var err;
@@ -80,6 +81,10 @@ router.get('/:communityName/posts', verifyAccessTokenIfProvided, async (req, res
     if(!posts) return res.send("No posts yet")
     var returns = []
     var index = 0
+    const moderators = []
+    for (const _mod of community.moderators) {
+        moderators.push(await User.findOne({uid: _mod}).select('uid displayName avatar provider'))
+    }
     for(const _post of posts) {
         const post = await getPostById(_post._id, req.payload.authenticated, req.payload.aud, false)
         if(!post) continue
@@ -87,8 +92,9 @@ router.get('/:communityName/posts', verifyAccessTokenIfProvided, async (req, res
         index++
     }
     if(req.query.sort=== "best") returns.sort((firstItem, secondItem) => secondItem.votes_likes - firstItem.votes_likes)
-    if(req.payload.authenticated) return res.send({community:{description:community.description, members: community.members.length, avatar: community.avatar, isMember: community.members.findIndex((mem)=>mem===req.payload.aud)!==-1},post:returns})
-    res.send({community:{description:community.description, members: community.members.length},post:returns})
+
+    if(req.payload.authenticated) return res.send({community:{description:community.description, members: community.members.length, avatar: community.avatar, moderators: moderators, isMember: community.members.findIndex((mem)=>mem===req.payload.aud)!==-1},post:returns})
+    res.send({community:{description:community.description, avatar: community.avatar, moderators: moderators, members: community.members.length},post:returns})
 })
 
 router.get('/:communityName', verifyAccessTokenIfProvided, async (req, res, next) => {

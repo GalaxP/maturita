@@ -25,15 +25,21 @@ import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover"
 import { Button } from "./ui/button"
 import { useEffect, useState } from "react"
 import { Input } from "./ui/input"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useParams, useSearchParams } from "react-router-dom"
+import { HiOutlineUserGroup } from "react-icons/hi";
+
   
   export function SearchBox() {
     const [open, setOpen] = useState(false)
     const [searchQuery, setSearchQuery] = useState("")
     const navigate = useNavigate()
+    const [searchParams] = useSearchParams();
 
     useEffect(()=>{
       setSearchQuery("")
+      const urlParams = new URLSearchParams(window.location.search);
+      const query = urlParams.get("q")
+      if(query) setSearchQuery(query)
     }, [window.location.href ])
     return (
       <Popover open={open}>
@@ -52,18 +58,18 @@ import { useNavigate } from "react-router-dom"
 
       </PopoverTrigger>
       <PopoverContent className="w-[250px] p-0">
-        <Command className="rounded-lg border shadow-md">
+        <Command>
           <CommandList>
             <CommandEmpty>No results found.</CommandEmpty>
-              <CommandItem onSelect={()=>{navigate('/search?q='+searchQuery+"&t=community")}}>
-                <Calendar className="mr-2 h-4 w-4" />
+              <CommandItem onSelect={()=>{searchQuery.length > 0 && navigate('/search?q='+searchQuery+"&t=community")}}>
+                <HiOutlineUserGroup className="mr-2 h-4 w-4" />
                 <span>Search {searchQuery} in Communities</span>
               </CommandItem>
-              <CommandItem onSelect={()=>{navigate('/search?q='+searchQuery+"&t=post")}}>
+              <CommandItem onSelect={()=>{searchQuery.length > 0 && navigate('/search?q='+searchQuery+"&t=post")}}>
                 <Pencil className="mr-2 h-4 w-4" />
                 <span>Search {searchQuery} in Posts</span>
               </CommandItem>
-              <CommandItem onSelect={()=>{navigate('/search?q='+searchQuery+"&t=user")}}>
+              <CommandItem onSelect={()=>{searchQuery.length > 0 && navigate('/search?q='+searchQuery+"&t=user")}}>
                 <Users className="mr-2 h-4 w-4" />
                 <span>Search {searchQuery} in Users</span>
               </CommandItem>
