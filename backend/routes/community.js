@@ -10,6 +10,8 @@ const Post = require('../schemas/post');
 const getPostById = require('../helpers/post');
 const { createDefaultCommunityAvatar } = require('../helpers/avatar');
 const User = require('../schemas/user');
+const path = require('node:path'); 
+const Avatar = require('../schemas/avatar')
 
 router.post("/create", verifyAccessToken, async (req, res, next)=> {
     var err;
@@ -93,7 +95,7 @@ router.get('/:communityName/posts', verifyAccessTokenIfProvided, async (req, res
     }
     if(req.query.sort=== "best") returns.sort((firstItem, secondItem) => secondItem.votes_likes - firstItem.votes_likes)
 
-    if(req.payload.authenticated) return res.send({community:{description:community.description, members: community.members.length, avatar: community.avatar, moderators: moderators, isMember: community.members.findIndex((mem)=>mem===req.payload.aud)!==-1},post:returns})
+    if(req.payload.authenticated) return res.send({community:{description:community.description, members: community.members.length, avatar: community.avatar, moderators: moderators, isModerator: community.moderators.findIndex((mod)=>mod===req.payload.aud)!==-1, isMember: community.members.findIndex((mem)=>mem===req.payload.aud)!==-1},post:returns})
     res.send({community:{description:community.description, avatar: community.avatar, moderators: moderators, members: community.members.length},post:returns})
 })
 
@@ -137,6 +139,61 @@ router.post('/:communityName/leave', verifyAccessToken, async (req, res, next) =
     catch{
         return next(createError.InternalServerError())
     }
+})
+
+
+const multer = require('multer');
+const storage = multer.diskStorage({
+  destination: function(req, file, callback) {
+    callback(null, process.env.COMMUNITY_AVATAR_PATH);
+  },
+  filename: function (req, file, callback) {
+    callback(null, req.name+path.extname(file.originalname));
+  }
+});
+const upload = multer({storage: storage, fileFilter: function (req, file, callback) {
+    var ext = path.extname(file.originalname).toLowerCase();
+    if(ext !== '.png' && ext !== '.jpg' && ext !== '.gif' && ext !== '.jpeg') {
+        return callback('Only images are allowed')
+    }
+    callback(null, true)
+}, limits: {fileSize: 1024*1024}}).single('avatar')
+
+
+router.post('/:communityName/change-avatar', verifyAccessToken, async(req, res, next)=> {
+    if(!req.params.communityName) return next(createError.BadRequest())
+    const community = await Community.findOne({name: req.params.communityName})
+    if(!community) return next(createError.BadRequest("community does not exist"))
+    req.name = req.params.communityName
+    if(community.moderators.findIndex(x=>x===req.payload.aud) === -1) return next(createError.Forbidden("you are not a moderator of this community")) //check whether the user has permission to change the avatar
+    
+    upload(req, res, async function (err) {
+        if (err instanceof multer.MulterError) {
+            if(err.code==='LIMIT_FILE_SIZE') return res.status(400).send("File must be under 1Mb")
+            
+            else {console.log(err);return res.status(400).send('unknown error')}
+        } else if (err) {
+            return res.status(400).send(err)
+        }
+
+        if(!req.file) return res.status(400).send("No file was sent")
+        const avatar = new Avatar({
+            filename: req.file.filename,
+            path: req.file.path,
+            type: "community"
+        });
+        
+        community.avatar = "/avatars/community/"+req.file.filename
+
+        try {
+            await avatar.save();
+            await community.save();
+            res.status(200).send('Image uploaded and saved successfully');
+        } catch (error) {
+            res.status(500).send('Error saving image to the database');
+        }
+    })
+
 })
 
 module.exports = router

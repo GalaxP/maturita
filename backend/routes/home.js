@@ -140,7 +140,7 @@ router.post('/search', /*verifyRecaptcha('search'),*/ verifyAccessTokenIfProvide
       const communities = await Community.find(regexQuery).limit(8)
       if(communities.length === 0) return res.send({})
       communities.map((community, index)=>{
-        result[index] = pick(community, "name", "description")
+        result[index] = pick(community, "name", "description", "avatar")
         result[index].members = community.members.length
         if(req.payload.authenticated) result[index].isMember = community.members.findIndex((mem)=>mem===req.payload.aud) !== -1
       })

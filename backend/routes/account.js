@@ -220,7 +220,8 @@ router.post ('/upload', jwt.verifyAccessToken, (req, res) => {
         if(!req.file) return res.status(400).send("No file was sent")
         const avatar = new Avatar({
             filename: req.file.filename,
-            path: req.file.path
+            path: req.file.path,
+            type: "user"
         });
         
         try {
