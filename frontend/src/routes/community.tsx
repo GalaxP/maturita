@@ -18,7 +18,7 @@ const Community = () => {
     const [loaded, setLoaded] = useState(false);
     const [posts, setPosts] = useState<PostSchema[]>([{author:{id:"",displayName:"", avatar:""}, title:"", createdAt: new Date(), body:"", _id:"", community: {name:"", avatar:""}, votes_likes:0, votes_dislikes:0, user_vote:0, comments:[], comment_length :0}]);
     const [error, setError] = useState("");
-    const [communityInfo, setCommunityInfo] = useState({description: "", members: 0, moderators: [{uid: "", displayName:"", avatar: "", provider: ""}], isMember: false, avatar: ""})
+    const [communityInfo, setCommunityInfo] = useState({description: "", members: 0, moderators: [{uid: "", displayName:"", avatar: "", provider: ""}], isModerator:false, isMember: false, avatar: ""})
     const [documentTitle, setDocumentTitle] = useDocumentTitle("")
     const [sortBy, setSortBy] = useState<{type:"newest" | "best", timeFrame: "alltime" | "day" | "week" | "month" | "year"}>({type: "newest", timeFrame: "day"})
     const navigate = useNavigate();
