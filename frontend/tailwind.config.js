@@ -2,6 +2,11 @@
 module.exports = {
   darkMode: ["class"],
   content: ["app/**/*.{ts,tsx}", "components/**/*.{ts,tsx}", "./**{ts,tsx}", "./src/**/*.{js,jsx,ts,tsx}",],
+  variants: {
+    extend: {
+      display: ["group-hover"]
+    }
+  },
   theme: {
     container: {
       center: true,

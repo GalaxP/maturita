@@ -12,7 +12,7 @@ import {
 } from "../../components/ui/form"
 import { Input } from "../../components/ui/input"
 import { useForm } from "react-hook-form"
-import { Loader2 } from "lucide-react"
+import { ChevronDown, ChevronsDown, Loader2 } from "lucide-react"
 import { Textarea } from "../ui/textarea"
 
 import {
@@ -40,6 +40,8 @@ import { PlusCircledIcon } from "@radix-ui/react-icons"
 import { DialogTrigger, Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "../../components/ui/dialog"
 import { Label } from "../../components/ui/label"
 import { useNavigate } from "react-router-dom"
+import { Avatar, AvatarFallback, AvatarImage } from "../../components/ui/avatar"
+import GetAvatar, { GetCommunityAvatar } from "helpers/getAvatar"
 
 const formSchema = z.object({
   community: z.string(),
@@ -64,6 +66,8 @@ export function SubmitForm({handleSubmit, isLoading}: props) {
   const [communities, setCommunities] = useState({communities: [{
     value: "general",
     label: "General",
+    avatar: process.env.REACT_APP_API_URL + "/community/general.png",
+    members: 0
   },], isEmpty : false})
 
 
@@ -77,11 +81,11 @@ export function SubmitForm({handleSubmit, isLoading}: props) {
     })
   }
   
-  type FuncType = (...args: any[]) => any;
+  type FuncType = (...args: any) => any;
   function debounce(func: FuncType, delay: number) {
     let timeoutId: NodeJS.Timeout;
 
-    return function debounced(...args: any[]) {
+    return function debounced(...args: any) {
       const later = () => {
         func(args);
       };
@@ -103,14 +107,16 @@ export function SubmitForm({handleSubmit, isLoading}: props) {
   const debouncedCA = debounce(checkAvailability, 500);
 
   const searchCommunities = (query: string) => {
-    if(!query) return setCommunities({communities: [{value: "", label: ""}], isEmpty: true})
+    query = query[0]
+    if(!query) return setCommunities({communities: [{value: "", label: "", avatar: "", members:0}], isEmpty: true})
+    
     post_data("/community/search", {query: query}, {}, true)
     .then((res)=> {
-      if(res.data.length === undefined || res.data.length === 0) return setCommunities({communities: [{value: "", label: ""}], isEmpty: true})
-      setCommunities({communities: [{value: "", label: ""}], isEmpty: true})
-      var communities_temp = [{value:"", label:""}]
+      if(res.data.length === undefined || res.data.length === 0) return setCommunities({communities: [{value: "", label: "", avatar: "", members:0}], isEmpty: true})
+      setCommunities({communities: [{value: "", label: "", avatar: "", members:0}], isEmpty: true})
+      var communities_temp = [{value:"", label:"", avatar: "", members:0}]
       res.data.map((community:any, index:number)=> {
-        communities_temp[index] = {value: community.name, label: community.name}
+        communities_temp[index] = {value: community.name, label: community.name, avatar: community.avatar, members: community.members}
       })
       setCommunities({communities: communities_temp, isEmpty: false})      
     })
@@ -146,19 +152,25 @@ export function SubmitForm({handleSubmit, isLoading}: props) {
                         <Button
                           variant="outline"
                           role="combobox"
-                          className="w-[200px] justify-between"
+                          className="max-w-[300px] justify-normal"
                           >
                           {field.value
                             ? //communities.find((communities) => communities.value === field.value)?.label
-                            field.value
-                            : "Select communities"}
-                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                            <>
+                            <Avatar className="h-6 w-6 mr-1">
+                            <AvatarImage src={GetCommunityAvatar(communities.communities.find(x=>x.value===field.value)?.avatar ?? "")} alt="@shadcn" />
+                            <AvatarFallback>NA</AvatarFallback>
+                          </Avatar>
+
+                            <span className="mr-auto">{field.value}</span></>
+                            : <span className="mr-auto">Select communities</span>}
+                          <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
-                    <PopoverContent className="w-[200px] p-0">
-                      <Command>
-                        <CommandInput placeholder="Search communities..." onValueChange={(e)=>{debounced(e)}}/>
+                    <PopoverContent className="max-w-[310px] p-0">
+                      <Command className="max-w-[310px]">
+                        <CommandInput className="max-w-[310px]" placeholder="Search communities..." onValueChange={(e)=>{debounced(e)}}/>
                         <CommandEmpty>No communities found.</CommandEmpty>
                         <CommandGroup heading="Others">
                           {!communities.isEmpty &&
@@ -171,13 +183,14 @@ export function SubmitForm({handleSubmit, isLoading}: props) {
                                 setOpen(false)
                               }}
                             >
-                              <Check
-                                className={cn(
-                                  "mr-2 h-4 w-4",
-                                  community.value === field.value ? "opacity-100" : "opacity-0"
-                                )}
-                              />
-                              {community.label}
+                              <Avatar className="h-6 w-6 mr-1">
+                                <AvatarImage src={GetCommunityAvatar(community.avatar)} alt="@shadcn" />
+                                <AvatarFallback>NA</AvatarFallback>
+                              </Avatar>
+                              <span className="text-black font-semibold">{community.label}</span>
+                              <span className="dot-separator mx-1"></span>
+                              {community.members} members
+                              <Check className={cn("ml-auto h-4 w-4", community.value === field.value ? "opacity-100" : "opacity-0")}/>
                             </CommandItem>
                           ))
                                 }

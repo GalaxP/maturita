@@ -41,7 +41,8 @@ router.post("/create", verifyAccessToken, async (req, res, next)=> {
 })
 
 router.post("/search", verifyAccessTokenIfProvided, async (req, res, next)=> {
-    if(!req.body.query) return next(createError.BadRequest("No search query was provided"))
+    console.log(req.body.query)
+    if(!req.body.query || req.body.query==="" || req.body.query[0] === "") return next(createError.BadRequest("No search query was provided"))
     var regexQuery = {
         name: new RegExp("^"+req.body.query)
     }
@@ -50,6 +51,7 @@ router.post("/search", verifyAccessTokenIfProvided, async (req, res, next)=> {
     var communities_result = []
     communities.map((community, index)=>{
         communities_result[index] = pick(community, "name", "avatar")
+        communities_result[index].members = community.members.length
         if(req.payload.authenticated) communities_result[index].isMember = community.members.findIndex((mem)=>mem===req.payload.aud) !== -1
     })
     res.send(communities_result);

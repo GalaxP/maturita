@@ -49,3 +49,8 @@
  .dot-separator::after { 
   content: '•'
  }
+
+ .avatar-edit:hover + #avatar_pencil {
+  position:absolute;
+  display:block
+ }

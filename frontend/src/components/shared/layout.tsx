@@ -11,6 +11,7 @@ import { Input } from "../ui/input";
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import { Search } from "lucide-react";
 import { SearchBox } from "components/searchBox";
+import { CookieConsent } from "components/cookieConsent";
 type LayoutProps = {
     children: React.ReactNode
 }
@@ -59,6 +60,7 @@ const Layout = ({children}: LayoutProps) => {
             {children}
         </div> */}
         {children}
+        <CookieConsent/>
     </>
 }
 

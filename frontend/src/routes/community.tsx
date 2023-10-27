@@ -6,7 +6,7 @@ import { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { PostSchema } from "schemas/postSchema";
 import { Button } from "../components/ui/button"
-import {  ArrowBigUp, ArrowDownWideNarrowIcon, BadgePlus, Bell, Shield, Users } from "lucide-react";
+import {  ArrowBigUp, ArrowDownWideNarrowIcon, BadgePlus, Bell, Pencil, Shield, Users } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import CreatePost from "components/createPost";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
@@ -77,10 +77,16 @@ const Community = () => {
             <div className="px-0 w-full bg-slate-50 p-4" > 
                 <div className="w-11/12 lg:max-w-[975px] m:w-11/12 sm:w-11/12 mx-auto">
                     <div className="flex text-center">
-                        <Avatar className="shadow-md">
-                            <AvatarImage src={GetCommunityAvatar(communityInfo.avatar)} />
-                            <AvatarFallback>CN</AvatarFallback>
-                        </Avatar>
+                        <div className="avatar-edit">
+
+                            <Avatar className={"avatar-edit shadow-md "+(communityInfo.isModerator && "cursor-pointer")}>
+                                <AvatarImage className="avatar-edit" src={GetCommunityAvatar(communityInfo.avatar)} />
+                                <AvatarFallback>CN</AvatarFallback>
+                            </Avatar>
+                        </div>
+                        {communityInfo.isModerator && <div id="avatar_pencil" className={"hidden cursor-pointer rounded-full z-10 w-[40px] h-[40px] bg-[rgba(0,0,0,.5)]"}>
+                            <Pencil strokeWidth={1.5} color="white" className={"ml-2 my-2 z-10 w-[25px] h-[25px]"} ></Pencil>
+                        </div>}
                         <h2 className="mb-0 scroll-m-20 text-3xl font-semibold tracking-tight first:mt-0 inline-block ml-2">{community_name}</h2>
                         <Button variant={"outline"} className="rounded-full w-20 ml-2 my-auto" onClick={handleJoinButton}>
                             {communityInfo.isMember ? "Leave" : "Join"}
