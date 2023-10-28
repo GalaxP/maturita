@@ -52,7 +52,6 @@ const Register = () => {
                     })
             })
         })
-        console.log(values)
     }
 
     return <div className="m-0 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">

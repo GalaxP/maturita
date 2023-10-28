@@ -3,21 +3,19 @@ import { Button } from "../components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "../components/ui/card"
 import { Link } from "react-router-dom"
 import { useEffect, useState } from "react"
-import Cookies from 'universal-cookie';
 
 export const CookieConsent = () => {
-    const cookies = new Cookies();
     const [loaded, setLoaded] = useState(false)
     const [consent, setConsent] = useState(false)
 
     useEffect(()=>{
         setLoaded(false)
-        if(cookies.get("consent")) setConsent(true)
+        if(localStorage.getItem("consent")=== "true") setConsent(true)
         setLoaded(true)
     })
 
     const giveConsent = () => {
-        cookies.set("consent", true, {maxAge: 60 * 60* 24 * 365})
+        localStorage.setItem("consent", "true")
         setConsent(true)
     }
     return loaded && !consent ? <div className="fixed block bottom-0 right-0 p-4 max-w-[550px]">
