@@ -8,10 +8,11 @@ import { post_data } from "helpers/api"
 import { useToast } from "./ui/use-toast"
 
 
-export const ChangeAvatar = ({children, community_name}: {children: React.ReactNode, community_name: string} ) => {
+export const ChangeAvatar = ({children, community_name, changeAvatar}: {children: React.ReactNode, community_name: string, changeAvatar: (arg0: string)=>void} ) => {
     const [error, setError] = useState("")
     const [inputFile, setInputFile] = useState<File>();
     const [imageSrc, setImageSrc] = useState<string | ArrayBuffer | null | undefined>('');
+    //const [croppedImage, setCroppedImage] = useState<string | ArrayBuffer | null | undefined>('');
 
     const [size, setSize] = useState(0)
 
@@ -26,6 +27,7 @@ export const ChangeAvatar = ({children, community_name}: {children: React.ReactN
 
     const [isDragging, setIsDragging] = useState(false);
 
+    const [open, setOpen] = useState(false)
     const { toast } = useToast()
 
     useEffect(()=>{
@@ -57,7 +59,7 @@ export const ChangeAvatar = ({children, community_name}: {children: React.ReactN
             image.onload = function (imageEvent) {
                 // Resize the image
                 var canvas = document.createElement('canvas'),
-                    max_size = 544,// TODO : pull max size from a site config
+                    max_size = 458,// TODO : pull max size from a site config
                     width = image.width,
                     height = image.height;
                 if (width > height) {
@@ -163,22 +165,12 @@ export const ChangeAvatar = ({children, community_name}: {children: React.ReactN
       for (var i = 0; i < byteString.length; i++) {
           ia[i] = byteString.charCodeAt(i);
       }
-  
-      //Old Code
-      //write the ArrayBuffer to a blob, and you're done
-      //var bb = new BlobBuilder();
-      //bb.append(ab);
-      //return bb.getBlob(mimeString);
-  
-      //New Code
       return new Blob([ab], {type: mimeString});
-  
-  
   }
 
     const submit = () => {
       let reader = new FileReader();
-      if(!inputFile) return
+      if(!imageSrc || !inputFile) return
 
       reader.onload = function (readerEvent) {
         var image = new Image();
@@ -195,15 +187,21 @@ export const ChangeAvatar = ({children, community_name}: {children: React.ReactN
           //console.log(dataUrl);
           var avatarBlob = dataURItoBlob(dataUrl);
           var avatar = new File([avatarBlob], inputFile.name, {type: inputFile.type});
+          //setCroppedImage(dataUrl);
+          //console.log(avatar);
           let data = new FormData()
           data.append("avatar", avatar)
 
+          
           post_data("/community/"+community_name+"/change-avatar", data, {}, true)
           .then((res)=> {
             toast({
               variant: "default",
               title: "Successfully saved changes",
             })
+            if(!res.data.avatar) window.location.reload();
+            changeAvatar(res.data.avatar);
+            setOpen(false)
           })
           .catch(()=>{
             toast({
@@ -215,12 +213,12 @@ export const ChangeAvatar = ({children, community_name}: {children: React.ReactN
         }
         if(typeof(readerEvent.target?.result)==="string") image.src = readerEvent.target?.result;
       }
-      reader.readAsDataURL(inputFile);
+      reader.readAsDataURL(dataURItoBlob(imageSrc as string));
       
       
     }
 
-    return <Dialog onOpenChange={reset}>
+    return <Dialog open={open} onOpenChange={()=>{reset(); setOpen(o=>!o)}}>
     <DialogTrigger asChild>{children}</DialogTrigger>
     <DialogContent>
       <DialogHeader>
@@ -259,6 +257,7 @@ export const ChangeAvatar = ({children, community_name}: {children: React.ReactN
             <Button variant={"secondary"} className="mr-2" onClick={reset}>Cancel</Button>
             <Button variant={"default"} onClick={submit}>Submit</Button>
         </div>
+        {/* <img id="test" src={croppedImage as string}/> */}
       </>
       }
 

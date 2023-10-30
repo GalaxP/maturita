@@ -190,7 +190,7 @@ router.post('/:communityName/change-avatar', verifyAccessToken, async(req, res, 
         try {
             await avatar.save();
             await community.save();
-            res.status(200).send('Image uploaded and saved successfully');
+            res.send({msg: 'Image uploaded and saved successfully', avatar: "/avatars/community/"+req.file.filename});
         } catch (error) {
             res.status(500).send('Error saving image to the database');
         }

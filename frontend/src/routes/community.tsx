@@ -26,6 +26,7 @@ const Community = () => {
     const { toast } = useToast()
     const [sortToggle, setSortToggle] = useState(false)
 
+
     const auth = useContext(AuthContext)
     useEffect(()=>{
         setSortToggle(false)
@@ -71,6 +72,11 @@ const Community = () => {
         }, ()=>navigate('/account/login'))
     }
 
+    const changeAvatar = (avatar:string) => {
+        setCommunityInfo({...communityInfo, avatar: avatar})
+        window.location.reload()
+    }
+
     const handleNotiButton = () => {
         alert('notied')
         console.log(GetCommunityAvatar(communityInfo.avatar))
@@ -78,25 +84,32 @@ const Community = () => {
     return ( loaded ? <> 
             <div className="px-0 w-full bg-slate-50 p-4" > 
                 <div className="w-11/12 lg:max-w-[975px] m:w-11/12 sm:w-11/12 mx-auto">
-                    <div className="flex text-center">
+                    <div className="flex flex-row text-center">
                         <div className="peer">
-                            <Avatar className={" shadow-md "+(communityInfo.isModerator && "cursor-pointer")}>
+                            <Avatar className={"w-16 h-16 shadow-md "+(communityInfo.isModerator && "cursor-pointer")}>
                                 <AvatarImage className="" src={GetCommunityAvatar(communityInfo.avatar)} />
                                 <AvatarFallback>CN</AvatarFallback>
                             </Avatar>
                         </div>
-                        {communityInfo.isModerator && <ChangeAvatar community_name={community_name || ""}><div id="avatar_pencil" className={"peer-hover:visible block hover:visible invisible absolute cursor-pointer rounded-full z-10 w-[40px] h-[40px] bg-[rgba(0,0,0,.5)]"}>
-                            <Pencil strokeWidth={1.5} color="white" className={"ml-2 my-2 z-10 w-[25px] h-[25px]"} ></Pencil>
-                        </div></ChangeAvatar>}
-                        <h2 className="mb-0 scroll-m-20 text-3xl font-semibold tracking-tight first:mt-0 inline-block ml-2">{community_name}</h2>
-                        <Button variant={"outline"} className="rounded-full w-20 ml-2 my-auto" onClick={handleJoinButton}>
-                            {communityInfo.isMember ? "Leave" : "Join"}
-                        </Button>
-                        <Button variant={"outline"} className="rounded-full ml-2 p-2" onClick={handleNotiButton}>
-                            <Bell size={22} strokeWidth={1.5}></Bell>
-                        </Button>
+                        {communityInfo.isModerator && 
+                        <ChangeAvatar changeAvatar={changeAvatar} community_name={community_name || ""}>
+                            <div id="avatar_pencil" className={"peer-hover:visible block hover:visible invisible mr-6 absolute cursor-pointer rounded-full z-10 w-16 h-16 bg-[rgba(0,0,0,.5)]"}>
+                                <Pencil strokeWidth={1.5} color="white" className={"ml-3.5 my-3.5 z-10 w-9 h-9"} ></Pencil>
+                            </div>
+                        </ChangeAvatar>}
+                        <div className="flex flex-col ml-3">
+                            <div className="flex flex-row items-top">
+                                <h2 className="mb-0 scroll-m-20 text-3xl font-semibold tracking-tight first:mt-0 inline-block">{community_name}</h2>
+                                <Button variant={"outline"} className="rounded-full w-20 ml-2" onClick={handleJoinButton}>
+                                    {communityInfo.isMember ? "Leave" : "Join"}
+                                </Button>
+                                <Button variant={"outline"} className="rounded-full ml-2 p-2" onClick={handleNotiButton}>
+                                    <Bell size={22} strokeWidth={1.5}></Bell>
+                                </Button>
+                            </div>
+                            <p className="">{communityInfo && communityInfo.description}</p>
+                        </div>
                     </div>
-                    <p>{communityInfo && communityInfo.description}</p>
                     
                 </div>
             </div>
