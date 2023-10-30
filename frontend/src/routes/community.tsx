@@ -6,7 +6,7 @@ import { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { PostSchema } from "schemas/postSchema";
 import { Button } from "../components/ui/button"
-import {  ArrowBigUp, ArrowDownWideNarrowIcon, BadgePlus, Bell, Pencil, Shield, Users } from "lucide-react";
+import { ArrowBigUp, ArrowDownWideNarrowIcon, BadgePlus, Bell, Pencil, Shield, Users } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import CreatePost from "components/createPost";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
@@ -85,7 +85,7 @@ const Community = () => {
                                 <AvatarFallback>CN</AvatarFallback>
                             </Avatar>
                         </div>
-                        {communityInfo.isModerator && <ChangeAvatar><div id="avatar_pencil" className={"peer-hover:visible block hover:visible invisible absolute cursor-pointer rounded-full z-10 w-[40px] h-[40px] bg-[rgba(0,0,0,.5)]"}>
+                        {communityInfo.isModerator && <ChangeAvatar community_name={community_name || ""}><div id="avatar_pencil" className={"peer-hover:visible block hover:visible invisible absolute cursor-pointer rounded-full z-10 w-[40px] h-[40px] bg-[rgba(0,0,0,.5)]"}>
                             <Pencil strokeWidth={1.5} color="white" className={"ml-2 my-2 z-10 w-[25px] h-[25px]"} ></Pencil>
                         </div></ChangeAvatar>}
                         <h2 className="mb-0 scroll-m-20 text-3xl font-semibold tracking-tight first:mt-0 inline-block ml-2">{community_name}</h2>
