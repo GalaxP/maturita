@@ -107,7 +107,7 @@ const Community = () => {
                                     <Bell size={22} strokeWidth={1.5}></Bell>
                                 </Button>
                             </div>
-                            <p className="">{communityInfo && communityInfo.description}</p>
+                            <p className="text-left">{communityInfo && communityInfo.description}</p>
                         </div>
                     </div>
                     

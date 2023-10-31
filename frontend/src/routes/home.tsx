@@ -2,11 +2,15 @@ import { useContext, useEffect, useState } from "react";
 import { post_data, get_data } from "../helpers/api"
 import { Post } from "../components/post"
 import { PostSchema } from "../schemas/postSchema";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import AuthContext from "../contexts/AuthContext";
 import { useDocumentTitle } from "hooks/setDocuemntTitle";
 import CreatePost from "../components/createPost"
 import GetAvatar from "helpers/getAvatar";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
+import { Button } from "../components/ui/button";
+import { Dialog, DialogDescription, DialogHeader, DialogTitle, DialogContent, DialogTrigger} from "../components/ui/dialog";
+import { CreateCommunityForm } from "components/forms/createCommunityForm";
 
 const Home = () => {
   const [loaded, setLoaded] = useState(false);
@@ -32,18 +36,67 @@ const Home = () => {
     }).catch((err)=>{setError(err);console.log(err); setLoaded(true);})
   }
 
+  const createCommunity = (values: {description: string, name: string}) => {
+    post_data("/community/create", {name: values.name, description: values.description}, {}, true)
+    .then(()=>{
+      navigate("/community/" + values.name)
+    })
+    .catch((err)=>{
+      alert('something went wrong')
+    })
+  }
   
   const posts_obj = [];
   for (let i = 0; i < posts.length; i++) {
-    posts_obj.push(<li key={posts[i]._id} className="w-11/12 lg:w-[700px] sm:w-11/12"><Post key={posts[i]._id} showLinkToPost={true} width="w-full" props={posts[i]}/> </li>);
+    posts_obj.push(<li key={posts[i]._id} className="w-full"><Post key={posts[i]._id} showLinkToPost={true} width="w-full" props={posts[i]}/> </li>);
   }
   return (loaded ? 
   <div className="mt-6">
-    
-    <ul className="flex flex-col space-y-2 justify-center items-center w-full">
-      <li key={"submit"} className="w-11/12 lg:w-[700px] sm:w-11/12">{auth?.isAuthenticated && <CreatePost/>}</li>
-      {posts_obj}
-    </ul>
+    <div className="flex flex-row w-full justify-center"> 
+      <ul className="w-11/12 lg:w-[650px] sm:w-11/12 space-y-2">
+        <li key={"submit"} className="w-full">{auth?.isAuthenticated && <CreatePost/>}</li>
+        {posts_obj}
+      </ul>
+      <div className="w-[300px] hidden sm:hidden md:hidden lg:block ml-6 space-y-2">
+        <Card>
+            <CardHeader>
+                <CardTitle>Home</CardTitle>
+                <CardDescription>
+                    This is your front page
+                </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div>
+                <Button className="w-full mb-2" variant={"outline"} onClick={()=>navigate("/submit")}>Create A Post</Button>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button className="w-full" variant={"outline"}>Create A Community</Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Create a new community</DialogTitle>
+                      <DialogDescription>
+                        Create a place for people with similiar interest.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <CreateCommunityForm handleSubmit={(e)=>createCommunity(e)} isLoading={false}/>
+                  </DialogContent>
+                </Dialog>
+              </div>
+            </CardContent>
+        </Card>
+        <Card className="sticky top-16">
+          <CardHeader><CardTitle>Useful links</CardTitle></CardHeader>
+          <CardContent className="mt-2">
+            <div className="flex flex-col">
+            <Link to="/contact">Contact Us</Link>
+            <Link to="/contact">Privacy Policy</Link>
+            <Link to="/contact">Terms of service</Link>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
   </div>
   : <div><p>loading...</p></div>);
 }

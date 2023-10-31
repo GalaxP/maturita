@@ -12,6 +12,7 @@ import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import { Search } from "lucide-react";
 import { SearchBox } from "components/searchBox";
 import { CookieConsent } from "components/cookieConsent";
+import { UserNav } from "components/userNav";
 type LayoutProps = {
     children: React.ReactNode
 }
@@ -41,13 +42,16 @@ const Layout = ({children}: LayoutProps) => {
                     <div>
                         <LocaleSwitcher key={crypto.randomUUID()}/>
                     </div>
-                    <Button key="user" variant="ghost" className="" onClick={()=>navigate(auth?.isAuthenticated ? "/account/logout" : "/account/login")}>
-                        {auth?.isAuthenticated &&<Avatar className="shadow-md cursor-pointer mr-2">
+                    {/*<Button key="user" variant="ghost" className="" onClick={()=>navigate(auth?.isAuthenticated ? "/account/logout" : "/account/login")}>
+                        auth?.isAuthenticated &&<Avatar className="shadow-md cursor-pointer mr-2">
                             <AvatarImage src={GetAvatar(auth?.getUser())} alt="@shadcn" />
                             <AvatarFallback>AVATAR</AvatarFallback>
-                        </Avatar> }
-                            {auth?.isAuthenticated ? auth?.getUser().user.displayName :  localeContext.localize("LOGIN") }
-                    </Button>
+                        </Avatar> </Button>*/}
+                    <div className="flex items-center mx-2">
+                        {auth?.isAuthenticated ? <UserNav displayName={auth?.getUser().user.displayName} email={auth?.getUser().user.email} avatar={GetAvatar(auth?.getUser())} />: <Button variant={"ghost"} onClick={()=>navigate("/account/login")}>Login</Button>}
+                    </div>
+                            {/*auth?.isAuthenticated ? auth?.getUser().user.displayName :  localeContext.localize("LOGIN") */}
+                    
                     
                 </div>
             </div>
