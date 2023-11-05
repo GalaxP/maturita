@@ -16,6 +16,7 @@ import { LocalizationContextProvider } from "contexts/LocalizationContext";
 import { Search } from "routes/search";
 import { Suspense } from "react";
 import { lazyLoad } from "routes/lazyLoad";
+import { Security } from "routes/account/security";
 
 const Register = lazyLoad("routes/account/register")
 const PostId = lazyLoad("components/postId", "PostId")
@@ -34,6 +35,7 @@ function App() {
                     <Route path='login' element={<Login/> }></Route>
                     <Route path='logout' element={<Logout/> } ></Route>
                     <Route path='edit' element={ <ProtectedRoute><Edit/></ProtectedRoute>} ></Route>
+                    <Route path='security' element={ <ProtectedRoute><Security/></ProtectedRoute>} ></Route>
                   </Route>
                   <Route path="submit" element={<ProtectedRoute><Submit/></ProtectedRoute>}></Route>
                   <Route path="community/:community" element={<Community/>}></Route>

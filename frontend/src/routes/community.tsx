@@ -92,7 +92,7 @@ const Community = () => {
                             </Avatar>
                         </div>
                         {communityInfo.isModerator && 
-                        <ChangeAvatar changeAvatar={changeAvatar} community_name={community_name || ""}>
+                        <ChangeAvatar type="community" changeAvatar={changeAvatar} community_name={community_name || ""}>
                             <div id="avatar_pencil" className={"peer-hover:visible block hover:visible invisible mr-6 absolute cursor-pointer rounded-full z-10 w-16 h-16 bg-[rgba(0,0,0,.5)]"}>
                                 <Pencil strokeWidth={1.5} color="white" className={"ml-3.5 my-3.5 z-10 w-9 h-9"} ></Pencil>
                             </div>

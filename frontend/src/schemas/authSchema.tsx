@@ -10,6 +10,7 @@ export type AuthContextProviderProps = {
 
 export type AuthContextType = {
     getUser: any
+    setUserForcefully: (user: any) => void
     isAuthenticated: boolean
     /*accessToken: string
     refresh_token: () => Promise<any>*/

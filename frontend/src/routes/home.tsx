@@ -54,7 +54,7 @@ const Home = () => {
   <div className="mt-6">
     <div className="flex flex-row w-full justify-center"> 
       <ul className="w-11/12 lg:w-[650px] sm:w-11/12 space-y-2">
-        <li key={"submit"} className="w-full">{auth?.isAuthenticated && <CreatePost/>}</li>
+        {auth?.isAuthenticated &&<li key={"submit"} className="w-full"> <CreatePost/></li>}
         {posts_obj}
       </ul>
       <div className="w-[300px] hidden sm:hidden md:hidden lg:block ml-6 space-y-2">

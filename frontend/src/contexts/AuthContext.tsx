@@ -141,8 +141,19 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
         return null;
     }
 
+    const setUserForcefully = (user: any) => {
+        cookies.set('account', JSON.stringify(user), { 
+            path:"/",
+            sameSite: "strict",
+            httpOnly: false,
+            secure: true,
+            maxAge: 30*24*60*60
+        })
+        setUser(user);
+    }
+
     return (  
-        <AuthContext.Provider value={{ getUser, isAuthenticated, protectedAction, login, googleLogin, logout }}>
+        <AuthContext.Provider value={{ getUser, setUserForcefully, isAuthenticated, protectedAction, login, googleLogin, logout }}>
             {children}
         </AuthContext.Provider>
     );

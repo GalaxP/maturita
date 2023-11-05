@@ -1,15 +1,23 @@
 import { AccountForm } from "components/forms/accountForm";
 import { post_data } from "../../helpers/api"
-import { useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { FieldErrors } from "react-hook-form";
 import { useToast } from "../../components/ui/use-toast"
-import { Button } from "../../components/ui/button";
 import { LoginForm } from "components/forms/loginForm";
 import { Separator } from "../../components/ui/separator";
+import { SettingsLayout } from "components/shared/settingsLayout";
+import { ProfileSettingsForm } from "components/forms/ProfileSettingsForm";
+import AuthContext from "contexts/AuthContext";
+import { ChangeAvatar } from "components/changeAvatar";
+import { Button } from "components/ui/button";
+import { Avatar, AvatarImage, AvatarFallback } from "components/ui/avatar";
+import GetAvatar from "helpers/getAvatar";
+import { Pencil } from "lucide-react";
 
 const Edit = () => {
     const [error, setError] = useState({field: "", message: ""})
     const { toast } = useToast()
+    const auth = useContext(AuthContext)
 
     useEffect(()=>{
 
@@ -35,38 +43,31 @@ const Edit = () => {
             })
         }
     }
-   
+    
+    const changeAvatar = (avatar: string) => {
+        auth?.setUserForcefully({...auth?.getUser(), user: {...auth?.getUser().user, avatar: avatar}})
+    }
     
     return <>
         {/* <AccountForm handleSubmit={(v)=>onSubmit(v)} isLoading={false} setError={error}/> */}
-        <div className="p-10 h-full">
-            <div className="flex flex-row justify-stretch">
-                
-                <nav className="flex flex-col w-64">
-                    <Button className="justify-start bg-muted" variant={"ghost"}>
-                        Profile
-                    </Button>
-                    <Button className="justify-start hover:bg-transparent hover:underline" variant={"ghost"}>
-                        Account
-                    </Button>
-                    <Button className="justify-start hover:bg-transparent hover:underline" variant={"ghost"}>
-                        Security
-                    </Button>
-                </nav>
-                <div className="w-1/2 p-6 pt-0 flex flex-col items-start">
-                    <div className="mb-2 w-full">
-                        <h2 className="scroll-m-20 pb-2 text-3xl font-semibold tracking-tight first:mt-0">
-                            Profile Settings
-                        </h2>
-                        <p className="text-sm text-muted-foreground">This is where you can change your profile settings.</p>
-                        <Separator className="my-3"/>
+        <SettingsLayout page={"Profile"}>
+            <>
+                <ChangeAvatar type="user" changeAvatar={(a)=>{changeAvatar(a)}}>
+                    <div>  
+                        <div className="peer w-20">
+                            <Avatar className="w-20 h-20 mb-2">
+                                <AvatarImage src={GetAvatar(auth?.getUser())}></AvatarImage>
+                                <AvatarFallback>AVT</AvatarFallback>
+                            </Avatar>
+                        </div>
+                        <div id="avatar_pencil" className={"peer-hover:visible block hover:visible invisible absolute cursor-pointer rounded-full z-10 w-20 h-20 mt-[-5.5rem] bg-[rgba(0,0,0,.5)]"}>
+                            <Pencil strokeWidth={1.5} color="white" className={"ml-4 my-4 z-10 w-12 h-12"} ></Pencil>
+                        </div>
                     </div>
-                    <div className="w-full flex flex-col">
-                        <LoginForm googleSignIn={()=>{}} handleSubmit={()=>{}} isLoading={false} />
-                    </div>
-                </div>
-            </div>
-        </div>
+                </ChangeAvatar>
+                <ProfileSettingsForm originalDisplayName={auth?.getUser().user.displayName} originalEmail={auth?.getUser().user.email} handleSubmit={()=>{}} isLoading={false} />
+            </>
+        </SettingsLayout>
     </>
 }
 export default Edit

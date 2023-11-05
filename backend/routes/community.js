@@ -179,19 +179,28 @@ router.post('/:communityName/change-avatar', verifyAccessToken, async(req, res, 
         }
 
         if(!req.file) return res.status(400).send("No file was sent")
-        const avatar = new Avatar({
-            filename: req.file.filename,
-            path: req.file.path,
-            type: "community"
-        });
+
+        let oldAvatar = await Avatar.findOne({type:"community", filename: {$regex: req.name}})
+        let avatar;
+        if(oldAvatar) {
+            oldAvatar.filename = req.file.filename,
+            oldAvatar.path = req.file.path
+        } else {
+            avatar = new Avatar({
+                filename: req.file.filename,
+                path: req.file.path,
+                type: "community"
+            });
+        }
         
         community.avatar = "/avatars/community/"+req.file.filename
 
         try {
-            await avatar.save();
-            await community.save();
+            if(oldAvatar) await oldAvatar.save(); else await avatar.save();;
+            await community.save()
             res.send({msg: 'Image uploaded and saved successfully', avatar: "/avatars/community/"+req.file.filename});
         } catch (error) {
+            console.log(error)
             res.status(500).send('Error saving image to the database');
         }
     })

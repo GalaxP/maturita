@@ -8,7 +8,7 @@ import { post_data } from "helpers/api"
 import { useToast } from "./ui/use-toast"
 
 
-export const ChangeAvatar = ({children, community_name, changeAvatar}: {children: React.ReactNode, community_name: string, changeAvatar: (arg0: string)=>void} ) => {
+export const ChangeAvatar = ({children, type, community_name, changeAvatar}: {children: React.ReactNode, type:"community" | "user", community_name?: string, changeAvatar: (arg0: string)=>void} ) => {
     const [error, setError] = useState("")
     const [inputFile, setInputFile] = useState<File>();
     const [imageSrc, setImageSrc] = useState<string | ArrayBuffer | null | undefined>('');
@@ -49,11 +49,6 @@ export const ChangeAvatar = ({children, community_name, changeAvatar}: {children
         if(!avatar) return
         let reader = new FileReader();
 
-        /*
-        reader.onload = (e) => {
-            setImageSrc(e.target?.result);
-        };*/
-        //var reader = new FileReader();
         reader.onload = function (readerEvent) {
             var image = new Image();
             image.onload = function (imageEvent) {
@@ -78,7 +73,6 @@ export const ChangeAvatar = ({children, community_name, changeAvatar}: {children
 
                 canvas.getContext('2d')?.drawImage(image, 0, 0, width, height);
                 var dataUrl = canvas.toDataURL(inputFile?.type);
-                //console.log(dataUrl);
                 setImageSrc(dataUrl)
             }
             if(typeof(readerEvent.target?.result)==="string") image.src = readerEvent.target?.result;
@@ -128,7 +122,7 @@ export const ChangeAvatar = ({children, community_name, changeAvatar}: {children
         if (isDragging) {
           const newX = widthShift + e.movementX;
           const newY = heightShift + e.movementY;
-          //setPosition({ x: newX, y: newY });
+
           const maxX = ((initialWidth-size)/2)
           const maxY = ((initialHeight-size)/2)
           
@@ -168,63 +162,61 @@ export const ChangeAvatar = ({children, community_name, changeAvatar}: {children
       return new Blob([ab], {type: mimeString});
   }
 
-    const submit = () => {
-      let reader = new FileReader();
-      if(!imageSrc || !inputFile) return
+  const submit = () => {
+    let reader = new FileReader();
+    if(!imageSrc || !inputFile) return
 
-      reader.onload = function (readerEvent) {
-        var image = new Image();
-        image.onload = function (imageEvent) {
-          
-          // Resize the image
-          var canvas = document.createElement('canvas')
+    reader.onload = function (readerEvent) {
+      var image = new Image();
+      image.onload = function (imageEvent) {
+        
+        // Resize the image
+        var canvas = document.createElement('canvas')
 
-          canvas.width = size;
-          canvas.height = size;
+        canvas.width = size;
+        canvas.height = size;
 
-          canvas.getContext('2d')?.drawImage(image, widthShift+((initialWidth-size)/2), heightShift+((initialHeight-size)/2), size, size, 0, 0, size, size);
-          var dataUrl = canvas.toDataURL(inputFile?.type);
-          //console.log(dataUrl);
-          var avatarBlob = dataURItoBlob(dataUrl);
-          var avatar = new File([avatarBlob], inputFile.name, {type: inputFile.type});
-          //setCroppedImage(dataUrl);
-          //console.log(avatar);
-          let data = new FormData()
-          data.append("avatar", avatar)
+        canvas.getContext('2d')?.drawImage(image, widthShift+((initialWidth-size)/2), heightShift+((initialHeight-size)/2), size, size, 0, 0, size, size);
+        var dataUrl = canvas.toDataURL(inputFile?.type);
+        //console.log(dataUrl);
+        var avatarBlob = dataURItoBlob(dataUrl);
+        var avatar = new File([avatarBlob], inputFile.name, {type: inputFile.type});
+        //setCroppedImage(dataUrl);
+        //console.log(avatar);
+        let data = new FormData()
+        data.append("avatar", avatar)
 
-          
-          post_data("/community/"+community_name+"/change-avatar", data, {}, true)
-          .then((res)=> {
-            toast({
-              variant: "default",
-              title: "Successfully saved changes",
-            })
-            if(!res.data.avatar) window.location.reload();
-            changeAvatar(res.data.avatar);
-            setOpen(false)
+        let url = type === "community" ? "/community/"+community_name+"/change-avatar" : "/account/upload"
+        post_data(url, data, {}, true)
+        .then((res)=> {
+          toast({
+            variant: "default",
+            title: "Successfully saved changes",
           })
-          .catch(()=>{
-            toast({
-              variant: "destructive",
-              title: "Uh oh! Something went wrong.",
-              description: "There was a problem with your request.",
-            })
+          changeAvatar(res.data.avatar);
+          setOpen(false)
+          //if(!res.data.avatar) window.location.reload();
+        })
+        .catch(()=>{
+          toast({
+            variant: "destructive",
+            title: "Uh oh! Something went wrong.",
+            description: "There was a problem with your request.",
           })
-        }
-        if(typeof(readerEvent.target?.result)==="string") image.src = readerEvent.target?.result;
+        })
       }
-      reader.readAsDataURL(dataURItoBlob(imageSrc as string));
-      
-      
+      if(typeof(readerEvent.target?.result)==="string") image.src = readerEvent.target?.result;
     }
+    reader.readAsDataURL(dataURItoBlob(imageSrc as string));
+  }
 
     return <Dialog open={open} onOpenChange={()=>{reset(); setOpen(o=>!o)}}>
     <DialogTrigger asChild>{children}</DialogTrigger>
     <DialogContent>
       <DialogHeader>
-        <DialogTitle>Change Community Avatar</DialogTitle>
+        <DialogTitle>Change {type === "community" ? "Community" : "User"} Avatar</DialogTitle>
         <DialogDescription>
-          Upload a photo that will be used as the avatar for the community
+          Upload a photo that will be used as the avatar for {type === "community" ? "the community" : "your profile"}
         </DialogDescription>
       </DialogHeader>
       <Input id="avatar-input" accept=".png,.jpg,.jpeg" type="file" className="hidden" onChange={(e:any)=>handleImageSubmit(e.currentTarget.files)}></Input>

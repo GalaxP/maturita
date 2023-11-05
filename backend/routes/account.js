@@ -32,7 +32,6 @@ const storage = multer.diskStorage({
     callback(null, process.env.AVATAR_PATH);
   },
   filename: function (req, file, callback) {
-    console.log(req.payload.aud)
     callback(null, req.payload.aud+path.extname(file.originalname));
   }
 });
@@ -208,7 +207,10 @@ router.post('/google/callback', async (req,res)=> {
     res.redirect(process.env.CLIENT_DOMAIN + "google/callback?user=" + encodeURIComponent(user_json) + "&token="+accessToken)
 })
 
-router.post ('/upload', jwt.verifyAccessToken, (req, res) => {
+router.post ('/upload', jwt.verifyAccessToken, async (req, res) => {
+    const user = await User.findOne({uid:req.payload.aud});
+    if(!user) return next(createError.BadRequest('User not found'))
+    
     upload(req, res, async function (err) {
         if (err instanceof multer.MulterError) {
             if(err.code==='LIMIT_FILE_SIZE') return res.status(400).send("File must be under 1Mb")
@@ -217,18 +219,31 @@ router.post ('/upload', jwt.verifyAccessToken, (req, res) => {
             return res.status(400).send(err)
         }
 
+
         if(!req.file) return res.status(400).send("No file was sent")
-        const avatar = new Avatar({
-            filename: req.file.filename,
-            path: req.file.path,
-            type: "user"
-        });
+        let oldAvatar = await Avatar.findOne({filename:{$regex: req.payload.aud}, type: "user"})
+        let avatar = new Avatar();
+        if(oldAvatar) {
+            oldAvatar.filename = req.file.filename,
+            oldAvatar.path = req.file.path,
+            oldAvatar.type = "user" 
+        } else {
+            avatar = new Avatar({
+                filename: req.file.filename,
+                path: req.file.path,
+                type: "user"
+            });
+        }
+
+        user.avatar = "/avatars/"+req.file.filename
         
         try {
-            await avatar.save();
-            res.status(200).send('Image uploaded and saved successfully');
+            if(oldAvatar) await oldAvatar.save(); else await avatar.save();
+            await user.save();
+            res.send({msg: 'Image uploaded and saved successfully', avatar: "/avatars/"+req.file.filename});
         } catch (error) {
             res.status(500).send('Error saving image to the database');
+            console.log(error)
         }
     })
     // You can perform additional operations with the uploaded image here.

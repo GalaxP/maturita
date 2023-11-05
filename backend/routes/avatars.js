@@ -7,7 +7,7 @@ const path = require('path');
 router.get("/:avatar", async function(req, res, next) {
     const avatar = req.params.avatar;
     if(!avatar) return next(createError.BadRequest())
-    const avatarPath = await Avatar.findOne({filename: avatar})
+    const avatarPath = await Avatar.findOne({filename: avatar, type: "user"})
     if(!avatarPath) return next(createError.BadRequest("Avatar does not exist"))
 
     const options = {
@@ -24,7 +24,7 @@ router.get("/:avatar", async function(req, res, next) {
 router.get("/community/:name", async function(req, res, next) {
     const name = req.params.name;
     if(!name) return next(createError.BadRequest())
-    const avatarPath = await Avatar.findOne({filename: name})
+    const avatarPath = await Avatar.findOne({filename: name, type: "community"})
     if(!avatarPath) return next(createError.BadRequest("Avatar does not exist"))
 
     const options = {
