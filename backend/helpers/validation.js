@@ -30,9 +30,19 @@ const createCommunitySchema = Joi.object({
     description: Joi.string().required(),
 })
 
+const contactSchema = Joi.object({
+    firstName: Joi.string().required(),
+    lastName: Joi.string().required(),
+    title: Joi.string().required(),
+    body: Joi.string().required(),
+    email: Joi.string().email().required(),
+    token: Joi.string()
+})
+
 module.exports = {
     postSchema,
     userSchema,
     postActionSchema,
-    createCommunitySchema
+    createCommunitySchema,
+    contactSchema
 }

@@ -7,7 +7,7 @@ import AuthContext from "contexts/AuthContext";
 import { useContext, useState } from "react";
 
 
-const CreatePost = () => {
+const CreatePost = ({defaultCommunity}: {defaultCommunity?: string}) => {
     const navigate = useNavigate()
     const auth = useContext(AuthContext)
 
@@ -19,7 +19,7 @@ const CreatePost = () => {
                         <AvatarImage src={GetAvatar(auth?.getUser())} alt="@shadcn" />
                         <AvatarFallback>CN</AvatarFallback>
                     </Avatar>
-                    <Input readOnly placeholder="Create A Post" onClick={()=>navigate("/submit")}/>
+                    <Input readOnly placeholder="Create A Post" onClick={()=>{ defaultCommunity ? navigate("/submit?comm="+defaultCommunity) : navigate("/submit")}}/>
                 </div>
             </CardContent>
         </Card>

@@ -41,7 +41,6 @@ router.post("/create", verifyAccessToken, async (req, res, next)=> {
 })
 
 router.post("/search", verifyAccessTokenIfProvided, async (req, res, next)=> {
-    console.log(req.body.query)
     if(!req.body.query || req.body.query==="" || req.body.query[0] === "") return next(createError.BadRequest("No search query was provided"))
     var regexQuery = {
         name: new RegExp("^"+req.body.query)

@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const User = require('../schemas/user')
-const { postSchema } = require('../helpers/validation')
+const { postSchema, contactSchema } = require('../helpers/validation')
 var createError = require("http-errors");
 const Post = require('../schemas/post');
 const { verifyAccessToken, verifyAccessTokenIfProvided } = require('../helpers/jwt');
@@ -11,6 +11,7 @@ const verifyRecaptcha = require('../helpers/recaptcha');
 const createDefaultAvatar = require('../helpers/avatar');
 const Community = require('../schemas/community');
 const pick = require('../helpers/pick');
+const Contact = require('../schemas/contact');
 
 //const { createAvatar } = require('@dicebear/core');
 //const { identicon } = require('@dicebear/collection');
@@ -175,5 +176,29 @@ router.post('/search', /*verifyRecaptcha('search'),*/ verifyAccessTokenIfProvide
   }
 })
 
+router.post('/contact', verifyRecaptcha("contact"), async (req, res, next) => {
+  const result = await contactSchema.validateAsync(req.body).catch((err)=>{
+    return next(createError.BadRequest(err.message))
+  })
+  if(!result) return;
+  const userAgent = req.headers['user-agent'];
+  const remoteIP = req.ip
 
+  const contact = new Contact({
+    firstName: result.firstName,
+    lastName: result.lastName,
+    body: result.body,
+    email: result.email,
+    title: result.title,
+    remoteIP: remoteIP,
+    userAgent: userAgent
+  })
+
+  await contact.save().then(()=> {
+    return res.send("success")
+  })
+  .catch((err)=> { 
+    return next(createError.InternalServerError())
+  })
+})
 module.exports = router;

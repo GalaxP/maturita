@@ -20,6 +20,8 @@ import { Security } from "routes/account/security";
 
 const Register = lazyLoad("routes/account/register")
 const PostId = lazyLoad("components/postId", "PostId")
+const Contact = lazyLoad("routes/contact", "Contact")
+
 function App() {
   return (
     <>
@@ -41,6 +43,7 @@ function App() {
                   <Route path="community/:community" element={<Community/>}></Route>
                   <Route path="/post/:postId" element={<PostId/>}></Route>
                   <Route path="/search" element={<Search/>}></Route>
+                  <Route path="/contact" element={<Contact/>}></Route>
 
                   <Route path='google'>
                     <Route path='callback' element={<Callback/>}></Route>

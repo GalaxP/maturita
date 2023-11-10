@@ -50,12 +50,13 @@ const formSchema = z.object({
 })
 interface props {
     handleSubmit: (values: z.infer<typeof formSchema>) => void,
-    isLoading : boolean
+    isLoading : boolean,
+    defaultCommunity?: string
 }
 
 
 
-export function SubmitForm({handleSubmit, isLoading}: props) {
+export function SubmitForm({handleSubmit, isLoading, defaultCommunity}: props) {
   const navigate = useNavigate()
   const [openDialog, setOpenDialog] = useState(false)
   const [open, setOpen] = useState(false)
@@ -70,7 +71,23 @@ export function SubmitForm({handleSubmit, isLoading}: props) {
     members: 0
   },], isEmpty : false})
 
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema)
+  })
 
+  useEffect(()=>{
+    if(defaultCommunity) {
+      post_data("/community/search", {query: defaultCommunity}, {}, true)
+      .then((res)=> {
+        if(res.data.length > 0 && res.data[0].name === defaultCommunity) {
+          setCommunities({communities: [{value: defaultCommunity, label: res.data[0].name, avatar: res.data[0].avatar, members: res.data[0].members}], isEmpty: false})
+          form.setValue("community", defaultCommunity);
+        }
+      })
+      .catch(()=>{})
+      
+    }
+  }, [])
   const createCommunity = () => {
     post_data("/community/create", {name: communityName, description: communityDescription}, {}, true)
     .then(()=>{
@@ -123,10 +140,7 @@ export function SubmitForm({handleSubmit, isLoading}: props) {
   }
   const debounced = debounce(searchCommunities, 500);
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema)
-  })
-
+ 
   function onSubmit(values: z.infer<typeof formSchema>) {
     handleSubmit(values)
   }
@@ -144,7 +158,7 @@ export function SubmitForm({handleSubmit, isLoading}: props) {
             name="community"
             render={({field})=> (
               <FormItem className="flex flex-col">
-                <FormLabel>Community</FormLabel>
+                <FormLabel className="mb-1">Community</FormLabel>
                 <Dialog open={showNewTeamDialog} onOpenChange={setShowNewTeamDialog}>
                   <Popover open={open} onOpenChange={setOpen}>
                     <PopoverTrigger asChild>

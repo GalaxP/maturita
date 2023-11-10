@@ -118,7 +118,7 @@ const Community = () => {
                     
                     <div className="w-11/12 lg:w-[650px] sm:w-11/12 space-y-2">
 
-                        {auth?.isAuthenticated && <div className="w-full"><CreatePost/></div>}
+                        {auth?.isAuthenticated && <div className="w-full"><CreatePost defaultCommunity={community_name}/></div>}
                         <Card className={"mx-auto pt-6"}>
                         <CardContent>
                             <div className="flex flex-row items-center space-x-2">
