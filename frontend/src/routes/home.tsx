@@ -67,10 +67,10 @@ const Home = () => {
             </CardHeader>
             <CardContent>
               <div>
-                <Button className="w-full mb-2" variant={"outline"} onClick={()=>navigate("/submit")}>Create A Post</Button>
+                <Button className="w-full mb-2" variant={"round"} onClick={()=>navigate("/submit")}>Create A Post</Button>
                 <Dialog>
                   <DialogTrigger asChild>
-                    <Button className="w-full" variant={"outline"}>Create A Community</Button>
+                    <Button className="w-full" variant={"round_outline"}>Create A Community</Button>
                   </DialogTrigger>
                   <DialogContent>
                     <DialogHeader>
