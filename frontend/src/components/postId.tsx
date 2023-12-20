@@ -11,6 +11,7 @@ import Comment from "../components/comment"
 import { Skeleton } from "../components/ui/skeleton";
 import { useDocumentTitle } from "../hooks/setDocuemntTitle"
 import LocalizationContext from "contexts/LocalizationContext";
+import InteractiveTextArea from "./interactiveTextArea";
 
 declare var grecaptcha:any
 
@@ -54,7 +55,14 @@ const PostId = () => {
                     toast({
                         description: "Your comment has been sent.",
                     })
-                    setSubmitted(true)
+                    //setSubmitted(true)
+                    setComment('');
+                    post.comments?.unshift({author: {avatar:authContext?.getUser().user.avatar, displayName: authContext?.getUser().user.displayName, id:authContext?.getUser().user.uid}, body:comment, comments: [], createdAt: new Date(), id: res.data, votes_dislikes:0, votes_likes: 0})
+                    console.log(post.comments);
+                    setPost(post);
+                    
+                    //post.comments?.push({author:{avatar:authContext?.getUser().user.avatar, displayName: authContext?.getUser().user.displayName, id:authContext?.getUser().user.uid}, body:comment, comments: [], createdAt: new Date(), id: "3", votes_dislikes:0, votes_likes: 0})
+                    console.log(authContext?.getUser())
                 })
                 .catch((err)=> {
                     toast({
@@ -106,8 +114,7 @@ const PostId = () => {
     <div className="mt-6">
         <Post props={post}/>
         <div className="w-11/12 lg:w-[700px] sm:w-11/12 mx-auto mt-5" >
-            <Textarea className="w-full inline max-w-full" value={comment} onChange={e => setComment(e.target.value)} placeholder={authContext?.isAuthenticated ? "Type your comment here." : "You need to log in to comment."} disabled={!authContext?.isAuthenticated}/>
-            {authContext?.isAuthenticated && <Button className="w-20 ml-auto" onClick={submitComment}>Comment</Button> }
+            <InteractiveTextArea buttonText="Comment" comment={comment} isAuthenticated={authContext?.isAuthenticated} setComment={(e)=>setComment(e)} submitComment={submitComment} placeholder="Type your comment here." key={id}/>
             <div className="text-lg font-semibold my-2">{post.comment_length} {post.comment_length !== 1 ? localizeContext.localize("COMMENT_COUNT_P") : localizeContext.localize("COMMENT_COUNT_S")}</div>
             {comments}
         </div>

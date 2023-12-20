@@ -54,3 +54,10 @@
   position:absolute;
   display:block
  }
+
+.rounded-md-t-0 {
+  border-radius: 0px 0px calc(var(--radius) - 2px) calc(var(--radius) - 2px);
+}
+.rounded-md-b-0 {
+  border-radius: calc(var(--radius) - 2px) calc(var(--radius) - 2px) 0px 0px;
+}

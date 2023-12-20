@@ -9,6 +9,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { post_data } from "helpers/api";
 import { useToast } from "./ui/use-toast";
 import { AiOutlineDelete } from "react-icons/ai";
+import InteractiveTextArea from "./interactiveTextArea";
 
 declare var grecaptcha:any
 
@@ -36,6 +37,7 @@ const Comment = (comment: IComment) => {
     const auth = useContext(AuthContext);
     const navigate = useNavigate();
     const { toast } = useToast()
+    const [reply, setReply] = useState("")
     
     const vote = (dir: number) => {
         if(!auth?.isAuthenticated) return navigate("/account/login")
@@ -102,7 +104,7 @@ const Comment = (comment: IComment) => {
                     Reply
                 </Button>
             </div>
-            {showReply && <Reply submitReply={(e)=>comment.onReply(comment._id, e)}/>}
+            {showReply && <InteractiveTextArea buttonText="Reply" comment={reply} isAuthenticated={auth?.isAuthenticated} setComment={(e) => setReply(e)} submitComment={()=>comment.onReply(comment._id, reply)} placeholder="Type your reply here." />}
         </div>
     </div>
         

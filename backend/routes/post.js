@@ -74,7 +74,7 @@ router.post('/:postId/comment', verifyAccessToken, verifyRecaptcha("comment"), a
     post.comments.push(_comment)
     await post.save().catch((err)=>{console.log(err);return next(createError.InternalServerError())});
 
-    res.send("success")
+    res.send(_comment._id)
 })
 
 router.post('/:postId/comment/:commentId', verifyAccessToken, verifyRecaptcha("reply"), async (req, res, next)=> {
