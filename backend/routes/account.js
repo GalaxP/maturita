@@ -106,7 +106,7 @@ router.post('/login', verifyRecaptcha("login"), async function(req, res, next) {
         res.cookie("refreshToken", refreshToken, {httpOnly:true, sameSite:"lax", maxAge: 30 * 24 * 60 * 60 * 1000}) //30days
         res.send({
             message: "success",
-            user: pick(user, "email", "uid", "avatar", "displayName"),
+            user: pick(user, "email", "uid", "avatar", "displayName", "roles"),
             provider: "local",
             accessToken: accessToken
         })
@@ -141,7 +141,7 @@ router.post("/logout", async function (req, res, next) {
         if (!refreshToken) throw createError.BadRequest();
         const token = await jwt.verifyRefreshToken(refreshToken);
         Token.deleteMany({ uid: token.aud }).catch((err) => {
-          console.log(err);
+          //console.log(err);
           throw createError.InternalServerError();
         });
         res.clearCookie("refreshToken")

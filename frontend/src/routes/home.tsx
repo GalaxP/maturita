@@ -11,6 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../co
 import { Button } from "../components/ui/button";
 import { Dialog, DialogDescription, DialogHeader, DialogTitle, DialogContent, DialogTrigger} from "../components/ui/dialog";
 import { CreateCommunityForm } from "components/forms/createCommunityForm";
+import HomeSkeleton from "../components/skeleton/home";
 
 const Home = () => {
   const [loaded, setLoaded] = useState(false);
@@ -98,7 +99,7 @@ const Home = () => {
       </div>
     </div>
   </div>
-  : <div><p>loading...</p></div>);
+  : <HomeSkeleton/>);
 }
 
 export default Home;

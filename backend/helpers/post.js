@@ -53,7 +53,14 @@ const getPostById = async (postId, authorized, userId, getComments) => {
             commentsLength += await getAmountOfComments(comment._id) //note: not very optimized since this runs twice if you want to load all comments
         }
         result.comment_length = commentsLength
+
+        comments.sort((a, b) => {
+            return b.votes_likes - a.votes_likes;
+        })
+    
         if(getComments) result.comments = comments
+        
+
         if(userVote===""|| !userVote) return {...result, votes_likes: votes_likes.length, votes_dislikes: votes_dislikes.length, user_vote: null}
         return {...result, votes_likes: votes_likes.length, votes_dislikes: votes_dislikes.length, user_vote: userVote.direction}
     } catch (err) {
@@ -87,7 +94,6 @@ const getAllComments = async (commentId, authorized, userId) => {
         
         comments[comments.length] = result
     }
-    //console.log(comments)
     return comments
 }
 

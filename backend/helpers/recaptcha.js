@@ -10,7 +10,7 @@ const verifyRecaptcha = (action) => {
         axios.post("https://www.google.com/recaptcha/api/siteverify", requestBody, {headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
         .then((res)=>{
             var result = res.data
-            if(result.success !== true || result.score <= 0.5) return next(createError.BadRequest("failed captcha"))
+            if(result.success !== true || result.score <= 0.5) { console.log(result.score); return next(createError.BadRequest("failed captcha")) }
             if(result.action !== action) {return next(createError.BadRequest("captcha action is incorrect"));}
             next()
         })

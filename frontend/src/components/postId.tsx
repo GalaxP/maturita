@@ -58,11 +58,7 @@ const PostId = () => {
                     //setSubmitted(true)
                     setComment('');
                     post.comments?.unshift({author: {avatar:authContext?.getUser().user.avatar, displayName: authContext?.getUser().user.displayName, id:authContext?.getUser().user.uid}, body:comment, comments: [], createdAt: new Date(), id: res.data, votes_dislikes:0, votes_likes: 0})
-                    console.log(post.comments);
                     setPost(post);
-                    
-                    //post.comments?.push({author:{avatar:authContext?.getUser().user.avatar, displayName: authContext?.getUser().user.displayName, id:authContext?.getUser().user.uid}, body:comment, comments: [], createdAt: new Date(), id: "3", votes_dislikes:0, votes_likes: 0})
-                    console.log(authContext?.getUser())
                 })
                 .catch((err)=> {
                     toast({
@@ -107,7 +103,7 @@ const PostId = () => {
     }
     
     return <>
-    {isLoading ? <div className=" mt-12 flex justify-center items-center space-x-4 w-full flex-col space-y-2">
+    {isLoading ? <div className="mt-12 flex justify-center items-center space-x-4 w-full flex-col space-y-2">
         <Skeleton className="h-40 w-3/5" />
         <Skeleton className="mx-0 h-10 w-3/5 " />
     </div> : <>

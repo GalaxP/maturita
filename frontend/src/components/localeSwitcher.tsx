@@ -26,7 +26,7 @@ const LocaleSwitcher = () => {
         }
         </>
     })}
-    <div key="languages" className={"bg-white absolute shadow-md w-24" + (localeToggle ? " block" : " hidden")}>
+    <div key="languages" className={"bg-white absolute shadow-md w-[105px]" + (localeToggle ? " block" : " hidden")}>
         {locales.map((lang)=>{
             return <>
             {lang.name !== locale.getLocale() &&<Button key={lang.name} variant="ghost" className="pr-1 block w-full text-left" onClick={()=>{localeContext.setLocaleCookie(lang.name); setReRender(true)}}>

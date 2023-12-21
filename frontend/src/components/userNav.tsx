@@ -15,9 +15,12 @@ import {
     DropdownMenuShortcut,
     DropdownMenuTrigger,
   } from "./ui/dropdown-menu"
+import { useContext } from "react";
+import AuthContext from "contexts/AuthContext";
 
 export function UserNav({avatar, displayName, email}: {avatar: string, displayName: string, email: string}) {
     const navigate = useNavigate();
+    const auth = useContext(AuthContext)
 
     return (
       <DropdownMenu>
@@ -25,7 +28,7 @@ export function UserNav({avatar, displayName, email}: {avatar: string, displayNa
           <Button variant="ghost" className="relative h-8 w-8 rounded-full">
             <Avatar className="h-8 w-8 py-auto">
               <AvatarImage src={avatar} />
-              <AvatarFallback>AT</AvatarFallback>
+              <AvatarFallback>NO AVATAR</AvatarFallback>
             </Avatar>
           </Button>
         </DropdownMenuTrigger>
@@ -43,11 +46,19 @@ export function UserNav({avatar, displayName, email}: {avatar: string, displayNa
             <DropdownMenuItem>  
               <Link to="/account/edit" className="w-full">
                 Profile
-                </Link>
+              </Link>
             </DropdownMenuItem>
             <DropdownMenuItem>
               Settings
             </DropdownMenuItem>
+            
+            {
+              auth?.getUser().user.roles && auth?.getUser().user.roles.includes('admin') &&
+              <DropdownMenuItem>  
+              <Link to="/admin" className="w-full">
+                Admin Panel
+              </Link>
+            </DropdownMenuItem>}
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuItem>
