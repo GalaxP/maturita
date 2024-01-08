@@ -26,6 +26,7 @@ const PostId = () => {
     const comments:any = []
     const [submitted, setSubmitted] = useState(false)
     const localizeContext = useContext(LocalizationContext)
+    const [error, setError] = useState(false)
 
     useEffect(()=> {
         setIsLoading(true)
@@ -35,16 +36,20 @@ const PostId = () => {
             setPost(res.data)
             setDocumentTitle(res.data.title)
             setIsLoading(false)
+            setError(false)
         })
         .catch((err)=> {
             if(err.name !== "CanceledError") {
-                if(err.response.status === 429)
+                //if(err.response.status === 429)
                 setIsLoading(false)
+                setError(true)
+                console.log(error)
             }
         })
         
         return () => {
             setIsLoading(false)
+            //setError(false)
         }
     },[id, submitted])
     const submitComment = () => {
@@ -103,19 +108,19 @@ const PostId = () => {
     }
     
     return <>
-    {isLoading ? <div className="mt-12 flex justify-center items-center space-x-4 w-full flex-col space-y-2">
+    {isLoading ? <div className="mt-12 flex justify-center items-center w-full flex-col space-y-2">
         <Skeleton className="h-40 w-3/5" />
-        <Skeleton className="mx-0 h-10 w-3/5 " />
-    </div> : <>
+        <Skeleton className="mx-0 h-10 w-3/5 ml-0" />
+    </div> : error===false ?
     <div className="mt-6">
-        <Post props={post}/>
+        <Post props={post} showLinkToPost={false}/>
         <div className="w-11/12 lg:w-[700px] sm:w-11/12 mx-auto mt-5" >
             <InteractiveTextArea buttonText="Comment" comment={comment} isAuthenticated={authContext?.isAuthenticated} setComment={(e)=>setComment(e)} submitComment={submitComment} placeholder="Type your comment here." key={id}/>
             <div className="text-lg font-semibold my-2">{post.comment_length} {post.comment_length !== 1 ? localizeContext.localize("COMMENT_COUNT_P") : localizeContext.localize("COMMENT_COUNT_S")}</div>
             {comments}
         </div>
     </div>
-    </>
+    : <p>404</p>
     
     }
     </>

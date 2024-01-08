@@ -4,7 +4,6 @@ import { Skeleton } from "../ui/skeleton"
 const HomeSkeleton = () => {
     const n:number = Math.round(window.innerHeight/180);
     useEffect(()=>{
-        console.log(n)
     })
     return <>
         <div className="mt-6">

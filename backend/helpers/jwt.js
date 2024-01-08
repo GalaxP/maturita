@@ -4,6 +4,7 @@ const tokenModel = require('../schemas/token.js')
 var createError = require("http-errors");
 const queue = require('async/queue.js');
 const User = require('../schemas/user.js');
+const { IsUserBanned } = require('./account.js');
 
 var q = queue(async function (task, callback) {
     try {
@@ -38,13 +39,15 @@ const signAccessToken = (userId, provider) => {
 }
 
 const signRefreshToken = (userId, provider) => {
-    return new Promise((resolve, reject)=>{
+    return new Promise(async(resolve, reject)=>{
         const options = {
             expiresIn: "30d",
             issuer: "odporuc.sk",
             audience: userId,
         };
-        
+        const banned = await IsUserBanned(userId)
+        if(banned) return reject(createError.Unauthorized())
+
         jwt.sign({provider: provider}, process.env.REFRESH_TOKEN_SECRET, options, async (err, token) => {
             if(err) 
                 return reject(createError.InternalServerError());

@@ -73,7 +73,8 @@ router.post('/register', verifyRecaptcha("register"), async function(req, res, n
         displayName: result.displayName,
         password: hashedPassword,
         avatar: "/avatars/"+uid+".png",
-        uid: uid
+        uid: uid,
+        banned: false
     })
 
     _user.save().then(() => {
@@ -95,7 +96,7 @@ router.post('/login', verifyRecaptcha("login"), async function(req, res, next) {
         return next(createError(400));
     }
     
-    const user = await User.findOne({email: body.email})
+    const user = await User.findOne({email: body.email, banned: false})
     if(user === null)
         return next(createError.Unauthorized("Invalid Credentials"))
 
@@ -120,9 +121,9 @@ router.post("/refresh-token"/*, rateLimiterUsingThirdParty*/, async function (re
     try {
         const refreshToken = req.cookies.refreshToken;
         if (!refreshToken) throw createError.BadRequest();
-        const token = await jwt.verifyRefreshToken(refreshToken);
+        const token = await jwt.verifyRefreshToken(refreshToken).catch((err)=>{res.clearCookie("refreshToken");res.clearCookie("account");throw err});
         const accessToken = await jwt.signAccessToken(token.aud, token.provider);
-        const refreshToken_ = await jwt.signRefreshToken(token.aud, token.provider).catch((err)=>{next(createError.InternalServerError())});
+        const refreshToken_ = await jwt.signRefreshToken(token.aud, token.provider).catch((err)=>{res.clearCookie("refreshToken");res.clearCookie("account");return next(res.redirect(process.env.CLIENT_DOMAIN))});
         res.cookie("refreshToken", refreshToken_, {httpOnly:true, sameSite:"lax", maxAge: 30 * 24 * 60 * 60 * 1000})
         //res.cookie("accessToken", accessToken, {httpOnly:true, sameSite:"lax"})
         
@@ -186,7 +187,8 @@ router.post('/google/callback', async (req,res)=> {
             uid: payload.sub,
             google: payload,
             avatar: payload.picture,
-            displayName: payload.given_name + " " + payload.family_name
+            displayName: payload.given_name + " " + payload.family_name,
+            banned: false
         })
 
         await google_user.save().catch((err)=>{

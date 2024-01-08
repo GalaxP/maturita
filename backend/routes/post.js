@@ -6,6 +6,7 @@ const Post = require('../schemas/post');
 const Comment = require('../schemas/comment');
 var createError = require("http-errors");
 const verifyRecaptcha = require('../helpers/recaptcha');
+const { IsUserBanned } = require('../helpers/account');
 var router = express.Router();
 
 router.post("/action", verifyAccessToken, verifyRecaptcha("action"), async (req, res, next) => {
@@ -29,7 +30,7 @@ router.post("/action", verifyAccessToken, verifyRecaptcha("action"), async (req,
             })
         }
 
-        if(!post) return next(createError.UnprocessableEntity(`${result.type !== "vote" ? "comment" : "post"} with the id ${result.postId} doesn't exist`))
+        if(!post || await IsUserBanned(post.author)) return next(createError.UnprocessableEntity(`${result.type !== "vote" ? "comment" : "post"} with the id ${result.postId} doesn't exist`))
 
         const previousAction = await PostAction.findOne({userId: req.payload.aud, postId: result.postId})
         if(previousAction) {
@@ -64,7 +65,7 @@ router.post('/:postId/comment', verifyAccessToken, verifyRecaptcha("comment"), a
     const id = req.params.postId
     if(!id) return next(createError.BadRequest())
     const post = await Post.findById(id).catch(()=> {})
-    if(!post) return next(createError.BadRequest("post with the id "+id+"does not exist"))
+    if(!post || await IsUserBanned(post.author)) return next(createError.BadRequest("post with the id "+id+" does not exist"))
     
     const _comment = new Comment({
         author: req.payload.aud,
@@ -85,9 +86,9 @@ router.post('/:postId/comment/:commentId', verifyAccessToken, verifyRecaptcha("r
     const post = await Post.findById(postId).catch(()=> {})
     const comment = await Comment.findById(commentId).catch(()=> {})
 
-    if(!post) return next(createError.BadRequest("post with the id "+postId+"does not exist"))
+    if(!post || await IsUserBanned(post.author)) return next(createError.BadRequest("post with the id "+postId+" does not exist"))
     if(!commentId) return next(createError.BadRequest())
-    if(!comment) return next(createError.BadRequest("comment with the id "+commentId+"does not exist"))
+    if(!comment || await IsUserBanned(comment.author)) return next(createError.BadRequest("comment with the id "+commentId+" does not exist"))
     
     const _comment = new Comment({
         author: req.payload.aud,

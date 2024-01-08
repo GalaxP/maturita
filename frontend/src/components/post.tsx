@@ -15,7 +15,7 @@ declare var grecaptcha:any
 
 interface Iprop {
     props: PostSchema,
-    showLinkToPost?: boolean,
+    showLinkToPost: boolean,
     width?: string,
     showCommunity?: boolean
 }
@@ -98,7 +98,7 @@ const Post = ({props, showLinkToPost, width, showCommunity=true}: Iprop) => {
                             setIsVoting(false)
                         })
                     }
-                }, ()=> {setIsVoting(false);alert("you must be logged in to vote")})
+                }, ()=> {setIsVoting(false);navigate("/account/login")})
             })
         })
     }
@@ -129,7 +129,7 @@ const Post = ({props, showLinkToPost, width, showCommunity=true}: Iprop) => {
 
     var width_class = `${width ? width : "w-11/12 lg:w-[700px] sm:w-11/12"} mx-auto`;
     return <>
-        <Card className={width_class+" cursor-pointer"} onClick={redirect}>
+        <Card className={width_class + (showLinkToPost?" cursor-pointer":"")} onClick={redirect}>
             <CardHeader className="pb-0">
                 <CardDescription className="flex flex-row text-center align-middle">
                     {showCommunity&& <><Avatar className="shadow-md cursor-pointer w-[20px] h-[20px] inline-block mr-1">
@@ -144,6 +144,10 @@ const Post = ({props, showLinkToPost, width, showCommunity=true}: Iprop) => {
                  {new Date(props.createdAt).toLocaleDateString() + " " + new Date(props.createdAt).toLocaleTimeString()}
                 </CardDescription>
                 <CardTitle>{props.title}</CardTitle>
+                <p>{props.body}</p>
+                  
+            </CardHeader>
+            <CardContent className="pt-2 pb-4">
                 <div className="flex flex-row content-center space-x-1">
                     <VoteButton type="like" votes={votes.votes_likes} current_vote={votes.user_vote} onClick={vote}/>
                     <VoteButton type="dislike" votes={votes.votes_dislikes} current_vote={votes.user_vote} onClick={vote}/>
@@ -159,10 +163,6 @@ const Post = ({props, showLinkToPost, width, showCommunity=true}: Iprop) => {
                     }
 
                 </div>
-                  
-            </CardHeader>
-            <CardContent>
-                <p>{props.body}</p>
             </CardContent>
         </Card>
     </>

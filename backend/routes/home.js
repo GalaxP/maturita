@@ -161,13 +161,12 @@ router.post('/search', /*verifyRecaptcha('search'),*/ verifyAccessTokenIfProvide
     case "user":
       try {
       var regexQuery = {
-        displayName: new RegExp(req.body.query)
+        displayName: { $regex: new RegExp(req.body.query, "i") }
       } } catch(err) {return next(createError.BadRequest())}
-      const users = await User.find(regexQuery).select('uid displayName avatar provider').limit(10)
+      const users = await User.find({regexQuery, banned: false}).select('uid displayName avatar provider').limit(10)
       let results = []
       for (let index = 0; index < users.length; index++) {
         results[index] = {...users[index]._doc, posts: (await Post.find({author: users[index].uid})).length}
-        
       }
 
       return res.send(results)
@@ -200,5 +199,11 @@ router.post('/contact', verifyRecaptcha("contact"), async (req, res, next) => {
   .catch((err)=> { 
     return next(createError.InternalServerError())
   })
+})
+
+router.post('/subscribe', async (req, res, next) => {
+  const email = req.body.email
+  if(!email) return next(createError.BadRequest())
+  
 })
 module.exports = router;

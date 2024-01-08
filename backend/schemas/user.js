@@ -53,6 +53,11 @@ const UserSchema = new Schema({
         type: Date,
         default: Date.now,
         required: true
+    },
+    banned: {
+        type: Boolean,
+        required: true,
+        default: false
     }
 })
 UserSchema.methods.isValidPassword = async function (password) {
