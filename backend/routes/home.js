@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const User = require('../schemas/user')
-const { postSchema, contactSchema } = require('../helpers/validation')
+const { postSchema, contactSchema, emailSchema } = require('../helpers/validation')
 var createError = require("http-errors");
 const Post = require('../schemas/post');
 const { verifyAccessToken, verifyAccessTokenIfProvided } = require('../helpers/jwt');
@@ -12,6 +12,9 @@ const createDefaultAvatar = require('../helpers/avatar');
 const Community = require('../schemas/community');
 const pick = require('../helpers/pick');
 const Contact = require('../schemas/contact');
+const Subscriber = require('../schemas/subscriber');
+const crypto = require('crypto');
+const { emailTransporter, getConfirmEMailBody } = require('../helpers/email');
 
 //const { createAvatar } = require('@dicebear/core');
 //const { identicon } = require('@dicebear/collection');
@@ -201,9 +204,62 @@ router.post('/contact', verifyRecaptcha("contact"), async (req, res, next) => {
   })
 })
 
-router.post('/subscribe', async (req, res, next) => {
-  const email = req.body.email
-  if(!email) return next(createError.BadRequest())
+router.post('/subscribe', async (req, res, next) => {  
+  const result = await emailSchema.validateAsync(req.body).catch((err)=>{
+    return next(createError.BadRequest(err.message))
+  })
+  if(!result) return;
+
+  const email = result.email
+  const doesExist = await Subscriber.findOne({email: email})
+  if(doesExist) return next(createError.Conflict(`email ${result.email} has already subscribed to our newsletter`))
+  const token = crypto.randomUUID().toString()
+  const sub = new Subscriber({
+    verified: false,
+    token: token,
+    email: email
+  })
+
   
+    
+  var mailOptions = {
+    from: 'alex.petras@outlook.com',
+    to: email,
+    subject: 'Please confirm your email',
+    html: getConfirmEMailBody(token)
+  };
+  
+  emailTransporter.sendMail(mailOptions, function(error, info){
+    if(error) {return next(createError.InternalServerError());console.log(error)}
+  });
+
+  await sub.save().then(()=> {
+    res.send("success")
+  })
+  .catch((err)=> { 
+    return next(createError.InternalServerError())
+  })
+})
+
+router.get('/verify', async(req, res, next) => {
+  const token = req.query.token
+  if(!token) return next(createError.BadRequest())
+  const sub = await Subscriber.findOne({token: token})
+  if(!sub) return next(createError.BadRequest())
+
+  if(sub.verified) return next(createError.BadRequest("already verified"))
+
+  var differenceValue =(Date.now() - sub.createdAt) / 1000;
+  differenceValue /= 60;
+
+  if(differenceValue > 30) {await sub.deleteOne(); return next(createError.BadRequest("expired. sign up again"))}
+  
+  sub.verified = true
+  await sub.save().then(()=> {
+    res.send("successfully verified your email address")
+  })
+  .catch(()=>{
+    return next(createError.InternalServerError())
+  })
 })
 module.exports = router;

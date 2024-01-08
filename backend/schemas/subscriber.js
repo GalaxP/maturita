@@ -13,9 +13,13 @@ const subscriberSchema = new Schema({
         type: Boolean,
         default: false,
     },
-    confirmed: {
+    verified: {
         type: Boolean,
         required:true,
+    },
+    token: {
+        type: String,
+        required: true,
     },
     createdAt: {
         type: Date,

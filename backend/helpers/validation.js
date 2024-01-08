@@ -38,11 +38,14 @@ const contactSchema = Joi.object({
     email: Joi.string().email().required(),
     token: Joi.string()
 })
-
+const emailSchema = Joi.object({
+    email: Joi.string().email().required()
+})
 module.exports = {
     postSchema,
     userSchema,
     postActionSchema,
     createCommunitySchema,
-    contactSchema
+    contactSchema,
+    emailSchema
 }
