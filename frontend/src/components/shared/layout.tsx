@@ -13,6 +13,7 @@ import { Search } from "lucide-react";
 import { SearchBox } from "components/searchBox";
 import { CookieConsent } from "components/cookieConsent";
 import { UserNav } from "components/userNav";
+import { NewsLetter } from "components/newsLetter";
 type LayoutProps = {
     children: React.ReactNode
 }
@@ -90,6 +91,7 @@ const Layout = ({children}: LayoutProps) => {
         </div> */}
         {children}
         <CookieConsent/>
+        <NewsLetter/>
     </>
 }
 

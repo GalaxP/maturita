@@ -13,6 +13,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../co
 import { useToast } from "../components/ui/use-toast"
 import GetAvatar, { GetCommunityAvatar } from "helpers/getAvatar";
 import { ChangeAvatar } from "components/changeAvatar";
+import { NoResult } from "components/noResult";
+import { NoPosts } from "components/noPosts";
 
 const Community = () => {
     const community_name = useParams().community;
@@ -147,7 +149,7 @@ const Community = () => {
                             </div>
                             </CardContent>
                         </Card>
-                        {posts.length === 0 && error!=="community does not exist" && "there are no posts yet"}
+                        {posts.length === 0 && error!=="community does not exist" && <NoPosts/>}
                         {error==="community does not exist" && <p>Community does not exist</p>}
 
                         {posts.length > 0 &&  error!=="community does not exist" && posts.map((_post)=>{

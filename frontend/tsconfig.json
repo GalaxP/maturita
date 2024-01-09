@@ -8,7 +8,6 @@
     ],
     "baseUrl": "./src",
     "paths": {
-      "@components/*": ["./components/ui/*"],
       "@lib/*": ["./components/ui/lib/*"]
     },
     "allowJs": true,
