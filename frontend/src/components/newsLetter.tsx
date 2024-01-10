@@ -13,12 +13,14 @@ export const NewsLetter = () => {
     const [email, setEmail] = useState("")
 
     useEffect(()=>{
-        setLoaded(false)
-        if(localStorage.getItem("newsletter") === "true") {
-            setClose(true)
-        }
-        
-        setLoaded(true)
+        setTimeout(()=>{
+            setLoaded(false)
+            if(localStorage.getItem("newsletter") === "true") {
+                setClose(true)
+            }
+            
+            setLoaded(true)
+        }, 5000)
     }, [])
 
     const whenClosed = () => {

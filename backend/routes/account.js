@@ -11,10 +11,9 @@ const pick = require('../helpers/pick')
 const rateLimit = require('express-rate-limit');
 const {OAuth2Client} = require('google-auth-library');
 const verifyRecaptcha = require('../helpers/recaptcha');
-const { default: axios } = require('axios');
 const Avatar = require('../schemas/avatar')
 const path = require('node:path'); 
-const createDefaultAvatar = require('../helpers/avatar')
+const { createDefaultAvatar } = require('../helpers/avatar')
 require('dotenv').config()
 
 const rateLimiterUsingThirdParty = rateLimit({
@@ -62,7 +61,6 @@ router.post('/register', verifyRecaptcha("register"), async function(req, res, n
 
     const uid = v4()
     await createDefaultAvatar(uid).catch((err)=>{return next(createError.InternalServerError(err.message))})
-
     const hashedPassword = await HashPassword(result.password)
     const _user = new User(
     {

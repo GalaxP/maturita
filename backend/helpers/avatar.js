@@ -10,9 +10,9 @@ class AvatarError extends Error {
 }
 
 const createDefaultAvatar = async(uid) => {
+    console.log("here")
     const createAvatar = await import('@dicebear/core');
     const identicon = await import('@dicebear/collection');
-
     const avatar = createAvatar.createAvatar(identicon.identicon, {
         seed: uid,
         size: 40,
