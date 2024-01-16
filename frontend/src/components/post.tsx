@@ -10,6 +10,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { useToast } from "./ui/use-toast";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import { GetCommunityAvatar } from "helpers/getAvatar";
+import prettyDate from "helpers/dateFormat";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../components/ui/tooltip";
 
 declare var grecaptcha:any
 
@@ -139,12 +141,23 @@ const Post = ({props, showLinkToPost, width, showCommunity=true}: Iprop) => {
                         <Link to={"/community/"+props.community.name} className="hover:underline py-auto text-black flex-inline flex-row">
                     {props.community.name}</Link>
                 <span className="dot-separator mx-1"></span></>}
-                    <Link to={"/user/"+props.author.id} className="hover:underline">{props.author.displayName}</Link> 
-                <span className="dot-separator mx-1"></span>
-                 {new Date(props.createdAt).toLocaleDateString() + " " + new Date(props.createdAt).toLocaleTimeString()}
+                    <Link to={"/user/"+props.author.id} className="hover:underline sm:block hidden">{props.author.displayName}</Link> 
+                <span className="dot-separator mx-1 sm:block hidden"></span>
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <div>{prettyDate(new Date(props.createdAt).getTime())} ago</div> 
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                {new Date(props.createdAt).toLocaleDateString() + " " + new Date(props.createdAt).toLocaleTimeString()}
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
                 </CardDescription>
+                {!showLinkToPost &&<Link to={"/user/"+props.author.id} className="hover:underline sm:hidden block text-xs text-primary">u/{props.author.displayName}</Link>}
+
                 <CardTitle>{props.title}</CardTitle>
-                <p>{props.body}</p>
+                <p className="break-words">{props.body}</p>
                   
             </CardHeader>
             <CardContent className="pt-2 pb-4">

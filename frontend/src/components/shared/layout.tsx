@@ -9,7 +9,7 @@ import LocaleSwitcher from "components/localeSwitcher";
 import LocalizationContext from "contexts/LocalizationContext";
 import { Input } from "../ui/input";
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
-import { Search } from "lucide-react";
+import { Search, SearchIcon } from "lucide-react";
 import { SearchBox } from "components/searchBox";
 import { CookieConsent } from "components/cookieConsent";
 import { UserNav } from "components/userNav";
@@ -63,10 +63,13 @@ const Layout = ({children, openNewsletter}: LayoutProps) => {
                         <defs v-gra="od"/>
                         </svg>
                         </Link>
-                    <div className="mx-auto w-[250px]">
+                    <div className="mx-auto w-[250px] sm:block hidden ">
                         {/* <Search className="absolute top-[10px] ml-3 h-5 w-5" strokeWidth={1.3}></Search>
                         <Input placeholder="Search" className="w-full pl-9 rounded-full" value={searchQuery} onChange={(e)=>{setSearchQuery(e.target.value)}}/> */}
                         <SearchBox key="search"/>
+                    </div>
+                    <div className="my-auto ml-5 sm:hidden ">
+                        <SearchIcon className="cursor-pointer" onClick={()=>navigate("/search")}></SearchIcon>
                     </div>
                 </div>
                 <div className="flex">

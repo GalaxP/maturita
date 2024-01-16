@@ -10,6 +10,8 @@ import { post_data } from "helpers/api";
 import { useToast } from "./ui/use-toast";
 import { AiOutlineDelete } from "react-icons/ai";
 import InteractiveTextArea from "./interactiveTextArea";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
+import prettyDate from "helpers/dateFormat";
 
 declare var grecaptcha:any
 
@@ -93,9 +95,18 @@ const Comment = (comment: IComment) => {
         <div className="ml-2 w-full">
             <Link to={"/user/"+comment.author.id}><span className="text-sm pl-2">{comment.author.displayName}</span></Link>
             
-            <div className="inline-block"><span className="text-sm text-muted-foreground pl-2">{new Date(comment.createdAt.toString()).toLocaleString()}</span></div>
+            <div className="inline-block"><span className="text-sm text-muted-foreground pl-2"><TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <div> &nbsp;{prettyDate(new Date(comment.createdAt).getTime())} ago</div> 
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                {new Date(comment.createdAt).toLocaleDateString() + " " + new Date(comment.createdAt).toLocaleTimeString()}
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider></span></div>
             
-            <span className="text-sm pl-2 block">{comment.body}</span>
+            <span className="text-sm pl-2 block break-words">{comment.body}</span>
             <div className="flex flex-row content-center space-x-1 pl-2 items-center">
                 <VoteButton type="like" current_vote={votes.user_vote} votes={votes.votes_likes} onClick={()=>vote(1)}/>
                 <VoteButton type="dislike" current_vote={votes.user_vote} votes={votes.votes_dislikes} onClick={()=>vote(-1)}/>
