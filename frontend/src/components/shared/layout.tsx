@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom"
 import AuthContext from "../../contexts/AuthContext";
 import React from "react";
@@ -16,15 +16,20 @@ import { UserNav } from "components/userNav";
 import { NewsLetter } from "components/newsLetter";
 type LayoutProps = {
     children: React.ReactNode
+    openNewsletter: boolean;
 }
 
 const excludedFromLayout: string[] = []
 
-const Layout = ({children}: LayoutProps) => {
+const Layout = ({children, openNewsletter}: LayoutProps) => {
     const auth = useContext(AuthContext);
     const [loaded, setLoaded] = useState(false)
     const localeContext = useContext(LocalizationContext)
     const [searchQuery, setSearchQuery] = useState("")
+
+    useEffect(()=>{
+
+    }, [openNewsletter])
 
     const navigate = useNavigate();
     return <>
@@ -91,7 +96,7 @@ const Layout = ({children}: LayoutProps) => {
         </div> */}
         {children}
         <CookieConsent/>
-        <NewsLetter/>
+        <NewsLetter toggleNewsletter={openNewsletter}/>
     </>
 }
 

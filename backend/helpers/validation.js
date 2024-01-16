@@ -41,11 +41,16 @@ const contactSchema = Joi.object({
 const emailSchema = Joi.object({
     email: Joi.string().email().required()
 })
+const newsLetterSchema = Joi.object({
+    message: Joi.string().required(),
+    title: Joi.string().required()
+})
 module.exports = {
     postSchema,
     userSchema,
     postActionSchema,
     createCommunitySchema,
     contactSchema,
-    emailSchema
+    emailSchema,
+    newsLetterSchema
 }

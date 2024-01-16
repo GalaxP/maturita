@@ -13,7 +13,7 @@ import { Dialog, DialogDescription, DialogHeader, DialogTitle, DialogContent, Di
 import { CreateCommunityForm } from "components/forms/createCommunityForm";
 import HomeSkeleton from "../components/skeleton/home";
 
-const Home = () => {
+const Home = ({openNewsletter}: {openNewsletter: ()=>void}) => {
   const [loaded, setLoaded] = useState(false);
   const [posts, setPosts] = useState<PostSchema[]>([{author:{id:"",displayName:"", avatar:""}, title:"", createdAt: new Date(), body:"", _id:"", community: {name: "", avatar:""}, votes_likes:0, votes_dislikes:0, user_vote:0, comments:[], comment_length :0}]);
   const [error, setError] = useState();
@@ -93,6 +93,7 @@ const Home = () => {
             <Link to="/contact">Contact Us</Link>
             <Link to="/contact">Privacy Policy</Link>
             <Link to="/contact">Terms of service</Link>
+            <a href="#newsletter" onClick={()=>{openNewsletter();localStorage.removeItem("newsletter");return false;}}>Newsletter</a>
             </div>
           </CardContent>
         </Card>

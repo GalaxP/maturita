@@ -14,7 +14,7 @@ const emailTransporter = nodemailer.createTransport({
     }
 });
 
-getConfirmEMailBody = (token) => {
+getConfirmEmailBody = (token) => {
     return `<!DOCTYPE html>
     <html>
     <head>
@@ -269,7 +269,141 @@ getConfirmEMailBody = (token) => {
     </body>
     </html>`
 }
+
+getNewsletterBody = (message, title, token) => {
+  return `<html lang="sk-SK" style="margin:0;padding:0"><head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="format-detection" content="telephone=no">
+  
+  <title>${title}</title>
+  <style type="text/css"> @media screen and (max-width: 480px) {
+          .mailpoet_button {width:100% !important;}
+      }
+@media screen and (max-width: 599px) {
+          .mailpoet_header {
+              padding: 10px 20px;
+          }
+          .mailpoet_button {
+              width: 100% !important;
+              padding: 5px 0 !important;
+              box-sizing:border-box !important;
+          }
+          div, .mailpoet_cols-two, .mailpoet_cols-three {
+              max-width: 100% !important;
+          }
+      }
+</style>
+  
+</head>
+<body leftmargin="0" topmargin="0" marginwidth="0" marginheight="0" style="margin:0;padding:0;background-color:#eeeeee">
+  <table class="mailpoet_template" border="0" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;border-spacing:0;mso-table-lspace:0;mso-table-rspace:0">
+      <tbody>
+      <tr>
+          <td class="mailpoet_preheader" style="border-collapse:collapse;display:none;visibility:hidden;mso-hide:all;font-size:1px;color:#333333;line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden;-webkit-text-size-adjust:none" height="1">
+              
+          </td>
+      </tr>
+      <tr>
+          <td align="center" class="mailpoet-wrapper" valign="top" style="border-collapse:collapse;background-color:#eeeeee"><!--[if mso]>
+              <table align="center" border="0" cellspacing="0" cellpadding="0"
+                     width="660">
+                  <tr>
+                      <td class="mailpoet_content-wrapper" align="center" valign="top" width="660">
+              <![endif]--><table class="mailpoet_content-wrapper" border="0" width="660" cellpadding="0" cellspacing="0" style="border-collapse:collapse;background-color:#ffffff;border-spacing:0;mso-table-lspace:0;mso-table-rspace:0;max-width:660px;width:100%">
+                  <tbody>
+    <tr>
+      <td class="mailpoet_content" align="center" style="border-collapse:collapse;background-color:#ffffff!important" bgcolor="#ffffff">
+        <table width="100%" border="0" cellpadding="0" cellspacing="0" style="border-collapse:collapse;border-spacing:0;mso-table-lspace:0;mso-table-rspace:0">
+          <tbody>
+            <tr>
+              <td style="border-collapse:collapse;padding-left:0;padding-right:0">
+                <table width="100%" border="0" cellpadding="0" cellspacing="0" class="mailpoet_cols-one" style="border-collapse:collapse;border-spacing:0;mso-table-lspace:0;mso-table-rspace:0;table-layout:fixed;margin-left:auto;margin-right:auto;padding-left:0;padding-right:0">
+                  <tbody>
+    <tr>
+      <td class="mailpoet_spacer" height="30" valign="top" style="border-collapse:collapse"></td>
+    </tr>
+    <tr>
+      <td class="mailpoet_text mailpoet_padded_vertical mailpoet_padded_side" valign="top" style="border-collapse:collapse;padding-top:10px;padding-bottom:10px;padding-left:20px;padding-right:20px;word-break:break-word;word-wrap:break-word">
+        <h1 style="margin:0 0 9px;mso-ansi-font-size:30px;color:#111111;font-family:'Trebuchet MS','Lucida Grande','Lucida Sans Unicode','Lucida Sans',Tahoma,sans-serif;font-size:30px;line-height:48px;mso-line-height-alt:48px;text-align:center;padding:0;font-style:normal;font-weight:normal"><strong>Newsletter  </strong></h1>
+<br>
+<table style="border-collapse:collapse;border-spacing:0;mso-table-lspace:0;mso-table-rspace:0" width="100%" cellpadding="0">
+      <tbody><tr>
+        <td class="mailpoet_paragraph" style="border-collapse:collapse;mso-ansi-font-size:16px;color:#000000;font-family:Arial,'Helvetica Neue',Helvetica,sans-serif;font-size:16px;line-height:25.6px;mso-line-height-alt:26px;word-break:break-word;word-wrap:break-word;text-align:left">
+          ${message}
+        </td>
+      </tr></tbody></table>
+
+      </td>
+    </tr>
+                  </tbody>
+                </table>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </td>
+    </tr>
+    <tr>
+      <td class="mailpoet_content" align="center" style="border-collapse:collapse;background-color:#f8f8f8!important" bgcolor="#f8f8f8">
+        <table width="100%" border="0" cellpadding="0" cellspacing="0" style="border-collapse:collapse;border-spacing:0;mso-table-lspace:0;mso-table-rspace:0">
+          <tbody>
+            <tr>
+              <td style="border-collapse:collapse;padding-left:0;padding-right:0">
+                <table width="100%" border="0" cellpadding="0" cellspacing="0" class="mailpoet_cols-one" style="border-collapse:collapse;border-spacing:0;mso-table-lspace:0;mso-table-rspace:0;table-layout:fixed;margin-left:auto;margin-right:auto;padding-left:0;padding-right:0">
+                  <tbody>
+    <tr>
+      <td class="mailpoet_divider" valign="top" style="border-collapse:collapse;padding:24.5px 20px 24.5px 20px">
+        <table width="100%" border="0" cellpadding="0" cellspacing="0" style="border-collapse:collapse;border-spacing:0;mso-table-lspace:0;mso-table-rspace:0">
+          <tbody><tr>
+            <td class="mailpoet_divider-cell" style="border-collapse:collapse;border-top-width:3px;border-top-style:solid;border-top-color:#aaaaaa">
+           </td>
+          </tr>
+        </tbody></table>
+      </td>
+    </tr>
+    <tr>
+      <td class="mailpoet_divider" valign="top" style="border-collapse:collapse;padding:7.5px 20px 7.5px 20px">
+        <table width="100%" border="0" cellpadding="0" cellspacing="0" style="border-collapse:collapse;border-spacing:0;mso-table-lspace:0;mso-table-rspace:0">
+          <tbody><tr>
+            <td class="mailpoet_divider-cell" style="border-collapse:collapse;border-top-width:3px;border-top-style:solid;border-top-color:#aaaaaa">
+           </td>
+          </tr>
+        </tbody></table>
+      </td>
+    </tr>
+    <tr>
+      <td class="mailpoet_header_footer_padded mailpoet_footer" style="border-collapse:collapse;padding:10px 20px;line-height:19.2px;text-align:center;color:#222222;font-family:Arial, 'Helvetica Neue', Helvetica, sans-serif;font-size:12px">
+        <a href="https://api.maturita-forum.sk/unsubscribe?token=${token}" style="color:#6cb7d4;text-decoration:none">Unsubscribe from newsletter</a><br>maturita-forum.sk
+      </td>
+    </tr>
+                  </tbody>
+                </table>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </td>
+    </tr>
+    
+                  </tbody>
+              </table><!--[if mso]>
+              </td>
+              </tr>
+              </table>
+              <![endif]--></td>
+      </tr>
+      </tbody>
+  </table>
+<img alt="" class="" src="http://vinality.sk?mailpoet_router&amp;endpoint=track&amp;action=open&amp;data=WyIyNiIsImI3MzliMzI5MDNkMGU5OTcwYzU0YmQzYWE4N2QzMTY1IiwiMiIsbnVsbCxmYWxzZV0">
+
+</body></html>
+  `
+}
+
 module.exports = {
     emailTransporter,
-    getConfirmEMailBody
+    getConfirmEmailBody,
+    getNewsletterBody
 }

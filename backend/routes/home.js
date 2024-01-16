@@ -1,10 +1,10 @@
 var express = require('express');
 var router = express.Router();
 const User = require('../schemas/user')
-const { postSchema, contactSchema, emailSchema } = require('../helpers/validation')
+const { postSchema, contactSchema, emailSchema, newsLetterSchema } = require('../helpers/validation')
 var createError = require("http-errors");
 const Post = require('../schemas/post');
-const { verifyAccessToken, verifyAccessTokenIfProvided } = require('../helpers/jwt');
+const { verifyAccessToken, verifyAccessTokenIfProvided, isAuthorized } = require('../helpers/jwt');
 const getPostById = require('../helpers/post')
 const jwt = require('jsonwebtoken');
 const verifyRecaptcha = require('../helpers/recaptcha');
@@ -14,7 +14,7 @@ const pick = require('../helpers/pick');
 const Contact = require('../schemas/contact');
 const Subscriber = require('../schemas/subscriber');
 const crypto = require('crypto');
-const { emailTransporter, getConfirmEMailBody } = require('../helpers/email');
+const { emailTransporter, getConfirmEmailBody, getNewsletterBody } = require('../helpers/email');
 
 //const { createAvatar } = require('@dicebear/core');
 //const { identicon } = require('@dicebear/collection');
@@ -220,13 +220,11 @@ router.post('/subscribe', async (req, res, next) => {
     email: email
   })
 
-  
-    
   var mailOptions = {
     from: 'alex.petras@outlook.com',
     to: email,
     subject: 'Please confirm your email',
-    html: getConfirmEMailBody(token)
+    html: getConfirmEmailBody(token)
   };
   
   emailTransporter.sendMail(mailOptions, function(error, info){
@@ -239,6 +237,22 @@ router.post('/subscribe', async (req, res, next) => {
   .catch((err)=> { 
     return next(createError.InternalServerError())
   })
+})
+
+router.get('/unsubscribe', async (req, res, next) => {
+  const token = req.query.token
+  if(!token) return next(createError.BadRequest())
+
+  const subscriber = await Subscriber.findOne({token: token})
+  if(!subscriber) return next(createError.BadRequest())
+
+  try {
+    await subscriber.deleteOne();
+    res.send("success")
+  }
+  catch{
+    return next(createError.InternalServerError())
+  }
 })
 
 router.get('/verify', async(req, res, next) => {
@@ -261,5 +275,25 @@ router.get('/verify', async(req, res, next) => {
   .catch(()=>{
     return next(createError.InternalServerError())
   })
+})
+
+router.post('/sendNewsletter', verifyAccessToken, isAuthorized('admin'), async (req, res, next) => {
+  const result = await newsLetterSchema.validateAsync(req.body).catch((err)=>{
+    return next(createError.BadRequest(err.message))
+  })
+
+  const subscribers = await Subscriber.find({verified: true})
+  for(let subscriber of subscribers) {
+    var mailOptions = {
+      from: 'alex.petras@outlook.com',
+      to: subscriber.email,
+      subject: 'NewsLetter',
+      BroadcastChannel: '',
+      html: getNewsletterBody(result.message, result.title, subscriber.token)
+    };
+    
+    await emailTransporter.sendMail(mailOptions);
+  }
+  res.send("success");
 })
 module.exports = router;

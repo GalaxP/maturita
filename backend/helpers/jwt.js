@@ -128,7 +128,6 @@ const verifyRefreshToken = (refreshToken) => {
 const isAuthorized = (role) => {
     return (req, res, next) => {
         if(!req.payload || !req.payload.roles) return next(createError.Forbidden())
-        console.log(req.payload.roles.indexOf(role))
         if(req.payload.roles.indexOf(role) === -1) return next(createError.Forbidden())
         return next()
     }

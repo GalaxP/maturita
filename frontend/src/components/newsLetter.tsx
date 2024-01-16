@@ -1,4 +1,4 @@
-import { Cookie } from "lucide-react"
+import { Cookie, Loader2 } from "lucide-react"
 import { Button } from "./ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "./ui/card"
 import { Link } from "react-router-dom"
@@ -6,13 +6,20 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Label } from "./ui/label"
 import { Input } from "./ui/input"
 import { useEffect, useState } from "react"
+import { post_data } from "helpers/api"
 
-export const NewsLetter = () => {
+export const NewsLetter = (toggleNewsletter: {toggleNewsletter: (boolean)}) => {
     const [loaded, setLoaded] = useState(false)
     const [close, setClose] = useState(false)
     const [email, setEmail] = useState("")
+    const [error, setError] = useState("")
+    const [loading, setLoading] = useState(false)
+    const [isSignedUp, setIsSignedUp] = useState(false)
+    
 
     useEffect(()=>{
+      let delay = toggleNewsletter.toggleNewsletter ? 0 : 5000
+      if(toggleNewsletter.toggleNewsletter) {localStorage.removeItem("newsletter"); setClose(false); setLoaded(true);}
         setTimeout(()=>{
             setLoaded(false)
             if(localStorage.getItem("newsletter") === "true") {
@@ -20,16 +27,47 @@ export const NewsLetter = () => {
             }
             
             setLoaded(true)
-        }, 5000)
-    }, [])
+        }, delay)
+    }, [toggleNewsletter])
 
     const whenClosed = () => {
         localStorage.setItem("newsletter", "true")
+        setClose(true)
+    }
+
+    const subscribe = (email:string) => {
+      if(!email) {
+        setError("This field is required")
+        return;
+      }
+      if((email.match(
+        /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+      ))===null){
+        setError("Enter a valid email address")
+        return;
+      }
+      setError("")
+      setLoading(true)
+      post_data("/subscribe", {email: email})
+      .then(()=>{
+        setLoading(false)
+        setIsSignedUp(true)
+        localStorage.setItem("newsletter", "true")
+      })
+      .catch((err)=>{
+        if(err.response.status === 409) {
+          setError("Already signed up")
+          setLoading(false)
+          return
+        }
+        setError("something went wrong.")
+      })
+      setLoading(false)
     }
     
     return loaded ? <>
         <div className="fixed block bottom-0 right-0 p-4 max-w-[550px]">
-        <Dialog defaultOpen={!close} onOpenChange={(isOpen)=>{if(!isOpen)whenClosed();}}>
+        <Dialog defaultOpen={!close} open={!close} onOpenChange={(isOpen)=>{if(!isOpen)whenClosed();}}>
 
       <DialogContent className="sm:max-w-[425px]" >
         <DialogHeader>
@@ -38,23 +76,37 @@ export const NewsLetter = () => {
             Receive exclusive updates, insightful content delivered directly to your inbox
           </DialogDescription>
         </DialogHeader>
-        <div className="py-4">
-          <div className="flex items-center align-middle space-x-4">
-            <Label htmlFor="name" className="text-right">
-              Email
-            </Label>
-            <Input
-              id="email"
-              className="col-span-3"
-              type="text"
-              value={email}
-              placeholder="name@example.com"
-              onChange={(value)=>setEmail(value.target.value)}
-            />
+        <div hidden={isSignedUp}>
+          <div className="pt-4">
+            <div className="flex items-center align-middle space-x-4">
+              <Label htmlFor="name" className="text-right">
+                Email
+              </Label>
+              <Input
+                id="email"
+                className="col-span-3"
+                type="text"
+                value={email}
+                placeholder="name@example.com"
+                onChange={(value)=>setEmail(value.target.value)}
+                />
+            </div>
+            <div className="flex flex-col items-center mt-1">
+              <Label className="text-sm font-medium text-destructive" hidden={error===""}>
+                {error}
+              </Label>
+            </div>
           </div>
         </div>
-        <DialogFooter>
-            <Button type="submit">Subscribe</Button>
+        <div hidden={!isSignedUp}>
+          <div className="pt-4">
+            <div className="flex items-center align-middle space-x-4">
+              Successfully signed up to our newsletter! Check you inbox to confirm your e-mail.
+            </div>
+          </div>
+        </div>
+        <DialogFooter hidden={isSignedUp}>
+            <Button type="submit" onClick={()=>subscribe(email)}>Subscribe<Loader2 className={loading ? "ml-2 h-4 w-4 animate-spin" : "hidden"} /> </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

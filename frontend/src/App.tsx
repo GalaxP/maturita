@@ -14,7 +14,7 @@ import Submit from "routes/submit";
 import Community from "routes/community";
 import { LocalizationContextProvider } from "contexts/LocalizationContext";
 import { Search } from "routes/search";
-import { Suspense } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { lazyLoad } from "routes/lazyLoad";
 import { Security } from "routes/account/security";
 
@@ -24,15 +24,20 @@ const Contact = lazyLoad("routes/contact", "Contact")
 const AdminRoute = lazyLoad("routes/adminRoute")
 
 function App() {
+  const [openNewsletter, setOpenNewsletter] = useState(false)
+
+  useEffect(()=>{
+    if(openNewsletter) setOpenNewsletter(false)
+  }, [openNewsletter])
   return (
     <>
         <AuthContextProvider>
           <LocalizationContextProvider>
             <Suspense fallback={<h1>loading...</h1>}>
               <Router>
-                <Layout>
+                <Layout openNewsletter={openNewsletter}>
                 <Routes>
-                  <Route path='/' element={<Home />}></Route>
+                  <Route path='/' element={<Home openNewsletter={()=>{setOpenNewsletter(true)}}/>}></Route>
                   <Route path='account'>
                     <Route path='register' element={<Register/> }></Route>
                     <Route path='login' element={<Login/> }></Route>
