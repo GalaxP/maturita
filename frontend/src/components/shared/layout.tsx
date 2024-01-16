@@ -69,7 +69,7 @@ const Layout = ({children, openNewsletter}: LayoutProps) => {
                         <SearchBox key="search"/>
                     </div>
                     <div className="my-auto ml-5 sm:hidden ">
-                        <SearchIcon className="cursor-pointer" onClick={()=>navigate("/search")}></SearchIcon>
+                        <Search className="cursor-pointer" onClick={()=>navigate("/search")}></Search>
                     </div>
                 </div>
                 <div className="flex">

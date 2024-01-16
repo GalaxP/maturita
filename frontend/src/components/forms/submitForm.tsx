@@ -51,12 +51,13 @@ const formSchema = z.object({
 interface props {
     handleSubmit: (values: z.infer<typeof formSchema>) => void,
     isLoading : boolean,
-    defaultCommunity?: string
+    defaultCommunity?: string,
+    showMyCommunities?: boolean
 }
 
 
 
-export function SubmitForm({handleSubmit, isLoading, defaultCommunity}: props) {
+export function SubmitForm({handleSubmit, isLoading, defaultCommunity, showMyCommunities}: props) {
   const navigate = useNavigate()
   const [openDialog, setOpenDialog] = useState(false)
   const [open, setOpen] = useState(false)
@@ -67,15 +68,37 @@ export function SubmitForm({handleSubmit, isLoading, defaultCommunity}: props) {
   const [communities, setCommunities] = useState({communities: [{
     value: "general",
     label: "General",
-    avatar: process.env.REACT_APP_API_URL + "/community/general.png",
+    avatar: "/avatars/community/general.jpg",
     members: 0
   },], isEmpty : false})
+  const [mycommunities, setMyCommunities] = useState({communities: [{
+    value: "",
+    label: "",
+    avatar: "",
+    members: 0
+  },], isEmpty : false})
+
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema)
   })
 
   useEffect(()=>{
+    console.log(showMyCommunities)
+    if(showMyCommunities) {
+      get_data('/account/communities', {}, true).then((res)=>{
+        if(res.status === 200) {
+          let _community = []
+          for (let i = 0; i < res.data.length; i++) {
+            _community[i] = {value: res.data[i].name, avatar: res.data[i].avatar, label: res.data[i].name, members:  res.data[i].members}
+          }
+
+          setMyCommunities({communities: _community, isEmpty: res.data.length > 0 ? false : true})
+        }
+        console.log("ewsfslkfjksle")
+      }).catch((err)=>{console.log(err)})
+      return
+    }
     if(defaultCommunity) {
       post_data("/community/search", {query: defaultCommunity}, {}, true)
       .then((res)=> {
@@ -172,7 +195,7 @@ export function SubmitForm({handleSubmit, isLoading, defaultCommunity}: props) {
                             ? //communities.find((communities) => communities.value === field.value)?.label
                             <>
                             <Avatar className="h-6 w-6 mr-1">
-                            <AvatarImage src={GetCommunityAvatar(communities.communities.find(x=>x.value===field.value)?.avatar ?? "")} alt="@shadcn" />
+                            <AvatarImage src={GetCommunityAvatar(communities.communities.find(x=>x.value===field.value)?.avatar ?? mycommunities.communities.find(x=>x.value===field.value)?.avatar ?? "")} alt="@shadcn" />
                             <AvatarFallback>NA</AvatarFallback>
                           </Avatar>
 
@@ -186,7 +209,7 @@ export function SubmitForm({handleSubmit, isLoading, defaultCommunity}: props) {
                       <Command className="max-w-[310px]">
                         <CommandInput className="max-w-[310px]" placeholder="Search communities..." onValueChange={(e)=>{debounced(e)}}/>
                         <CommandEmpty>No communities found.</CommandEmpty>
-                        <CommandGroup heading="Others">
+                        { !communities.isEmpty && <CommandGroup heading="Others">
                           {!communities.isEmpty &&
                           communities.communities.map((community) => (
                             <CommandItem
@@ -208,7 +231,32 @@ export function SubmitForm({handleSubmit, isLoading, defaultCommunity}: props) {
                             </CommandItem>
                           ))
                                 }
+                        </CommandGroup> }
+
+                        <CommandGroup heading="My Communities">
+                          {!mycommunities.isEmpty && communities.isEmpty &&
+                          mycommunities.communities.map((community) => (
+                            <CommandItem
+                              value={community.value}
+                              key={community.value}
+                              onSelect={() => {
+                                form.setValue("community", community.value)
+                                setOpen(false)
+                              }}
+                            >
+                              <Avatar className="h-6 w-6 mr-1">
+                                <AvatarImage src={GetCommunityAvatar(community.avatar)} alt="@shadcn" />
+                                <AvatarFallback>NA</AvatarFallback>
+                              </Avatar>
+                              <span className="text-black font-semibold">{community.label}</span>
+                              <span className="dot-separator mx-1"></span>
+                              {community.members} members
+                              <Check className={cn("ml-auto h-4 w-4", community.value === field.value ? "opacity-100" : "opacity-0")}/>
+                            </CommandItem>
+                          ))
+                                }
                         </CommandGroup>
+
                         <CommandSeparator />
                         <CommandGroup>
                           <DialogTrigger asChild>
@@ -227,7 +275,7 @@ export function SubmitForm({handleSubmit, isLoading, defaultCommunity}: props) {
                     <DialogHeader>
                       <DialogTitle>Create a new community</DialogTitle>
                       <DialogDescription>
-                        Create a new comunity on reddit.
+                        Create a new comunity.
                       </DialogDescription>
                     </DialogHeader>
                       <div className="space-y-4 py-2 pb-4">

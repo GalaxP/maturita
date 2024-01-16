@@ -26,6 +26,7 @@ const rateLimiterUsingThirdParty = rateLimit({
 
 
 const multer = require('multer');
+const Community = require('../schemas/community');
 const storage = multer.diskStorage({
   destination: function(req, file, callback) {
     callback(null, process.env.AVATAR_PATH);
@@ -248,4 +249,14 @@ router.post ('/upload', jwt.verifyAccessToken, async (req, res) => {
     })
     // You can perform additional operations with the uploaded image here.
 });
+
+router.get('/communities', jwt.verifyAccessToken, async (req,res,next) => {
+    const usr = req.payload.aud
+    const membered_communities = await Community.find({members: {$all: [usr]}}, 'name description avatar members')
+    for(let i = 0; i < membered_communities.length; i++) {
+        membered_communities[i].members = membered_communities[i].members.length
+    }
+    
+    res.send(membered_communities)
+})
 module.exports = router;

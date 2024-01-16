@@ -292,7 +292,7 @@ router.post('/sendNewsletter', verifyAccessToken, isAuthorized('admin'), async (
       html: getNewsletterBody(result.message, result.title, subscriber.token)
     };
     
-    await emailTransporter.sendMail(mailOptions);
+    await emailTransporter.sendMail(mailOptions).catch((err)=>{});
   }
   res.send("success");
 })

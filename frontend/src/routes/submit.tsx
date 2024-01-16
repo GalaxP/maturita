@@ -33,8 +33,8 @@ const Submit = () => {
       }
 
 
-    return <div className="lg:w-3/5 sm:w-3/4 mt-6 w-[90%] mx-auto">
-      <SubmitForm defaultCommunity={typeof comm === "string" ? comm : undefined} handleSubmit={handleSubmit} isLoading={false}/>
+    return <div className="sm w-11/12 lg:w-[700px] sm:w-11/12 mt-6 mx-auto">
+      <SubmitForm showMyCommunities defaultCommunity={typeof comm === "string" ? comm : undefined} handleSubmit={handleSubmit} isLoading={false}/>
     </div>
 }
 

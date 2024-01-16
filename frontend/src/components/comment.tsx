@@ -95,16 +95,20 @@ const Comment = (comment: IComment) => {
         <div className="ml-2 w-full">
             <Link to={"/user/"+comment.author.id}><span className="text-sm pl-2">{comment.author.displayName}</span></Link>
             
-            <div className="inline-block"><span className="text-sm text-muted-foreground pl-2"><TooltipProvider>
+            <div className="inline-block">
+                <span className="text-sm text-muted-foreground pl-2">
+                    <TooltipProvider>
                         <Tooltip>
                             <TooltipTrigger asChild>
-                                <div> &nbsp;{prettyDate(new Date(comment.createdAt).getTime())} ago</div> 
+                                <>{prettyDate(new Date(comment.createdAt).getTime())} ago</>
                             </TooltipTrigger>
                             <TooltipContent>
                                 {new Date(comment.createdAt).toLocaleDateString() + " " + new Date(comment.createdAt).toLocaleTimeString()}
                             </TooltipContent>
                         </Tooltip>
-                    </TooltipProvider></span></div>
+                    </TooltipProvider>
+                </span>
+            </div>
             
             <span className="text-sm pl-2 block break-words">{comment.body}</span>
             <div className="flex flex-row content-center space-x-1 pl-2 items-center">
