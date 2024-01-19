@@ -9,6 +9,10 @@ import { Post } from "components/post";
 import GetAvatar, { GetCommunityAvatar } from "helpers/getAvatar";
 import { Tabs, TabsContent, TabsTrigger, TabsList } from "../components/ui/tabs";
 import { NoResult } from "components/noResult";
+import { Skeleton } from "components/ui/skeleton";
+import SearchSkeleton from "components/skeleton/search";
+
+declare var grecaptcha:any
 
 export const Search = () => {
     const [searchParams] = useSearchParams();
@@ -26,14 +30,19 @@ export const Search = () => {
         setLoaded(false)
         setCommunities(undefined)
         setPosts(undefined)
-        post_data("/search", {query: searchQuery, type: type}, {}, auth?.isAuthenticated)
-        .then((res)=>{
-            if(type==="community") setCommunities(res.data)
-            if(type==="post") setPosts(res.data)
-            if(type==="user") setUsers(res.data)
-            setLoaded(true)
-        })
-        .catch(()=>{setLoaded(true)})
+        
+        grecaptcha.ready(function() {
+                grecaptcha.execute(process.env.REACT_APP_RECAPTCHA_SITE_KEY, {action: 'search'}).then(function(token:string) {
+                post_data("/search", {query: searchQuery, type: type, token: token}, {}, auth?.isAuthenticated)
+                    .then((res)=>{
+                        if(type==="community") setCommunities(res.data)
+                        if(type==="post") setPosts(res.data)
+                        if(type==="user") setUsers(res.data)
+                        setLoaded(true)
+                })
+                .catch(()=>{setLoaded(true)})
+            }); 
+        });
     }, [searchParams])
 
     return <>
@@ -68,14 +77,14 @@ export const Search = () => {
                                 </div>
                             </div>
                         </>
-                    }): <NoResult query={searchParams.get("q")}/>}
+                    }): searchParams.get("t")==="community" ? loaded ? <NoResult query={searchParams.get("q")}/> : <SearchSkeleton></SearchSkeleton> : <SearchSkeleton></SearchSkeleton>}
                     </TabsContent>
 
                     <TabsContent value="post" className="w-full">
                         <div className="space-y-2">
                             {posts?.length && posts.length > 0 ? posts.map((post)=> {
                                 return <Post key={post._id} props={post} showCommunity showLinkToPost width="w-full"/>
-                            }): <NoResult query={searchParams.get("q")}/>}
+                            }): searchParams.get("t")==="post" ? loaded ? <NoResult query={searchParams.get("q")}/> : <SearchSkeleton></SearchSkeleton> : <SearchSkeleton></SearchSkeleton>}
                         </div>
                     </TabsContent>
 
@@ -92,10 +101,21 @@ export const Search = () => {
                                 </div>
                             </div>
                         </>
-                        }): <NoResult query={searchParams.get("q")}/>}
+                        }): searchParams.get("t")==="user" ? loaded ? <NoResult query={searchParams.get("q")}/> : <SearchSkeleton></SearchSkeleton> : <SearchSkeleton></SearchSkeleton>}
                 </TabsContent>
                 </Tabs>
             </div>
-        </> : <p>loading...</p>}
+        </> : 
+        <div className="mt-6">
+        <Tabs defaultValue={searchParams.get('t') || "community"} className="mx-auto items-center flex flex-col" activationMode="manual">
+            <TabsList>
+                <TabsTrigger onClick={()=>navigate("/search?q="+searchParams.get("q")+"&t="+"community")} value="community" >Communities</TabsTrigger>
+                <TabsTrigger onClick={()=>navigate("/search?q="+searchParams.get("q")+"&t="+"post")} value="post">Posts</TabsTrigger>
+                <TabsTrigger onClick={()=>navigate("/search?q="+searchParams.get("q")+"&t="+"user")} value="user">Users</TabsTrigger>
+            </TabsList>
+        <SearchSkeleton></SearchSkeleton>
+        </Tabs>
+        </div> 
+        }
     </>
 }

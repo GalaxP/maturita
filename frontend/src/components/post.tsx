@@ -40,7 +40,6 @@ const Post = ({props, showLinkToPost, width, showCommunity=true}: Iprop) => {
             grecaptcha.execute(process.env.REACT_APP_RECAPTCHA_SITE_KEY, {action: 'action'}).then(function(token:string) {
                 grecaptchaToken = token
                 
-                
                 auth?.protectedAction(()=> {
                     if(direction === 0 && votes.user_vote !== 0) {
                         post_data("/post/action", {postId: props._id, type: "vote", direction: 0, token: grecaptchaToken}, {}, true)

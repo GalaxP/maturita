@@ -8,8 +8,8 @@ import GetAvatar from "helpers/getAvatar";
 import LocaleSwitcher from "components/localeSwitcher";
 import LocalizationContext from "contexts/LocalizationContext";
 import { Input } from "../ui/input";
-import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
-import { Search, SearchIcon } from "lucide-react";
+import { MagnifyingGlassIcon, PersonIcon } from "@radix-ui/react-icons";
+import { Search, SearchIcon, User, User2, UserCircle2 } from "lucide-react";
 import { SearchBox } from "components/searchBox";
 import { CookieConsent } from "components/cookieConsent";
 import { UserNav } from "components/userNav";
@@ -82,7 +82,7 @@ const Layout = ({children, openNewsletter}: LayoutProps) => {
                             <AvatarFallback>AVATAR</AvatarFallback>
                         </Avatar> </Button>*/}
                     <div className="flex items-center mx-2">
-                        {auth?.isAuthenticated ? <UserNav displayName={auth?.getUser().user.displayName} email={auth?.getUser().user.email} avatar={GetAvatar(auth?.getUser())} />: <Button variant={"ghost"} onClick={()=>navigate("/account/login")}>Login</Button>}
+                        {auth?.isAuthenticated ? <UserNav displayName={auth?.getUser().user.displayName} email={auth?.getUser().user.email} avatar={GetAvatar(auth?.getUser())} />: <Button variant={"ghost"} onClick={()=>navigate("/account/login")}><User2 strokeWidth={1.5} className="mr-1"></User2>{localeContext.localize("LOGIN")}</Button>}
                     </div>
                             {/*auth?.isAuthenticated ? auth?.getUser().user.displayName :  localeContext.localize("LOGIN") */}
                     

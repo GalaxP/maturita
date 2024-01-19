@@ -17,11 +17,13 @@ import { Search } from "routes/search";
 import { Suspense, useEffect, useState } from "react";
 import { lazyLoad } from "routes/lazyLoad";
 import { Security } from "routes/account/security";
+import User from "routes/user";
 
 const Register = lazyLoad("routes/account/register")
 const PostId = lazyLoad("components/postId", "PostId")
 const Contact = lazyLoad("routes/contact", "Contact")
 const AdminRoute = lazyLoad("routes/adminRoute")
+const TOS = lazyLoad("routes/termsOfService")
 
 function App() {
   const [openNewsletter, setOpenNewsletter] = useState(false)
@@ -47,10 +49,13 @@ function App() {
                   </Route>
                   <Route path="submit" element={<ProtectedRoute><Submit/></ProtectedRoute>}></Route>
                   <Route path="community/:community" element={<Community/>}></Route>
+                  <Route path="user/:userId" element={<User/>}></Route>
                   <Route path="/post/:postId" element={<PostId/>}></Route>
                   <Route path="/search" element={<Search/>}></Route>
                   <Route path="/contact" element={<Contact/>}></Route>
                   <Route path="/admin" element={<AdminRoute/>}></Route>
+
+                  <Route path="/terms-of-service" element={<TOS/>}></Route>
 
                   <Route path='google'>
                     <Route path='callback' element={<Callback/>}></Route>

@@ -6,11 +6,11 @@ const Post = require('../schemas/post')
 const User = require('../schemas/user')
 const getPostById = require('../helpers/post')
 
-router.get('/:displayName', verifyAccessTokenIfProvided, async function(req, res, next) {
-    const displayName = req.params.displayName
-    if(!displayName) return next(createError.BadRequest("displayName was not provided"))
+router.get('/:userId', verifyAccessTokenIfProvided, async function(req, res, next) {
+    const userId = req.params.userId
+    if(!userId) return next(createError.BadRequest("displayName was not provided"))
 
-    const user = await User.findOne({displayName: { $regex: '^'+displayName+'$', $options: 'i'}});
+    const user = await User.findOne({uid: userId, banned: false});
     if(!user) return next(createError.NotFound("User not found"))
     var isAuth = req.payload.authenticated
     const returns = []
@@ -22,10 +22,14 @@ router.get('/:displayName', verifyAccessTokenIfProvided, async function(req, res
         returns[index] = post
         index++
     }
-    res.send({author: {
+    res.send({
         id: user.uid,
         displayName: user.displayName,
-        avatar: user.avatar
-    },posts_length: posts.length, posts:returns})
+        avatar: user.avatar,
+        createdAt: user.createdAt,
+        provider: user.provider,
+        posts_length: posts.length,
+        posts: returns
+    })
 })
 module.exports = router;

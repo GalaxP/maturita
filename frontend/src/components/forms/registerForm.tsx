@@ -64,7 +64,7 @@ export function RegisterForm({handleSubmit, isLoading, setError}: auth) {
                 <FormItem>
                     <FormLabel>First Name</FormLabel>
                     <FormControl>
-                    <Input disabled={isLoading} placeholder="Dušan" {...field} />
+                    <Input disabled={isLoading} placeholder="" {...field} />
                     </FormControl>
                     <FormMessage />
                 </FormItem>
@@ -78,7 +78,7 @@ export function RegisterForm({handleSubmit, isLoading, setError}: auth) {
                 <FormItem>
                     <FormLabel>Last Name</FormLabel>
                     <FormControl>
-                    <Input disabled={isLoading} placeholder="Malina" {...field} />
+                    <Input disabled={isLoading} placeholder="" {...field} />
                     </FormControl>
                     <FormMessage />
                 </FormItem>
@@ -106,7 +106,7 @@ export function RegisterForm({handleSubmit, isLoading, setError}: auth) {
                 <FormItem>
                     <FormLabel>User Name</FormLabel>
                     <FormControl>
-                    <Input disabled={isLoading} placeholder="galaxp" {...field} />
+                    <Input disabled={isLoading} placeholder="" {...field} />
                     </FormControl>
                     <FormMessage />
                 </FormItem>
@@ -153,7 +153,7 @@ export function RegisterForm({handleSubmit, isLoading, setError}: auth) {
                             <label
                                 htmlFor="tos"
                                 className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                                Accept terms and conditions
+                                Accept <a className="text-primary" href="/terms-of-service"> terms and conditions </a>
                             </label>
                         </div>
                     </FormControl>
@@ -167,15 +167,6 @@ export function RegisterForm({handleSubmit, isLoading, setError}: auth) {
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" /> }
             Register
         </Button>
-        {/* <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t">
-              </span>
-          </div>
-          <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
-          </div>
-        </div>          */}
       </form>
     </Form>
   )

@@ -130,7 +130,7 @@ router.get('/avatar.png', async function(req, res) {
   res.send(Buffer.from(avatar_buffer))
 })
 
-router.post('/search', /*verifyRecaptcha('search'),*/ verifyAccessTokenIfProvided, async function(req, res, next) {
+router.post('/search', verifyRecaptcha('search'), verifyAccessTokenIfProvided, async function(req, res, next) {
   if(!req.body.query || !req.body.type) return next(createError.BadRequest("No search query was provided"))
   
   var result = []
@@ -162,11 +162,7 @@ router.post('/search', /*verifyRecaptcha('search'),*/ verifyAccessTokenIfProvide
         }
         return res.send(returns)
     case "user":
-      try {
-      var regexQuery = {
-        displayName: { $regex: new RegExp(req.body.query, "i") }
-      } } catch(err) {return next(createError.BadRequest())}
-      const users = await User.find({regexQuery, banned: false}).select('uid displayName avatar provider').limit(10)
+      const users = await User.find({displayName: {$regex: new RegExp(req.body.query), $options: 'i'}}).select('uid displayName avatar provider').limit(10)
       let results = []
       for (let index = 0; index < users.length; index++) {
         results[index] = {...users[index]._doc, posts: (await Post.find({author: users[index].uid})).length}
@@ -184,7 +180,7 @@ router.post('/contact', verifyRecaptcha("contact"), async (req, res, next) => {
   })
   if(!result) return;
   const userAgent = req.headers['user-agent'];
-  const remoteIP = req.ip
+  const remoteIP =  req.headers['x-forwarded-for'] || req.socket.remoteAddress 
 
   const contact = new Contact({
     firstName: result.firstName,
