@@ -21,7 +21,7 @@ const User = () => {
     useEffect(()=>{
         if(!userId) return setError("404")
         setLoaded(false)
-        get_data("/user/"+userId, {}, true).then((res)=>{
+        get_data("/user/"+userId, {}, auth?.isAuthenticated).then((res)=>{
             if(res.status === 404) return setError("404")
             setUser(res.data)
             setLoaded(true)
@@ -50,7 +50,7 @@ const User = () => {
                                         <AvatarFallback>{user.displayName}</AvatarFallback>
                                     </Avatar>
                                     <div className="flex flex-col ml-2">
-                                        <p>{user.displayName}</p>
+                                        <p className="overflow-hidden text-ellipsis">{user.displayName}</p>
                                         <div className="flex flex-row mt-2 space-x-1">
                                             <CakeSlice size={20} strokeWidth={1.5}></CakeSlice>
                                             <p className="text-sm font-normal">{prettyDate(new Date(user.createdAt).getTime())}</p>
@@ -70,7 +70,7 @@ const User = () => {
                 </div></li>
                     {posts_obj}
                 </ul>
-                <div className="w-[300px] hidden sm:hidden md:hidden lg:block ml-6 space-y-2 mt-2">
+                <div className="w-[350px] hidden sm:hidden md:hidden lg:block ml-6 space-y-2 mt-2">
                     <Card>
                         <CardHeader>
                             <CardTitle>
@@ -80,8 +80,8 @@ const User = () => {
                                         <AvatarImage src={getStringAvatar(user.avatar, user.provider)}/>
                                         <AvatarFallback>{user.displayName}</AvatarFallback>
                                     </Avatar>
-                                    <div className="flex flex-col ml-2">
-                                        <p>{user.displayName}</p>
+                                    <div className="flex flex-col ml-2 overflow-hidden">
+                                        <p className="whitespace-nowrap text-ellipsis">{user.displayName}</p>
                                         <div className="flex flex-row mt-2 space-x-1">
                                             <CakeSlice size={20} strokeWidth={1.5}></CakeSlice>
                                             <p className="text-sm font-normal">{prettyDate(new Date(user.createdAt).getTime())}</p>

@@ -15,6 +15,7 @@ import GetAvatar, { GetCommunityAvatar } from "helpers/getAvatar";
 import { ChangeAvatar } from "components/changeAvatar";
 import { NoResult } from "components/noResult";
 import { NoPosts } from "components/noPosts";
+import HomeSkeleton from "components/skeleton/home";
 
 const Community = () => {
     const community_name = useParams().community;
@@ -105,9 +106,6 @@ const Community = () => {
                                 <Button variant={"outline"} className="rounded-full w-20 ml-2" onClick={handleJoinButton}>
                                     {communityInfo.isMember ? "Leave" : "Join"}
                                 </Button>
-                                <Button variant={"outline"} className="rounded-full ml-2 p-2" onClick={handleNotiButton}>
-                                    <Bell size={22} strokeWidth={1.5}></Bell>
-                                </Button>
                             </div>
                             <p className="text-left">{communityInfo && communityInfo.description}</p>
                         </div>
@@ -195,7 +193,7 @@ const Community = () => {
                 </div>
             </div>
             </>
-        : <div><p>loading...</p></div>);
+        : <HomeSkeleton></HomeSkeleton>);
     
 }
 

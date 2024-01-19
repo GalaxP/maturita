@@ -45,7 +45,7 @@ import GetAvatar, { GetCommunityAvatar } from "helpers/getAvatar"
 
 const formSchema = z.object({
   community: z.string(),
-  title: z.string().min(6, "Title must contain at least 6 characters"),
+  title: z.string().min(6, "Title must contain at least 6 characters").max(70, "Title must not exceed 50 characters."),
   body: z.string()
 })
 interface props {
@@ -84,7 +84,6 @@ export function SubmitForm({handleSubmit, isLoading, defaultCommunity, showMyCom
   })
 
   useEffect(()=>{
-    console.log(showMyCommunities)
     if(showMyCommunities) {
       get_data('/account/communities', {}, true).then((res)=>{
         if(res.status === 200) {
@@ -95,7 +94,6 @@ export function SubmitForm({handleSubmit, isLoading, defaultCommunity, showMyCom
 
           setMyCommunities({communities: _community, isEmpty: res.data.length > 0 ? false : true})
         }
-        console.log("ewsfslkfjksle")
       }).catch((err)=>{console.log(err)})
       return
     }

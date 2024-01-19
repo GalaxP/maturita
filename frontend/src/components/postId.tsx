@@ -12,6 +12,7 @@ import { Skeleton } from "../components/ui/skeleton";
 import { useDocumentTitle } from "../hooks/setDocuemntTitle"
 import LocalizationContext from "contexts/LocalizationContext";
 import InteractiveTextArea from "./interactiveTextArea";
+import { PostSkeleton } from "./skeleton/post";
 
 declare var grecaptcha:any
 
@@ -35,6 +36,7 @@ const PostId = () => {
         .then((res)=> {
             setPost(res.data)
             setDocumentTitle(res.data.title)
+            
             setIsLoading(false)
             setError(false)
         })
@@ -108,10 +110,7 @@ const PostId = () => {
     }
     
     return <>
-    {isLoading ? <div className="mt-12 flex justify-center items-center w-full flex-col space-y-2">
-        <Skeleton className="h-40 w-3/5" />
-        <Skeleton className="mx-0 h-10 w-3/5 ml-0" />
-    </div> : error===false ?
+    {isLoading ? <PostSkeleton/> : error===false ?
     <div className="mt-6">
         <Post props={post} showLinkToPost={false}/>
         <div className="w-11/12 lg:w-[700px] sm:w-11/12 mx-auto mt-5" >
