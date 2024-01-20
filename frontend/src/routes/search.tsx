@@ -91,7 +91,7 @@ export const Search = () => {
                     <TabsContent value="user" className="w-full">
                         {users?.length && users.length > 0 ? users.map((user, i)=> {
                         return <>
-                            <div key={user.displayName} className={"bg-[10] border-gray-800 border-[1px] p-3 flex flex-row cursor-pointer "+(i !== 0 && "border-t-0")} onClick={()=>{navigate('/user/'+user.displayName)}}>
+                            <div key={user.displayName} className={"bg-[10] border-gray-800 border-[1px] p-3 flex flex-row cursor-pointer "+(i !== 0 && "border-t-0")} onClick={()=>{navigate('/user/'+user.uid)}}>
                                 <Avatar className="shadow-md inline-block my-auto" key={"avatar "+user.displayName}>
                                     <AvatarImage src={GetAvatar({user: user, provider: user.provider})} />
                                     <AvatarFallback>{user.displayName}</AvatarFallback>

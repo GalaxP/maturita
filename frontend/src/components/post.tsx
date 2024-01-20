@@ -156,7 +156,7 @@ const Post = ({props, showLinkToPost, width, showCommunity=true}: Iprop) => {
                 {!showLinkToPost &&<Link to={"/user/"+props.author.id} className="hover:underline sm:hidden block text-xs text-primary">u/{props.author.displayName}</Link>}
 
                 <CardTitle>{props.title}</CardTitle>
-                <p className="break-words">{props.body}</p>
+                <p className="break-words whitespace-pre-line">{props.body}</p>
                   
             </CardHeader>
             <CardContent className="pt-2 pb-4">

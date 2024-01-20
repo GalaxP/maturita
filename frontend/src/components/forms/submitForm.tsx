@@ -64,7 +64,9 @@ export function SubmitForm({handleSubmit, isLoading, defaultCommunity, showMyCom
   const [showNewTeamDialog, setShowNewTeamDialog] = useState(false)
   const [communityName, setCommunityName] = useState("")
   const [communityDescription, setCommunityDescription] = useState("")
+  const [selectedCommunityAvatar, setSelectedCommunityAvatar] = useState("")
   const [isAvailable, setIsAvailable] = useState(false)
+  const [query, setQuery] = useState("")
   const [communities, setCommunities] = useState({communities: [{
     value: "general",
     label: "General",
@@ -84,18 +86,17 @@ export function SubmitForm({handleSubmit, isLoading, defaultCommunity, showMyCom
   })
 
   useEffect(()=>{
-    if(showMyCommunities) {
+    if(true) {
       get_data('/account/communities', {}, true).then((res)=>{
         if(res.status === 200) {
           let _community = []
           for (let i = 0; i < res.data.length; i++) {
             _community[i] = {value: res.data[i].name, avatar: res.data[i].avatar, label: res.data[i].name, members:  res.data[i].members}
           }
-
           setMyCommunities({communities: _community, isEmpty: res.data.length > 0 ? false : true})
         }
       }).catch((err)=>{console.log(err)})
-      return
+      //return
     }
     if(defaultCommunity) {
       post_data("/community/search", {query: defaultCommunity}, {}, true)
@@ -181,7 +182,7 @@ export function SubmitForm({handleSubmit, isLoading, defaultCommunity, showMyCom
               <FormItem className="flex flex-col">
                 <FormLabel className="mb-1">Community</FormLabel>
                 <Dialog open={showNewTeamDialog} onOpenChange={setShowNewTeamDialog}>
-                  <Popover open={open} onOpenChange={setOpen}>
+                  <Popover open={open} onOpenChange={(e)=>{setOpen(e); setCommunityDescription(""); setQuery(""); setCommunities({communities:[],isEmpty:true}) }}>
                     <PopoverTrigger asChild>
                       <FormControl>
                         <Button
@@ -193,7 +194,7 @@ export function SubmitForm({handleSubmit, isLoading, defaultCommunity, showMyCom
                             ? //communities.find((communities) => communities.value === field.value)?.label
                             <>
                             <Avatar className="h-6 w-6 mr-1">
-                            <AvatarImage src={GetCommunityAvatar(communities.communities.find(x=>x.value===field.value)?.avatar ?? mycommunities.communities.find(x=>x.value===field.value)?.avatar ?? "")} alt="@shadcn" />
+                            <AvatarImage src={GetCommunityAvatar(selectedCommunityAvatar)} alt="@shadcn" />
                             <AvatarFallback>NA</AvatarFallback>
                           </Avatar>
 
@@ -205,7 +206,7 @@ export function SubmitForm({handleSubmit, isLoading, defaultCommunity, showMyCom
                     </PopoverTrigger>
                     <PopoverContent className="max-w-[310px] p-0">
                       <Command className="max-w-[310px]">
-                        <CommandInput className="max-w-[310px]" placeholder="Search communities..." onValueChange={(e)=>{debounced(e)}}/>
+                        <CommandInput className="max-w-[310px]" placeholder="Search communities..." onValueChange={(e)=>{setQuery(e);debounced(e)}}/>
                         <CommandEmpty>No communities found.</CommandEmpty>
                         { !communities.isEmpty && <CommandGroup heading="Others">
                           {!communities.isEmpty &&
@@ -215,6 +216,7 @@ export function SubmitForm({handleSubmit, isLoading, defaultCommunity, showMyCom
                               key={community.value}
                               onSelect={() => {
                                 form.setValue("community", community.value)
+                                setSelectedCommunityAvatar(community.avatar)
                                 setOpen(false)
                               }}
                             >
@@ -232,13 +234,14 @@ export function SubmitForm({handleSubmit, isLoading, defaultCommunity, showMyCom
                         </CommandGroup> }
 
                         <CommandGroup heading="My Communities">
-                          {!mycommunities.isEmpty && communities.isEmpty &&
+                          {!mycommunities.isEmpty && query === "" &&
                           mycommunities.communities.map((community) => (
                             <CommandItem
                               value={community.value}
                               key={community.value}
                               onSelect={() => {
                                 form.setValue("community", community.value)
+                                setSelectedCommunityAvatar(community.avatar)
                                 setOpen(false)
                               }}
                             >

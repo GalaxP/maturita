@@ -14,6 +14,7 @@ const Login = () => {
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false)
     const [documentTitle, setDocumentTitle] = useDocumentTitle("Login")
+    const [error, setError] = useState(false)
     //const [isInitialized, ]
 
     useEffect(()=>{
@@ -48,7 +49,7 @@ const Login = () => {
                     setIsLoading(false)
                 })
                 .catch((res)=> {
-                    if(res.response.status===401) alert("incorrect credentials")
+                    if(res.response.status===401) setError(true)
                     setIsLoading(false)
                 })
             });
@@ -57,7 +58,7 @@ const Login = () => {
 
     return <div className="m-0 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
         <div className="mx-auto w-[350px]">
-            <LoginForm handleSubmit={onSubmit} isLoading={isLoading} googleSignIn={googleLogin}/>
+            <LoginForm handleSubmit={onSubmit} isLoading={isLoading} googleSignIn={googleLogin} incorrectCredentials={error}/>
 
             <div id="buttonDiv" className="mt-3"></div>
             <div className="text-center mt-3"><p>Don't have an account? <Link to={"/account/register"} className="text-blue-500">Register here.</Link></p></div>

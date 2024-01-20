@@ -292,4 +292,20 @@ router.post('/sendNewsletter', verifyAccessToken, isAuthorized('admin'), async (
   }
   res.send("success");
 })
+
+router.get('/messages', verifyAccessToken, isAuthorized('admin'), async (req, res, next) => {
+  const messages = await Contact.find({read: false}).sort({createdAt: 'asc'})
+  res.send(messages)
+})
+router.post('/message/:messageId/read', verifyAccessToken, isAuthorized('admin'), async(req,res,next)=>{
+  const messageId = req.params.messageId
+  const message = await Contact.findById(messageId)
+  if(!message) return next(createError.NotFound("messsage does note exist"))
+  message.read = true
+  try {
+    message.save()
+    res.send("success")
+  }
+  catch{return next(createError.InternalServerError())}
+})
 module.exports = router;

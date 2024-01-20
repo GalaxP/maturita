@@ -23,9 +23,10 @@ const formSchema = z.object({
 interface auth {
     handleSubmit: (values: z.infer<typeof formSchema>) => void,
     googleSignIn: () => void,
-    isLoading : boolean
+    isLoading : boolean,
+    incorrectCredentials: boolean
 }
-export function LoginForm({handleSubmit, googleSignIn , isLoading}: auth) {
+export function LoginForm({handleSubmit, googleSignIn , isLoading, incorrectCredentials}: auth) {
   // ...
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema)
@@ -70,6 +71,7 @@ export function LoginForm({handleSubmit, googleSignIn , isLoading}: auth) {
             )}
           />
         </div>
+        <p className="text-destructive w-full text-center" hidden={!incorrectCredentials}>wrong email or password</p>
         <Button type="submit" disabled={isLoading} className="w-full mt-6">
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" /> }
             Log In

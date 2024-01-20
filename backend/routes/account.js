@@ -152,6 +152,28 @@ router.post("/logout", async function (req, res, next) {
     }
 })
 
+router.post("/change-email", verifyRecaptcha("email"), jwt.verifyAccessToken, async function (req, res, next) {
+    const email = req.body.email;
+    if(!email) return next(createError.BadRequest())
+
+    const emailExists = await User.findOne({email: email})
+    if(emailExists) return next(createError.Conflict(`email ${email} has already been registered`));
+
+    const userId = req.payload.aud
+    const user = await User.findOne({uid: userId, banned: false})
+    if(!user) return next(createError.NotFound("user not found"))
+
+    user.email = email
+
+    try {
+        await user.save()
+        res.send("success")
+    }
+    catch {
+        return next(createError.InternalServerError())
+    }
+})
+
 router.get("/protected", jwt.verifyAccessToken, jwt.isAuthorized('admin'), function (req, res, next) {
     res.send({ message: "You are authenticated and authorized", payload: req.payload });
 });

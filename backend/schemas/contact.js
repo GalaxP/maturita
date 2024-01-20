@@ -33,7 +33,12 @@ const contactSchema = new Schema({
     read: {
         type: Boolean,
         default: false
-    }
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now,
+        required: true
+    },
 })
 
 const Contact = mongoose.model("contact", contactSchema);

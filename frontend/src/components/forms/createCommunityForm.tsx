@@ -78,7 +78,7 @@ export function CreateCommunityForm({handleSubmit, isLoading}: props) {
     if(error) return
     handleSubmit(values)
   }
-  let regex = /^(?!_)[A-Za-z0-9_]+$/g
+  let regex = /^(?!_)[A-Za-z0-9_]+$/
   return (
 
     <Form {...form}>
@@ -92,7 +92,30 @@ export function CreateCommunityForm({handleSubmit, isLoading}: props) {
                 <FormLabel>Community Name</FormLabel>
                 <FormControl>
                   <div className="flex flex-row justify-end items-center">
-                    <Input disabled={isLoading} {...field} value={community_name} onChange={(i)=>{setChecking(true);form.setValue("name",i.target.value); setCommunity_name(i.target.value);regex.test(i.target.value) ? checkAvailabilityDebounced(i.target.value).then(()=>{if(!regex.test(i.target.value)){setChecking(false); form.setError("name", {message:"name must only contain letters and numbers and underscore"});setError(true);return} else {  setChecking(false);setError(false);form.clearErrors("name")}}).catch(()=>{setError(true);setChecking(false);form.setError("name", { message: "community already exists"})} ) : setChecking(false); form.setError("name", {message:"name must only contain letters and numbers and underscore"});setError(true)}}/>
+                    <Input disabled={isLoading} {...field} value={community_name} onChange={(i)=>{
+                      setChecking(true);
+                      form.setValue("name",i.target.value); 
+                      setCommunity_name(i.target.value);
+                      regex.test(i.target.value) 
+                      ? 
+                      checkAvailabilityDebounced(i.target.value).then(()=>{
+                        console.log(regex.test(i.target.value)+" "+i.target.value);
+                        if(!regex.test(i.target.value)){
+                          setChecking(false); 
+                          form.setError("name", {message:"name must only contain letters and numbers and underscore"});
+                          setError(true);
+                          return} 
+                          else { 
+                            setChecking(false);
+                            setError(false);
+                            form.clearErrors("name")
+                          }})
+                          .catch(()=>{
+                            setError(true);
+                            setChecking(false);
+                            form.setError("name", { message: "community already exists"})
+                            } ) 
+                      : setChecking(false); form.setError("name", {message:"name must only contain letters and numbers and underscore"});setError(true)}}/>
                     { checking && <Loader2 className="mr-2 h-5 w-5 animate-spin absolute" />}
                     { !checking && ! error && community_name!== "" && <Check className="absolute mr-2 h-5 w-5" color="green"/> }
                     { !checking && error && <X className="absolute w-5 h-5 mr-2" color="red"/> }

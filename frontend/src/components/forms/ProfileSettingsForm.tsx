@@ -17,7 +17,7 @@ import { Loader2 } from "lucide-react"
 import { AiOutlineGoogle } from "react-icons/ai"
  
 const formSchema = z.object({
-  displayName: z.string(),
+  //displayName: z.string(),
   email: z.string()
 })
 interface props {
@@ -32,6 +32,14 @@ export function ProfileSettingsForm({handleSubmit, isLoading, originalEmail, ori
     resolver: zodResolver(formSchema)
   })
   function onSubmit(values: z.infer<typeof formSchema>) {
+    if(!values.email.match(/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)) {
+      form.setError("email", {message:"invalid email address"})
+      return
+    }
+    else form.clearErrors()
+
+    if(values.email === originalEmail) {form.setError("email", {message: "choose a new email"}); return}
+
     handleSubmit(values)
   }
 
@@ -40,7 +48,7 @@ export function ProfileSettingsForm({handleSubmit, isLoading, originalEmail, ori
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3 w-full">
         <div className="space-y-2">
-          <FormField
+          {/*<FormField
             control={form.control}
             name="displayName"
             render={({ field }) => (
@@ -52,7 +60,7 @@ export function ProfileSettingsForm({handleSubmit, isLoading, originalEmail, ori
                 <FormMessage />
               </FormItem>
             )}
-          />
+            />*/}
           <FormField
           control={form.control}
             name="email"
@@ -60,14 +68,14 @@ export function ProfileSettingsForm({handleSubmit, isLoading, originalEmail, ori
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input disabled={isLoading} type="email" placeholder={originalEmail} { ...field} />
+                  <Input disabled={isLoading} type="text" placeholder={originalEmail} { ...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
         </div>
-        <Button type="submit" disabled={isLoading} variant={"secondary"} className="mt-6">
+        <Button type="submit" disabled={isLoading} variant={"secondary"} className="mt-6" >
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" /> }
             Save
         </Button>
