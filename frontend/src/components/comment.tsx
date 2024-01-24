@@ -26,6 +26,7 @@ export interface IComment {
     createdAt: Date,
     offset: number,
     onReply: (id:string, replyBody: string) => void,
+    showLine?: boolean
 }
 
 interface IVote {
@@ -95,11 +96,14 @@ const Comment = (comment: IComment) => {
         });
     }
     return <>
-    <div className="flex flex-row mt-2" style={{paddingLeft: comment.offset*3.5+"rem"}}>
-        <Avatar className="mt-2 shadow-md cursor-pointer">
-            <AvatarImage src={comment.author.avatar===null ? process.env.REACT_APP_API_URL+"/avatar.png" : comment.author.avatar?.search("googleusercontent") !== -1 ? comment.author.avatar : process.env.REACT_APP_API_URL + comment.author.avatar} alt="@shadcn" />
-            <AvatarFallback>CN</AvatarFallback>
-        </Avatar>
+    <div className="flex flex-row mt-2" style={{paddingLeft: comment.offset*/*40*/0+"px"}}>
+        <div className="flex flex-col">
+            <Avatar className="mt-2 shadow-md cursor-pointer">
+                <AvatarImage src={comment.author.avatar===null ? process.env.REACT_APP_API_URL+"/avatar.png" : comment.author.avatar?.search("googleusercontent") !== -1 ? comment.author.avatar : process.env.REACT_APP_API_URL + comment.author.avatar} alt="@shadcn" />
+                <AvatarFallback>CN</AvatarFallback>
+            </Avatar>
+            {comment.showLine && <div className="w-[2px] h-full bg-gray-200" style={{marginLeft: /*40*/18+"px"}}></div> }
+        </div>
         <div className="ml-2 w-full">
             <Link to={"/user/"+comment.author.id}><span className="text-sm pl-2">{comment.author.displayName}</span></Link>
             

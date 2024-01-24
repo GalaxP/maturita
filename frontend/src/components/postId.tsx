@@ -17,7 +17,7 @@ import { PostSkeleton } from "./skeleton/post";
 declare var grecaptcha:any
 
 const PostId = () => {
-    const [post, setPost] = useState<PostSchema>({author:{id:"", displayName:"", avatar:""}, title:"", createdAt: new Date(), body:"", community: {name: "", avatar: ""}, _id:"", votes_likes:0, votes_dislikes: 0, user_vote: 0, comments: [], comment_length: 0})
+const [post, setPost] = useState<PostSchema>({author:{id:"", displayName:"", avatar:""}, title:"", createdAt: new Date(), body:"", community: {name: "", avatar: ""}, _id:"", votes_likes:0, votes_dislikes: 0, user_vote: 0, comments: [], comment_length: 0})
     const [documentTitle, setDocumentTitle] = useDocumentTitle("")
     const [isLoading, setIsLoading] = useState(false)
     const id = useParams().postId;
@@ -95,16 +95,31 @@ const PostId = () => {
             })
         })
     }
+    const generateLines = (depth: number) => {
+        let lines:any = [depth]
+        for(let i =0; i < depth; i++) {
+            if(i===0) lines[i] = <div className="w-[2px] flex-shrink-0 bg-gray-200" style={{marginLeft: /*40*/18+"px"}} key={i}></div>;
+            else lines[i] = <div className="w-[2px] flex-shrink-0 bg-gray-200" style={{marginLeft: /*40*/26+"px"}} key={i}></div>;
+        }
+        return lines
+    }
 
     const recursiveComment = (_comment: IComment[], depth: number) => {
         _comment.map((comm: IComment) => {
-            comments.push(<Comment onReply={(id, body)=>reply(comm.id, body)} _id={comm.id} author={comm.author} body={comm.body} createdAt={comm.createdAt} offset={depth} votes_dislikes={comm.votes_dislikes} votes_likes={comm.votes_likes} user_vote={comm.user_vote} key={comm.id} />)
+            if(depth > 1 && window.visualViewport?.width && window.visualViewport?.width <= 320 ) {comments.push(<a className="cursor-pointer" style={{paddingLeft: depth*20+"px"}} key={"show_more_replies"+comm.id}>Show more replies</a>); return; }
+            /*if(depth > 0) comments.push(<div className="w-2 h-32 bg-primary"></div>)*/
+            let comment = <div className="flex flex-row space-x-2 flex-shrink" key={"wrapper "+comm.id}>
+                {generateLines(depth)}
+                <Comment showLine={comm.comments !== undefined} onReply={(id, body)=>reply(comm.id, body)} _id={comm.id} author={comm.author} body={comm.body} createdAt={comm.createdAt} offset={depth} votes_dislikes={comm.votes_dislikes} votes_likes={comm.votes_likes} user_vote={comm.user_vote} key={comm.id} />
+            </div>
+            comments.push(comment)
             if(comm.comments && comm.comments.length > 0) recursiveComment(comm.comments, depth+1);
         })
     }
+
     if(post.comments && post.comments.length>0) {
         post.comments.map((comm:IComment)=>{
-            comments.push(<Comment onReply={(id, body)=>reply(comm.id, body)} _id={comm.id} author={comm.author} body={comm.body} createdAt={comm.createdAt} offset={0} votes_dislikes={comm.votes_dislikes} votes_likes={comm.votes_likes} user_vote={comm.user_vote} key={comm.id}/>)
+            comments.push(<Comment showLine={comm.comments !== undefined} onReply={(id, body)=>reply(comm.id, body)} _id={comm.id} author={comm.author} body={comm.body} createdAt={comm.createdAt} offset={0} votes_dislikes={comm.votes_dislikes} votes_likes={comm.votes_likes} user_vote={comm.user_vote} key={comm.id}/>)
             if(comm.comments && comm.comments.length > 0) recursiveComment(comm.comments, 1);
         })
     }
