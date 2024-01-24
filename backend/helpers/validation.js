@@ -2,7 +2,7 @@ const Joi = require('joi')
 
 const postSchema = Joi.object({
     title: Joi.string().required().min(5).max(70),
-    body: Joi.string().required(),
+    body: Joi.string().required().max(700),
     community: Joi.string().required(),
     token: Joi.string().required()
 })

@@ -26,9 +26,9 @@ export const SettingsLayout = ({children, page} : {children: React.ReactNode, pa
     const navigate = useNavigate();
 
     return <>
-        <div className="p-10 h-full">
+        <div className="pt-2 h-full sm:p-10">
             <div className="flex flex-row justify-stretch">
-                <nav className="flex flex-col w-64">
+                <nav className="flex flex-col w-32 sm:w-64">
                     {Object.keys(pages).map((_page)=>{
                         return _page === page ?  <> 
                         <Button className="justify-start bg-muted" variant={"ghost"} onClick={()=>{navigate("/account"+pages[_page].Url)}}>
@@ -39,7 +39,7 @@ export const SettingsLayout = ({children, page} : {children: React.ReactNode, pa
                     </Button>
                     })}
                 </nav>
-                <div className="w-1/2 p-6 pt-0 flex flex-col items-start">
+                <div className="w-full sm:w-1/2 p-3 sm:p-6 pt-0 flex flex-col items-start">
                     <div className="mb-2 w-full">
                         <h2 className="scroll-m-20 pb-2 text-3xl font-semibold tracking-tight first:mt-0">
                             {pages[page].Title}

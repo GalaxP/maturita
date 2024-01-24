@@ -7,7 +7,7 @@ export const NoResult = ({query}: any) => {
             <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight mt-3">
                 No Search Results for '{query}'
             </h3>
-            <p className="leading-7 [&:not(:first-child)]:mt-1">
+            <p className="leading-7 [&:not(:first-child)]:mt-1 text-center">
             Try adjusting your keywords or filter to find what you're looking for.
             </p>
         </div>

@@ -36,10 +36,6 @@ const Layout = ({children, openNewsletter}: LayoutProps) => {
         <header className="sticky top-0 z-50 w-full border-b px-2 bg-white">
             <div className="h-full py-2 flex justify-between">
                 <div className="flex flex-grow mr-2">
-                    {/* <Button key="home" variant="ghost" onClick={()=>navigate("/")}>
-
-                        SpeakSpace
-                    </Button> */}
                     <Link to={"/"} className="my-auto w-10 h-10 ml-5">
                     <svg data-v-0dd9719b="" version="1.0" className="cursor-pointer" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 60 60" preserveAspectRatio="xMidYMid meet" colorInterpolationFilters="sRGB">
                         <g className="icon-text-wrapper icon-svg-group iconsvg">
@@ -61,42 +57,26 @@ const Layout = ({children, openNewsletter}: LayoutProps) => {
                             </g>
                         </g>
                         <defs v-gra="od"/>
-                        </svg>
+                    </svg>
                         </Link>
                     <div className="mx-auto w-[250px] sm:block hidden ">
-                        {/* <Search className="absolute top-[10px] ml-3 h-5 w-5" strokeWidth={1.3}></Search>
-                        <Input placeholder="Search" className="w-full pl-9 rounded-full" value={searchQuery} onChange={(e)=>{setSearchQuery(e.target.value)}}/> */}
                         <SearchBox key="search"/>
                     </div>
                     <div className="my-auto ml-5 sm:hidden ">
-                        <Search className="cursor-pointer" onClick={()=>navigate("/search")}></Search>
+                        <Search strokeWidth={1.5} className="cursor-pointer" onClick={()=>navigate("/search")}></Search>
                     </div>
                 </div>
                 <div className="flex">
                     <div>
                         <LocaleSwitcher/>
                     </div>
-                    {/*<Button key="user" variant="ghost" className="" onClick={()=>navigate(auth?.isAuthenticated ? "/account/logout" : "/account/login")}>
-                        auth?.isAuthenticated &&<Avatar className="shadow-md cursor-pointer mr-2">
-                            <AvatarImage src={GetAvatar(auth?.getUser())} alt="@shadcn" />
-                            <AvatarFallback>AVATAR</AvatarFallback>
-                        </Avatar> </Button>*/}
                     <div className="flex items-center mx-2">
                         {auth?.isAuthenticated ? <UserNav displayName={auth?.getUser().user.displayName} email={auth?.getUser().user.email} avatar={GetAvatar(auth?.getUser())} />: <Button variant={"ghost"} onClick={()=>navigate("/account/login")}><User2 strokeWidth={1.5} className="mr-1"></User2>{localeContext.localize("LOGIN")}</Button>}
                     </div>
-                            {/*auth?.isAuthenticated ? auth?.getUser().user.displayName :  localeContext.localize("LOGIN") */}
-                    
-                    
                 </div>
             </div>
         </header>
-        
-        {/*auth?.isAuthenticated ? <><p className="w-max">logged in as {auth?.getUser().user.email} ({auth?.getUser().provider})</p><Link to={"/account/logout"}>Logout</Link></>: <Link to={"/account/login"}>Login</Link>*/}
-        {/* </div> */}
-        
-        {/* <div className="mt-8">
-            {children}
-        </div> */}
+
         {children}
         <CookieConsent/>
         <NewsLetter toggleNewsletter={openNewsletter}/>

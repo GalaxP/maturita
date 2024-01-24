@@ -62,6 +62,7 @@ router.post("/action", verifyAccessToken, verifyRecaptcha("action"), async (req,
 
 router.post('/:postId/comment', verifyAccessToken, verifyRecaptcha("comment"), async (req, res, next)=> {
     if(!req.body.body) return next(createError.BadRequest())
+    if(req.body.body.length > 500) return next(createError.BadRequest("the comment was too long"))
     const id = req.params.postId
     if(!id) return next(createError.BadRequest())
     const post = await Post.findById(id).catch(()=> {})
@@ -77,6 +78,23 @@ router.post('/:postId/comment', verifyAccessToken, verifyRecaptcha("comment"), a
 
     res.send(_comment._id)
 })
+
+router.post('/:postId/delete', verifyAccessToken, verifyRecaptcha("delete"), async (req, res, next)=> {
+    const postId = req.params.postId
+    if(!postId) return next(createError.BadRequest())
+    const post = await Post.findById(postId).catch(()=> {})
+    if(!post || await IsUserBanned(post.author)) return next(createError.BadRequest("post with the id "+postId+" does not exist"))
+    if(post.author !== post.author) return next(createError.Unauthorized())
+
+    try {
+        await post.deleteOne()
+        res.send("success")
+    }
+    catch{
+        return next(createError.InternalServerError())
+    }
+})
+
 
 router.post('/:postId/comment/:commentId', verifyAccessToken, verifyRecaptcha("reply"), async (req, res, next)=> {
     if(!req.body.body) return next(createError.BadRequest())

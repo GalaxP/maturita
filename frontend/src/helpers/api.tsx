@@ -1,6 +1,7 @@
 import axios, { AxiosError, AxiosHeaderValue, AxiosHeaders, AxiosRequestConfig, AxiosResponse, RawAxiosRequestHeaders } from "axios";
 import { useContext } from "react";
 import AuthContext from "../contexts/AuthContext";
+import Cookies from 'universal-cookie';
 
 const api_url = process.env.REACT_APP_API_URL
 let accessToken = ""
@@ -121,6 +122,7 @@ const get_data = function(path:string, options?:AxiosRequestConfig, sendToken?:b
         }
     })
 }
+const cookies = new Cookies();
 
 const refresh_token = function() {
     return new Promise((resolve, reject) => {
@@ -137,7 +139,27 @@ const refresh_token = function() {
         })
         .catch((err)=>{
             //TODO: FIGURE OUT WHAT TO DO IF THIS FAILS
+            //PROBABLY SHOULD FORCE LOG OUT
+            cookies.remove("account", { 
+                path:"/",
+                sameSite: "strict",
+                httpOnly: false,
+                secure: true
+            });
+            cookies.remove('refreshToken', {
+                path: "/",
+                sameSite: "lax",
+                httpOnly: false,
+                secure: false
+            })
+            cookies.remove('accessToken', {
+                path: "/",
+                sameSite: "lax",
+                httpOnly: false,
+                secure: false
+            })
             reject(err)
+            window.location.reload()
         })
     })
 }

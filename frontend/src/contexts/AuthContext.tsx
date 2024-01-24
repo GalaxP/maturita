@@ -59,7 +59,13 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
                     return reject(res)
                 }
             })
-            .catch((err)=>{setIsAuthenticated(false);setAccessToken("");return reject(err)})}
+            .catch((err)=>{setIsAuthenticated(false);setAccessToken("");cookies.set('account', JSON.stringify(user), { 
+                path:"/",
+                sameSite: "strict",
+                httpOnly: false,
+                secure: true,
+                maxAge: 30*24*60*60
+            });return reject(err)})}
     )}
 
     const logout = () => {

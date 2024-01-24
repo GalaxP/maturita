@@ -45,8 +45,8 @@ import GetAvatar, { GetCommunityAvatar } from "helpers/getAvatar"
 
 const formSchema = z.object({
   community: z.string(),
-  title: z.string().min(6, "Title must contain at least 6 characters").max(70, "Title must not exceed 50 characters."),
-  body: z.string()
+  title: z.string().min(6, "Title must contain at least 6 characters").max(70, "Title must not exceed 70 characters."),
+  body: z.string().max(700, "Body must not exceed 700 characters.")
 })
 interface props {
     handleSubmit: (values: z.infer<typeof formSchema>) => void,

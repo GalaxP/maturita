@@ -12,6 +12,7 @@ import { AiOutlineDelete } from "react-icons/ai";
 import InteractiveTextArea from "./interactiveTextArea";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
 import prettyDate from "helpers/dateFormat";
+import CharacterCounter from "./characterCounter";
 
 declare var grecaptcha:any
 
@@ -40,10 +41,11 @@ const Comment = (comment: IComment) => {
     const navigate = useNavigate();
     const { toast } = useToast()
     const [reply, setReply] = useState("")
+    const [voting, setVoting] = useState(false)
     
     const vote = (dir: number) => {
         if(!auth?.isAuthenticated) return navigate("/account/login")
-
+        setVoting(true)
         grecaptcha.ready(function() {
             grecaptcha.execute(process.env.REACT_APP_RECAPTCHA_SITE_KEY, {action: 'action'}).then(function(token:string) {
                 if(votes.user_vote===undefined || votes.user_vote === 0) {
@@ -51,36 +53,42 @@ const Comment = (comment: IComment) => {
                     .then(()=> {
                         if(dir === 1) setVotes({...votes, votes_likes: votes.votes_likes+1, user_vote: dir})
                         if(dir === -1) setVotes({...votes, votes_dislikes: votes.votes_dislikes+1, user_vote: dir})
+                        setVoting(false)
                     })
                     .catch(()=>{
                         toast({
                             variant: "destructive",
                             title: "Uh oh! Something went wrong.",
                         })
+                        setVoting(false)
                     })
                 } else if (votes.user_vote === dir) {
                     post_data("/post/action", {postId: comment._id, type:"comment", direction: 0, token: token}, {}, true)
                     .then(()=> {
                         if(votes.user_vote === 1) setVotes({...votes, votes_likes: votes.votes_likes-1, user_vote: 0})
                         else setVotes({...votes, votes_dislikes: votes.votes_dislikes-1, user_vote: 0})
+                        setVoting(false)
                     })
                     .catch(()=>{
                         toast({
                             variant: "destructive",
                             title: "Uh oh! Something went wrong.",
                         })
+                        setVoting(false)
                     })
                 } else {
                     post_data("/post/action", {postId: comment._id, type:"comment", direction: dir, token: token}, {}, true)
                     .then(()=> {
                         if(dir === 1) setVotes({...votes, votes_likes: votes.votes_likes+1, votes_dislikes:votes.votes_dislikes-1, user_vote: dir})
                         else setVotes({...votes, votes_likes: votes.votes_likes-1, votes_dislikes:votes.votes_dislikes+1, user_vote: dir})
+                        setVoting(false)
                     })
                     .catch(()=>{
                         toast({
                             variant: "destructive",
                             title: "Uh oh! Something went wrong.",
                         })
+                        setVoting(false)
                     })
                 }
             });
@@ -112,8 +120,8 @@ const Comment = (comment: IComment) => {
             
             <span className="text-sm pl-2 block break-words">{comment.body}</span>
             <div className="flex flex-row content-center space-x-1 pl-2 items-center">
-                <VoteButton type="like" current_vote={votes.user_vote} votes={votes.votes_likes} onClick={()=>vote(1)}/>
-                <VoteButton type="dislike" current_vote={votes.user_vote} votes={votes.votes_dislikes} onClick={()=>vote(-1)}/>
+                <VoteButton type="like" current_vote={votes.user_vote} votes={votes.votes_likes} onClick={()=>vote(1)} loading={voting}/>
+                <VoteButton type="dislike" current_vote={votes.user_vote} votes={votes.votes_dislikes} onClick={()=>vote(-1)} loading={voting}/>
                 <Button variant="ghost" className="m-1" onClick={()=> {if(auth?.isAuthenticated) {setShowReply(r => !r)} else {navigate("/account/login")}}}>
                     <MessageSquare strokeWidth={1.5} size={20} className="mr-1"/>
                     Reply

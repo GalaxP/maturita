@@ -119,7 +119,7 @@ router.post('/login', verifyRecaptcha("login"), async function(req, res, next) {
 router.post("/refresh-token"/*, rateLimiterUsingThirdParty*/, async function (req, res, next) {
     try {
         const refreshToken = req.cookies.refreshToken;
-        if (!refreshToken) throw createError.BadRequest();
+        if (!refreshToken) {res.clearCookie("refreshToken");res.clearCookie("account");res.redirect(process.env.CLIENT_DOMAIN+"account/logout")}
         const token = await jwt.verifyRefreshToken(refreshToken).catch((err)=>{res.clearCookie("refreshToken");res.clearCookie("account");throw err});
         const accessToken = await jwt.signAccessToken(token.aud, token.provider);
         const refreshToken_ = await jwt.signRefreshToken(token.aud, token.provider).catch((err)=>{res.clearCookie("refreshToken");res.clearCookie("account");return next(res.redirect(process.env.CLIENT_DOMAIN))});
@@ -214,7 +214,7 @@ router.post('/google/callback', async (req,res)=> {
 
         await google_user.save().catch((err)=>{
             console.log(err)
-            return redirect(process.env.CLIENT_DOMAIN)
+            return res.redirect(process.env.CLIENT_DOMAIN)
         });
     }
 

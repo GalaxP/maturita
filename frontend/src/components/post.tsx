@@ -12,6 +12,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import { GetCommunityAvatar } from "helpers/getAvatar";
 import prettyDate from "helpers/dateFormat";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../components/ui/tooltip";
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "./ui/dialog";
 
 declare var grecaptcha:any
 
@@ -26,9 +27,9 @@ const Post = ({props, showLinkToPost, width, showCommunity=true}: Iprop) => {
     //const [likes, setLikes] = useState(0)
     //const [dislikes, setDislikes] = useState(0)
     const [error, setError] = useState()
-    const [post, setPost] = useState<PostSchema>({_id: props._id, community: props.community, author: props.author, body: props.body, createdAt: props.createdAt, title: props.title, votes_dislikes: props.votes_dislikes, votes_likes: props.votes_likes, user_vote: props.user_vote, comments: props.comments, comment_length: props.comment_length})
     const [votes, setVotes] = useState<any>({votes_likes: props.votes_likes, votes_dislikes: props.votes_dislikes, user_vote: props.user_vote})
     const [isVoting, setIsVoting] = useState(false)
+    const [confirmOpen, setConfirmOpen] = useState(false)
     const navigate = useNavigate()
     const { toast } = useToast()
 
@@ -128,8 +129,53 @@ const Post = ({props, showLinkToPost, width, showCommunity=true}: Iprop) => {
         }
     }, [error])
 
+    const openConfirmBox = () => {
+        setConfirmOpen(true)
+    }
+
+    const deletePost = () => {
+        if(!props._id) return
+        grecaptcha.ready(function() {
+            grecaptcha.execute(process.env.REACT_APP_RECAPTCHA_SITE_KEY, {action: 'delete'}).then(function(token:string) {
+                post_data("/post/"+props._id+"/delete", {token: token}, {}, true).then((res)=>{
+                    toast({
+                        variant: "default",
+                        title: "successfully deleted your post.",
+                    })
+                    setConfirmOpen(false)
+                    if(window.location.pathname.includes("post")) navigate("/")
+                    window.location.reload()
+                })
+                .catch(()=>{
+                    toast({
+                        variant: "destructive",
+                        title: "Uh oh! Something went wrong.",
+                    })
+                    setConfirmOpen(false)
+                })
+            })
+        })
+    }
+
     var width_class = `${width ? width : "w-11/12 lg:w-[700px] sm:w-11/12"} mx-auto`;
     return <>
+        <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+            <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                    <DialogTitle>Are you sure you want to delete your post?</DialogTitle>
+                    <DialogDescription>
+                        This action cannot be reversed.
+                    </DialogDescription>
+                </DialogHeader>
+                <DialogFooter>
+                    <DialogClose asChild>
+                        <Button type="submit" variant={"secondary"}>Cancel</Button>
+                    </DialogClose>
+                    <Button type="submit" onClick={deletePost}>Yes</Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+
         <Card className={width_class + (showLinkToPost?" cursor-pointer":"")} onClick={redirect}>
             <CardHeader className="pb-0">
                 <CardDescription className="flex flex-row text-center align-middle">
@@ -137,10 +183,10 @@ const Post = ({props, showLinkToPost, width, showCommunity=true}: Iprop) => {
                             <AvatarImage src={GetCommunityAvatar(props.community.avatar)} alt="@shadcn" />
                             <AvatarFallback>AVATAR</AvatarFallback>
                         </Avatar>
-                        <Link to={"/community/"+props.community.name} className="hover:underline py-auto text-black flex-inline flex-row">
+                        <Link to={"/community/"+props.community.name} className="hover:underline py-auto text-black flex-inline flex-row" key={props._id+ "community"}>
                     {props.community.name}</Link>
                 <span className="dot-separator mx-1"></span></>}
-                    <Link to={"/user/"+props.author.id} className="hover:underline sm:block hidden">{props.author.displayName}</Link> 
+                    <Link to={"/user/"+props.author.id} className="hover:underline sm:block hidden" key={props._id+" user"}>{props.author.displayName}</Link> 
                 <span className="dot-separator mx-1 sm:block hidden"></span>
                     <TooltipProvider>
                         <Tooltip>
@@ -161,14 +207,14 @@ const Post = ({props, showLinkToPost, width, showCommunity=true}: Iprop) => {
             </CardHeader>
             <CardContent className="pt-2 pb-4">
                 <div className="flex flex-row content-center space-x-1">
-                    <VoteButton type="like" votes={votes.votes_likes} current_vote={votes.user_vote} onClick={vote}/>
-                    <VoteButton type="dislike" votes={votes.votes_dislikes} current_vote={votes.user_vote} onClick={vote}/>
+                    <VoteButton type="like" votes={votes.votes_likes} current_vote={votes.user_vote} onClick={vote} loading={isVoting}/>
+                    <VoteButton type="dislike" votes={votes.votes_dislikes} current_vote={votes.user_vote} onClick={vote} loading={isVoting}/>
                     {showLinkToPost && <Button variant="ghost" className="px-2">
                         <AiOutlineComment size={20} className="mr-1"/>
                         {props.comment_length}
                     </Button>}
-                    { auth?.isAuthenticated && auth?.getUser().user.uid === props.author.id &&
-                    <Button variant="ghost" className="px-2">
+                    { auth?.isAuthenticated && auth?.getUser() && auth?.getUser().user.uid === props.author.id &&
+                    <Button variant="ghost" className="px-2" onClick={openConfirmBox}>
                         <AiOutlineDelete size={20} className="mr-1"/>
                         Delete
                     </Button>

@@ -17,23 +17,23 @@ const LocaleSwitcher = () => {
 
 
     return <>{locales.map((lang)=>{
-        return <>
+        return <div key={lang.name}>
         {lang.name === locale.getLocale() &&<Button variant="ghost" key={lang.name} className="pr-1" onBlur={()=>setTimeout(()=>setLocaleToggle(false),200 )}  onClick={()=>setLocaleToggle(l => !l)}>
         {lang.text}
         {!localeToggle ? <ChevronDown key={lang.name+" up"} strokeWidth={1.5} color="gray"/> :
         <ChevronUp key={lang.name+" down"} strokeWidth={1.5} color="gray"/>}
         </Button>
         }
-        </>
+        </div>
     })}
     <div key="languages" className={"bg-white absolute shadow-md w-[105px]" + (localeToggle ? " block" : " hidden")}>
-        {locales.map((lang)=>{
-            return <>
-            {lang.name !== locale.getLocale() &&<Button key={lang.name} variant="ghost" className="pr-1 block w-full text-left" onClick={()=>{localeContext.setLocaleCookie(lang.name); setReRender(true)}}>
+        {locales.map((lang, i)=>{
+            return <div key={lang.name} >
+            {lang.name !== locale.getLocale() &&<Button variant="ghost" key={lang.name+i} className="pr-1 block w-full text-left" onClick={()=>{localeContext.setLocaleCookie(lang.name); setReRender(true)}}>
             {lang.text}
             </Button>
             }
-            </>
+            </div>
         })}
     </div>
     </>

@@ -49,8 +49,8 @@ app.use(function (err, req, res, next) {
     res.status(err.status || 500);
     //err.message = err.message === "" ? err.name : err.message;
 
+    console.log(new Date().toLocaleString('sk')+": "+err.status + " " +err.message+" " + req.path);
     err.message = err.status == 500 || err.status == undefined ? "Internal Server Error" : err.message;
-    console.log(err.status + " " + req.path);
     //res.render("error");
     res.send({ error: { status: err.status, message: err.message } });
 });

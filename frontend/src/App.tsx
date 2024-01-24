@@ -18,6 +18,7 @@ import { Suspense, useEffect, useState } from "react";
 import { lazyLoad } from "routes/lazyLoad";
 import { Security } from "routes/account/security";
 import User from "routes/user";
+import HomeSkeleton from "components/skeleton/home";
 
 const Register = lazyLoad("routes/account/register")
 const PostId = lazyLoad("components/postId", "PostId")
@@ -35,7 +36,7 @@ function App() {
     <>
         <AuthContextProvider>
           <LocalizationContextProvider>
-            <Suspense fallback={<h1>loading...</h1>}>
+            <Suspense fallback={<HomeSkeleton></HomeSkeleton>}>
               <Router>
                 <Layout openNewsletter={openNewsletter}>
                 <Routes>
