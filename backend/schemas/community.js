@@ -25,6 +25,16 @@ const communitySchema = new Schema({
     members: {
         type: [String]
     },
+    tags: {
+        type: [
+            {
+                _id: {type: mongoose.Types.ObjectId},
+                name: {type: String},
+                color: {type: String},
+                createdAt: {type: Date, default: Date.now}
+            }
+        ]
+    },
     createdBy: {
         type: String,
         required: true

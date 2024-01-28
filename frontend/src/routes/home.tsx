@@ -91,7 +91,7 @@ const Home = ({openNewsletter}: {openNewsletter: ()=>void}) => {
           <CardContent className="mt-2">
             <div className="flex flex-col">
             <Link to="/contact">Contact Us</Link>
-            <Link to="/contact">Privacy Policy</Link>
+            <Link to="/privacy-policy">Privacy Policy</Link>
             <Link to="/terms-of-service">Terms of service</Link>
             <a href="#newsletter" onClick={()=>{openNewsletter();localStorage.removeItem("newsletter");return false;}}>Newsletter</a>
             </div>

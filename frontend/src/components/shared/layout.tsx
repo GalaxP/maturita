@@ -9,11 +9,20 @@ import LocaleSwitcher from "components/localeSwitcher";
 import LocalizationContext from "contexts/LocalizationContext";
 import { Input } from "../ui/input";
 import { MagnifyingGlassIcon, PersonIcon } from "@radix-ui/react-icons";
-import { Search, SearchIcon, User, User2, UserCircle2 } from "lucide-react";
+import { Pencil, Search, SearchIcon, User, User2, UserCircle2, Users } from "lucide-react";
 import { SearchBox } from "components/searchBox";
 import { CookieConsent } from "components/cookieConsent";
 import { UserNav } from "components/userNav";
 import { NewsLetter } from "components/newsLetter";
+import { Drawer,
+    DrawerClose,
+    DrawerContent,
+    DrawerDescription,
+    DrawerFooter,
+    DrawerHeader,
+    DrawerTitle,
+    DrawerTrigger, } from "components/ui/drawer";
+import { HiOutlineUserGroup } from "react-icons/hi";
 type LayoutProps = {
     children: React.ReactNode
     openNewsletter: boolean;
@@ -26,6 +35,7 @@ const Layout = ({children, openNewsletter}: LayoutProps) => {
     const [loaded, setLoaded] = useState(false)
     const localeContext = useContext(LocalizationContext)
     const [searchQuery, setSearchQuery] = useState("")
+    const [isSearchOpen, setIsSearchOpen] = useState(false)
 
     useEffect(()=>{
 
@@ -63,7 +73,34 @@ const Layout = ({children, openNewsletter}: LayoutProps) => {
                         <SearchBox key="search"/>
                     </div>
                     <div className="my-auto ml-5 sm:hidden ">
-                        <Search strokeWidth={1.5} className="cursor-pointer" onClick={()=>navigate("/search")}></Search>
+                        <Drawer direction="top" onOpenChange={(e)=>{setSearchQuery(""); setIsSearchOpen(e)}} open={isSearchOpen}>
+                            <DrawerTrigger className="block sm:hidden"><Search strokeWidth={1.5} className="cursor-pointer"></Search></DrawerTrigger>
+                            <DrawerContent>
+                                <DrawerFooter>
+                                    <div className="flex flex-row space-x-4">
+                                        <Input placeholder="Search" value={searchQuery} onChange={(e:any)=>setSearchQuery(e.target.value)}></Input>
+                                        <DrawerClose>
+                                            <Button variant="outline">Cancel</Button>
+                                        </DrawerClose>
+                                    </div>
+                                    <div className="flex flex-col space-y-3 curosr-pointer">
+                                        <div className="flex flex-row items-center" onClick={()=>{setIsSearchOpen(false); navigate('/search?q='+searchQuery+"&t=community")  }}>
+                                            <HiOutlineUserGroup className="mr-2 h-4 w-4" />
+                                            <span>Search '{searchQuery}' in Communities</span>
+                                        </div>
+                                        <div className="flex flex-row items-center" onClick={()=>{setIsSearchOpen(false); navigate('/search?q='+searchQuery+"&t=post")}}>
+                                            <Pencil className="mr-2 h-4 w-4" />
+                                            <span>Search '{searchQuery}' in Posts</span>
+                                        </div>
+                                        <div className="flex flex-row items-center" onClick={()=>{setIsSearchOpen(false); navigate('/search?q='+searchQuery+"&t=user")}}>
+                                            <Users className="mr-2 h-4 w-4" />
+                                            <span>Search '{searchQuery}' in Users</span>
+                                        </div>
+                                    </div>
+                                </DrawerFooter>
+                                
+                            </DrawerContent>
+                        </Drawer>
                     </div>
                 </div>
                 <div className="flex">
@@ -73,6 +110,7 @@ const Layout = ({children, openNewsletter}: LayoutProps) => {
                     <div className="flex items-center mx-2">
                         {auth?.isAuthenticated ? <UserNav displayName={auth?.getUser().user.displayName} email={auth?.getUser().user.email} avatar={GetAvatar(auth?.getUser())} />: <Button variant={"ghost"} onClick={()=>navigate("/account/login")}><User2 strokeWidth={1.5} className="mr-1"></User2>{localeContext.localize("LOGIN")}</Button>}
                     </div>
+                    
                 </div>
             </div>
         </header>

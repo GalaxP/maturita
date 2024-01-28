@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-const { createCommunitySchema } = require("../helpers/validation")
+const { createCommunitySchema, tagSchema } = require("../helpers/validation")
 const createError = require('http-errors');
 const Community = require('../schemas/community');
 const { verifyAccessToken, verifyAccessTokenIfProvided } = require('../helpers/jwt');
@@ -86,7 +86,11 @@ router.get('/:communityName/posts', verifyAccessTokenIfProvided, async (req, res
     var index = 0
     const moderators = []
     for (const _mod of community.moderators) {
-        moderators.push(await User.findOne({uid: _mod}).select('uid displayName avatar provider'))
+        moderators.push(await User.findOne({uid: _mod}).select('uid displayName avatar provider').catch(()=>{return}))
+    }
+    let tags = []
+    for (const _tag of community.tags) {
+        tags.push({name: _tag.name, color: _tag.color})
     }
     for(const _post of posts) {
         const post = await getPostById(_post._id, req.payload.authenticated, req.payload.aud, false)
@@ -96,8 +100,8 @@ router.get('/:communityName/posts', verifyAccessTokenIfProvided, async (req, res
     }
     if(req.query.sort=== "best") returns.sort((firstItem, secondItem) => secondItem.votes_likes - firstItem.votes_likes)
 
-    if(req.payload.authenticated) return res.send({community:{description:community.description, members: community.members.length, avatar: community.avatar, moderators: moderators, isModerator: community.moderators.findIndex((mod)=>mod===req.payload.aud)!==-1, isMember: community.members.findIndex((mem)=>mem===req.payload.aud)!==-1},post:returns})
-    res.send({community:{description:community.description, avatar: community.avatar, moderators: moderators, members: community.members.length},post:returns})
+    if(req.payload.authenticated) return res.send({community:{description:community.description, members: community.members.length, avatar: community.avatar, tags: tags, moderators: moderators, isModerator: community.moderators.findIndex((mod)=>mod===req.payload.aud)!==-1, isMember: community.members.findIndex((mem)=>mem===req.payload.aud)!==-1},post:returns})
+    res.send({community:{description:community.description, avatar: community.avatar, tags: tags, moderators: moderators, members: community.members.length},post:returns})
 })
 
 router.get('/:communityName', verifyAccessTokenIfProvided, async (req, res, next) => {
@@ -144,6 +148,7 @@ router.post('/:communityName/leave', verifyAccessToken, async (req, res, next) =
 
 
 const multer = require('multer');
+const { default: mongoose } = require('mongoose');
 const storage = multer.diskStorage({
   destination: function(req, file, callback) {
     callback(null, process.env.COMMUNITY_AVATAR_PATH);
@@ -204,6 +209,56 @@ router.post('/:communityName/change-avatar', verifyAccessToken, async(req, res, 
         }
     })
 
+})
+
+router.post('/:communityName/add-tag', verifyAccessToken, async (req, res, next) => {
+    if(!req.params.communityName) return next(createError.BadRequest())
+    const community = await Community.findOne({name: req.params.communityName})
+    if(!community) return next(createError.BadRequest("community does not exist"))
+    let err = ""
+    const result = await tagSchema.validateAsync(req.body).catch((_err)=>{err = _err})
+    if(!result) return next(createError.BadRequest(err.details[0].message));
+
+    if(community.moderators.findIndex(x=>x===req.payload.aud) === -1) return next(createError.Forbidden("you are not a moderator of this community"))
+    if(community.tags.findIndex(x=>x.name===result.name) !== -1) return next(createError.Forbidden("tag with the same name already exists"))
+    community.tags.push({
+        name: result.name,
+        color: result.color
+    })
+
+    try {
+        await community.save()
+        res.send("success")
+    }
+    catch{
+        return next(createError.InternalServerError())
+    }
+})
+
+router.post('/:communityName/remove-tag', verifyAccessToken, async (req, res, next) => {
+    if(!req.params.communityName) return next(createError.BadRequest())
+    const community = await Community.findOne({name: req.params.communityName})
+    if(!community) return next(createError.BadRequest("community does not exist"))
+    let err = ""
+    const id = req.body.id
+    if(!id) return next(createError.BadRequest("id is required"));
+
+    if(community.moderators.findIndex(x=>x===req.payload.aud) === -1) return next(createError.Forbidden("you are not a moderator of this community"))
+    //const index = community.tags.findIndex(x=>x.name === id)
+    //console.log(index +community.tags[0]+" "+`new ObjectId("${id}")`)
+    //if(index === -1) return next(createError.Forbidden("this tag does not exist"))
+    //const test = community.tags.findIndex(x=>x._id === new mongoose.Types.ObjectId("65b68f39c33527388f0daaf9"))
+    const test = await Community.findOne({_id: new mongoose.Types.ObjectId(community.id),"tags._id": new mongoose.Types.ObjectId(id) })
+    if(!test) return next(createError.BadRequest("tag does not exist"))
+
+    try {
+        await community.updateOne({$pull: {tags: {_id: id}}})
+        res.send("success")
+    }
+    catch(err){
+        console.log(err)
+        return next(createError.InternalServerError())
+    }
 })
 
 module.exports = router

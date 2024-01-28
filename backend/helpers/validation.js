@@ -4,14 +4,15 @@ const postSchema = Joi.object({
     title: Joi.string().required().min(5).max(70),
     body: Joi.string().required().max(700),
     community: Joi.string().required(),
+    tag: Joi.string(),
     token: Joi.string().required()
 })
 
 const userSchema = Joi.object({
     email: Joi.string().required().email().lowercase(),
-    firstName: Joi.string().required(),
-    lastName: Joi.string().required(),
-    displayName: Joi.string().required().min(3),
+    firstName: Joi.string().required().max(50),
+    lastName: Joi.string().required().max(50),
+    displayName: Joi.string().required().min(3).max(25).regex(/^[a-zA-Z0-9_]+$/),
     password: Joi.string().required().min(6),
     token: Joi.string(),
     uid: Joi.string()
@@ -27,7 +28,7 @@ const postActionSchema = Joi.object({
 
 const createCommunitySchema = Joi.object({
     name: Joi.string().required().max(40),
-    description: Joi.string().required(),
+    description: Joi.string().required().max(200),
 })
 
 const contactSchema = Joi.object({
@@ -45,6 +46,11 @@ const newsLetterSchema = Joi.object({
     message: Joi.string().required(),
     title: Joi.string().required()
 })
+
+const tagSchema = Joi.object({
+    name: Joi.string().required().max(15),
+    color: Joi.string().required().max(30)
+})
 module.exports = {
     postSchema,
     userSchema,
@@ -52,5 +58,6 @@ module.exports = {
     createCommunitySchema,
     contactSchema,
     emailSchema,
-    newsLetterSchema
+    newsLetterSchema,
+    tagSchema
 }

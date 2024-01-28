@@ -1,6 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar"
 import { Button } from "../components/ui/button"
-import { MessageSquare } from 'lucide-react';
+import { MessageSquare, Mic, Mic2 } from 'lucide-react';
 import { VoteButton } from "./voteButton";
 import { Reply } from "./reply";
 import { useContext, useState } from "react";
@@ -13,6 +13,8 @@ import InteractiveTextArea from "./interactiveTextArea";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
 import prettyDate from "helpers/dateFormat";
 import CharacterCounter from "./characterCounter";
+import { Badge } from "./ui/badge";
+import { HiMicrophone } from "react-icons/hi";
 
 declare var grecaptcha:any
 
@@ -26,7 +28,8 @@ export interface IComment {
     createdAt: Date,
     offset: number,
     onReply: (id:string, replyBody: string) => void,
-    showLine?: boolean
+    showLine?: boolean,
+    isOp: boolean
 }
 
 interface IVote {
@@ -105,9 +108,9 @@ const Comment = (comment: IComment) => {
             {comment.showLine && <div className="w-[2px] h-full bg-gray-200" style={{marginLeft: /*40*/18+"px"}}></div> }
         </div>
         <div className="ml-2 w-full">
-            <Link to={"/user/"+comment.author.id}><span className="text-sm pl-2">{comment.author.displayName}</span></Link>
             
-            <div className="inline-block">
+            <div className="flex flex-row items-center">
+                <Link to={"/user/"+comment.author.id}><span className="text-sm pl-2">{comment.author.displayName}</span></Link>
                 <span className="text-sm text-muted-foreground pl-2">
                     <TooltipProvider>
                         <Tooltip>
@@ -120,9 +123,10 @@ const Comment = (comment: IComment) => {
                         </Tooltip>
                     </TooltipProvider>
                 </span>
+                { comment.isOp && <Badge className="h-5 ml-1 text-center" variant={"outline"}>Original Poster</Badge> }
             </div>
             
-            <span className="text-sm pl-2 block break-words">{comment.body}</span>
+            <span className="text-sm pl-2 block break-words mt-1">{comment.body}</span>
             <div className="flex flex-row content-center space-x-1 pl-2 items-center">
                 <VoteButton type="like" current_vote={votes.user_vote} votes={votes.votes_likes} onClick={()=>vote(1)} loading={voting}/>
                 <VoteButton type="dislike" current_vote={votes.user_vote} votes={votes.votes_dislikes} onClick={()=>vote(-1)} loading={voting}/>

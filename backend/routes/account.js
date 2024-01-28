@@ -48,7 +48,7 @@ const upload = multer({storage: storage, fileFilter: function (req, file, callba
 router.post('/register', verifyRecaptcha("register"), async function(req, res, next) {
     try {
     const result = await userSchema.validateAsync(req.body).catch((err) => {
-        throw createError(400);
+        throw createError.BadRequest(err.message);
     });
     if(!req.body.token) return next(createError.BadRequest())
     const doesExist = await User.findOne({ email: result.email });

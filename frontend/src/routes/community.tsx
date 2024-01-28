@@ -6,23 +6,24 @@ import { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { PostSchema } from "schemas/postSchema";
 import { Button } from "../components/ui/button"
-import { ArrowBigUp, ArrowDownWideNarrowIcon, BadgePlus, Bell, Pencil, Shield, Users } from "lucide-react";
+import { ArrowBigUp, ArrowDownWideNarrowIcon, BadgePlus, Bell, Pencil, PlusCircle, Shield, Users } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import CreatePost from "components/createPost";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../components/ui/card";
 import { useToast } from "../components/ui/use-toast"
 import GetAvatar, { GetCommunityAvatar } from "helpers/getAvatar";
 import { ChangeAvatar } from "components/changeAvatar";
 import { NoResult } from "components/noResult";
 import { NoPosts } from "components/noPosts";
 import HomeSkeleton from "components/skeleton/home";
+import { Badge } from "components/ui/badge";
 
 const Community = () => {
     const community_name = useParams().community;
     const [loaded, setLoaded] = useState(false);
     const [posts, setPosts] = useState<PostSchema[]>([{author:{id:"",displayName:"", avatar:""}, title:"", createdAt: new Date(), body:"", _id:"", community: {name:"", avatar:""}, votes_likes:0, votes_dislikes:0, user_vote:0, comments:[], comment_length :0}]);
     const [error, setError] = useState("");
-    const [communityInfo, setCommunityInfo] = useState({description: "", members: 0, moderators: [{uid: "", displayName:"", avatar: "", provider: ""}], isModerator:false, isMember: false, avatar: ""})
+    const [communityInfo, setCommunityInfo] = useState({description: "", members: 0, tags: [{name: "", color:""}], moderators: [{uid: "", displayName:"", avatar: "", provider: ""}], isModerator:false, isMember: false, avatar: ""})
     const [documentTitle, setDocumentTitle] = useDocumentTitle("")
     const [sortBy, setSortBy] = useState<{type:"newest" | "best", timeFrame: "alltime" | "day" | "week" | "month" | "year"}>({type: "newest", timeFrame: "day"})
     const navigate = useNavigate();
@@ -170,6 +171,24 @@ const Community = () => {
                     </Card>
                     <Card className="my-2">
                         <CardHeader>
+                            <CardTitle>Tags</CardTitle>
+                            <CardDescription>
+                                These are the tags used for filtering posts
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            {communityInfo.tags.map((tag)=>{
+                                return <>
+                                        <Badge className={"h-5 ml-1 text-center text-white"} style={{backgroundColor: tag.color}} variant={"secondary"}>{tag.name}</Badge>
+                                </> 
+                            })}
+                        </CardContent>
+                        { communityInfo.isModerator &&<CardFooter>
+                                <Button className="flex justify-start" variant={"round_outline"}><PlusCircle strokeWidth={1.5} className="mr-2"></PlusCircle> Add Tag</Button>
+                        </CardFooter>}
+                    </Card>
+                    <Card className="my-2">
+                        <CardHeader>
                             <CardTitle>Moderators <Shield className="inline w-6 h-6"/></CardTitle>
                             <CardDescription>
                                 These are the people that enforce the rules of this community
@@ -189,6 +208,7 @@ const Community = () => {
                             })}
                         </CardContent>
                     </Card>
+                    
                     </div>
                 </div>
             </div>

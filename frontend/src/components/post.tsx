@@ -13,6 +13,8 @@ import { GetCommunityAvatar } from "helpers/getAvatar";
 import prettyDate from "helpers/dateFormat";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../components/ui/tooltip";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "./ui/dialog";
+import { Progress } from "./ui/progress";
+import { Badge } from "./ui/badge";
 
 declare var grecaptcha:any
 
@@ -178,7 +180,7 @@ const Post = ({props, showLinkToPost, width, showCommunity=true}: Iprop) => {
 
         <Card className={width_class + (showLinkToPost?" cursor-pointer":"")} onClick={redirect}>
             <CardHeader className="pb-0">
-                <CardDescription className="flex flex-row text-center align-middle">
+                <CardDescription className="flex flex-row text-center items-center center">
                     {showCommunity&& <><Avatar className="shadow-md cursor-pointer w-[20px] h-[20px] inline-block mr-1">
                             <AvatarImage src={GetCommunityAvatar(props.community.avatar)} alt="@shadcn" />
                             <AvatarFallback>AVATAR</AvatarFallback>
@@ -196,6 +198,7 @@ const Post = ({props, showLinkToPost, width, showCommunity=true}: Iprop) => {
                             <TooltipContent>
                                 {new Date(props.createdAt).toLocaleDateString() + " " + new Date(props.createdAt).toLocaleTimeString()}
                             </TooltipContent>
+                            <Badge className="h-5 ml-1 text-center bg-indigo-400 text-white" variant={"secondary"}>MEMES</Badge>
                         </Tooltip>
                     </TooltipProvider>
                 </CardDescription>
@@ -221,6 +224,8 @@ const Post = ({props, showLinkToPost, width, showCommunity=true}: Iprop) => {
                     }
 
                 </div>
+                {/*<div className="h-1 w-16 bg-black"></div> */}
+                {/*<Progress value={votes.votes_likes / (votes.votes_likes+votes.votes_dislikes) * 100} className="w-[80px] mt-1 ml-2 h-[3px] bg-slate-200"></Progress>*/}
             </CardContent>
         </Card>
     </>

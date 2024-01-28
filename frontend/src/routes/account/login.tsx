@@ -61,7 +61,7 @@ const Login = () => {
             <LoginForm handleSubmit={onSubmit} isLoading={isLoading} googleSignIn={googleLogin} incorrectCredentials={error}/>
 
             <div id="buttonDiv" className="mt-3"></div>
-            <div className="text-center mt-3"><p>Don't have an account? <Link to={"/account/register"} className="text-blue-500">Register here.</Link></p></div>
+            <div className="text-center mt-3"><p>Don't have an account? <Link to={"/account/register"} className="text-primary">Register here.</Link></p></div>
         </div>
     </div>
 }

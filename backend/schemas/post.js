@@ -23,6 +23,9 @@ const postSchema = new Schema({
         type: String,
         required: true
     },
+    tag: {
+        type: mongoose.Schema.Types.ObjectId,
+    },
     comments: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Comment'

@@ -25,6 +25,7 @@ const PostId = lazyLoad("components/postId", "PostId")
 const Contact = lazyLoad("routes/contact", "Contact")
 const AdminRoute = lazyLoad("routes/adminRoute")
 const TOS = lazyLoad("routes/termsOfService")
+const PrivacyPolicy = lazyLoad("routes/privacyPolicy")
 
 function App() {
   const [openNewsletter, setOpenNewsletter] = useState(false)
@@ -57,6 +58,7 @@ function App() {
                   <Route path="/admin" element={<AdminRoute/>}></Route>
 
                   <Route path="/terms-of-service" element={<TOS/>}></Route>
+                  <Route path="/privacy-policy" element={<PrivacyPolicy/>}></Route>
 
                   <Route path='google'>
                     <Route path='callback' element={<Callback/>}></Route>

@@ -103,6 +103,7 @@ export function SubmitForm({handleSubmit, isLoading, defaultCommunity, showMyCom
       .then((res)=> {
         if(res.data.length > 0 && res.data[0].name === defaultCommunity) {
           setCommunities({communities: [{value: defaultCommunity, label: res.data[0].name, avatar: res.data[0].avatar, members: res.data[0].members}], isEmpty: false})
+          setSelectedCommunityAvatar(res.data[0].avatar)
           form.setValue("community", defaultCommunity);
         }
       })

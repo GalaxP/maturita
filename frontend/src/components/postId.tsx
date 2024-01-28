@@ -110,7 +110,7 @@ const [post, setPost] = useState<PostSchema>({author:{id:"", displayName:"", ava
             /*if(depth > 0) comments.push(<div className="w-2 h-32 bg-primary"></div>)*/
             let comment = <div className="flex flex-row space-x-2 flex-shrink" key={"wrapper "+comm.id}>
                 {generateLines(depth)}
-                <Comment showLine={comm.comments !== undefined} onReply={(id, body)=>reply(comm.id, body)} _id={comm.id} author={comm.author} body={comm.body} createdAt={comm.createdAt} offset={depth} votes_dislikes={comm.votes_dislikes} votes_likes={comm.votes_likes} user_vote={comm.user_vote} key={comm.id} />
+                <Comment isOp={comm.author.id === post.author.id} showLine={comm.comments !== undefined} onReply={(id, body)=>reply(comm.id, body)} _id={comm.id} author={comm.author} body={comm.body} createdAt={comm.createdAt} offset={depth} votes_dislikes={comm.votes_dislikes} votes_likes={comm.votes_likes} user_vote={comm.user_vote} key={comm.id} />
             </div>
             comments.push(comment)
             if(comm.comments && comm.comments.length > 0) recursiveComment(comm.comments, depth+1);
@@ -119,7 +119,7 @@ const [post, setPost] = useState<PostSchema>({author:{id:"", displayName:"", ava
 
     if(post.comments && post.comments.length>0) {
         post.comments.map((comm:IComment)=>{
-            comments.push(<Comment showLine={comm.comments !== undefined} onReply={(id, body)=>reply(comm.id, body)} _id={comm.id} author={comm.author} body={comm.body} createdAt={comm.createdAt} offset={0} votes_dislikes={comm.votes_dislikes} votes_likes={comm.votes_likes} user_vote={comm.user_vote} key={comm.id}/>)
+            comments.push(<Comment isOp={comm.author.id === post.author.id} showLine={comm.comments !== undefined} onReply={(id, body)=>reply(comm.id, body)} _id={comm.id} author={comm.author} body={comm.body} createdAt={comm.createdAt} offset={0} votes_dislikes={comm.votes_dislikes} votes_likes={comm.votes_likes} user_vote={comm.user_vote} key={comm.id}/>)
             if(comm.comments && comm.comments.length > 0) recursiveComment(comm.comments, 1);
         })
     }

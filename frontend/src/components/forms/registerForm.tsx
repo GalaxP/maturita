@@ -20,7 +20,7 @@ const formSchema = z.object({
     firstName: z.string(),
     lastName: z.string(),
     email: z.string().email(),
-    displayName: z.string().min(3, "Your username has to be at least 3 characters long"),
+    displayName: z.string().min(3, "Your username has to be at least 3 characters long").max(25, "Your username cannot be longer than 25 characters").regex(/^[a-zA-Z0-9_]+$/, "Your username has to contain only letters, numbers or underscores"),
     password: z.string().min(6, "Password must be at least 6 characters long"),
     confirmPassword: z.string(),
     tos: z.boolean().default(false).refine((value) => value === true, {
@@ -153,7 +153,7 @@ export function RegisterForm({handleSubmit, isLoading, setError}: auth) {
                             <label
                                 htmlFor="tos"
                                 className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                                Accept <a className="text-primary" href="/terms-of-service"> terms and conditions </a>
+                                Accept <a className="text-primary" href="/terms-of-service" target="_blank"> terms and conditions </a> and <a className="text-primary" href="/privacy-policy" target="_blank"> privacy policy </a>
                             </label>
                         </div>
                     </FormControl>
