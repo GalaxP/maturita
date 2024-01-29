@@ -12,7 +12,7 @@ import {
 } from "../../components/ui/form"
 import { Input } from "../../components/ui/input"
 import { useForm } from "react-hook-form"
-import { ChevronDown, ChevronsDown, Loader2 } from "lucide-react"
+import { ChevronDown, ChevronsDown, Loader2, Tag } from "lucide-react"
 import { Textarea } from "../ui/textarea"
 
 import {
@@ -42,11 +42,13 @@ import { Label } from "../../components/ui/label"
 import { useNavigate } from "react-router-dom"
 import { Avatar, AvatarFallback, AvatarImage } from "../../components/ui/avatar"
 import GetAvatar, { GetCommunityAvatar } from "helpers/getAvatar"
+import { Badge } from "components/ui/badge"
 
 const formSchema = z.object({
   community: z.string(),
   title: z.string().min(6, "Title must contain at least 6 characters").max(70, "Title must not exceed 70 characters."),
-  body: z.string().max(700, "Body must not exceed 700 characters.")
+  body: z.string().max(700, "Body must not exceed 700 characters."),
+  tag: z.string().optional()
 })
 interface props {
     handleSubmit: (values: z.infer<typeof formSchema>) => void,
@@ -65,18 +67,28 @@ export function SubmitForm({handleSubmit, isLoading, defaultCommunity, showMyCom
   const [communityName, setCommunityName] = useState("")
   const [communityDescription, setCommunityDescription] = useState("")
   const [selectedCommunityAvatar, setSelectedCommunityAvatar] = useState("")
+  const [selectedTag, setSelectedTag] = useState<{name: string, color: string}>({name:"", color:""})
   const [isAvailable, setIsAvailable] = useState(false)
+  const [selectedCommunity, setSelectedCommunity] = useState({
+    value: "",
+    label: "",
+    avatar: "",
+    tags: [{name: "", color: ""}],
+    members: 0
+  })
   const [query, setQuery] = useState("")
   const [communities, setCommunities] = useState({communities: [{
     value: "general",
     label: "General",
     avatar: "/avatars/community/general.jpg",
+    tags: [{name: "", color: ""}],
     members: 0
   },], isEmpty : false})
   const [mycommunities, setMyCommunities] = useState({communities: [{
     value: "",
     label: "",
     avatar: "",
+    tags: [{name: "", color: ""}],
     members: 0
   },], isEmpty : false})
 
@@ -91,9 +103,10 @@ export function SubmitForm({handleSubmit, isLoading, defaultCommunity, showMyCom
         if(res.status === 200) {
           let _community = []
           for (let i = 0; i < res.data.length; i++) {
-            _community[i] = {value: res.data[i].name, avatar: res.data[i].avatar, label: res.data[i].name, members:  res.data[i].members}
+            _community[i] = {value: res.data[i].name, tags:res.data[i].tags, avatar: res.data[i].avatar, label: res.data[i].name, members:  res.data[i].members}
           }
           setMyCommunities({communities: _community, isEmpty: res.data.length > 0 ? false : true})
+          form.setValue("tag", "")
         }
       }).catch((err)=>{console.log(err)})
       //return
@@ -102,8 +115,9 @@ export function SubmitForm({handleSubmit, isLoading, defaultCommunity, showMyCom
       post_data("/community/search", {query: defaultCommunity}, {}, true)
       .then((res)=> {
         if(res.data.length > 0 && res.data[0].name === defaultCommunity) {
-          setCommunities({communities: [{value: defaultCommunity, label: res.data[0].name, avatar: res.data[0].avatar, members: res.data[0].members}], isEmpty: false})
+          setCommunities({communities: [{value: defaultCommunity, tags:res.data[0].tags, label: res.data[0].name, avatar: res.data[0].avatar, members: res.data[0].members}], isEmpty: false})
           setSelectedCommunityAvatar(res.data[0].avatar)
+          setSelectedCommunity(res.data[0])
           form.setValue("community", defaultCommunity);
         }
       })
@@ -148,20 +162,20 @@ export function SubmitForm({handleSubmit, isLoading, defaultCommunity, showMyCom
 
   const searchCommunities = (query: string) => {
     query = query[0]
-    if(!query) return setCommunities({communities: [{value: "", label: "", avatar: "", members:0}], isEmpty: true})
+    if(!query) return setCommunities({communities: [{value: "", tags: [{name: "", color: ""}], label: "", avatar: "", members:0}], isEmpty: true})
     
     post_data("/community/search", {query: query}, {}, true)
     .then((res)=> {
-      if(res.data.length === undefined || res.data.length === 0) return setCommunities({communities: [{value: "", label: "", avatar: "", members:0}], isEmpty: true})
-      setCommunities({communities: [{value: "", label: "", avatar: "", members:0}], isEmpty: true})
-      var communities_temp = [{value:"", label:"", avatar: "", members:0}]
+      if(res.data.length === undefined || res.data.length === 0) return setCommunities({communities: [{value: "", tags: [{name: "", color: ""}], label: "", avatar: "", members:0}], isEmpty: true})
+      setCommunities({communities: [{value: "", label: "", tags: [{name: "", color: ""}], avatar: "", members:0}], isEmpty: true})
+      var communities_temp = [{value:"", label:"", tags: [{name: "", color: ""}], avatar: "", members:0}]
       res.data.map((community:any, index:number)=> {
-        communities_temp[index] = {value: community.name, label: community.name, avatar: community.avatar, members: community.members}
+        communities_temp[index] = {value: community.name, label: community.name, tags:community.tags, avatar: community.avatar, members: community.members}
       })
       setCommunities({communities: communities_temp, isEmpty: false})      
     })
   }
-  const debounced = debounce(searchCommunities, 500);
+  const debounced = debounce(e=>searchCommunities(e), 500);
 
  
   function onSubmit(values: z.infer<typeof formSchema>) {
@@ -207,7 +221,7 @@ export function SubmitForm({handleSubmit, isLoading, defaultCommunity, showMyCom
                     </PopoverTrigger>
                     <PopoverContent className="max-w-[310px] p-0">
                       <Command className="max-w-[310px]">
-                        <CommandInput className="max-w-[310px]" placeholder="Search communities..." onValueChange={(e)=>{setQuery(e);debounced(e)}}/>
+                        <CommandInput className="max-w-[310px]" placeholder="Search communities..." onValueChange={(e)=>{debounced(e);setQuery(e);}}/>
                         <CommandEmpty>No communities found.</CommandEmpty>
                         { !communities.isEmpty && <CommandGroup heading="Others">
                           {!communities.isEmpty &&
@@ -218,6 +232,9 @@ export function SubmitForm({handleSubmit, isLoading, defaultCommunity, showMyCom
                               onSelect={() => {
                                 form.setValue("community", community.value)
                                 setSelectedCommunityAvatar(community.avatar)
+                                setSelectedCommunity(community)
+                                setSelectedTag({color: "", name:""})
+                                form.setValue("tag", "")
                                 setOpen(false)
                               }}
                             >
@@ -243,6 +260,9 @@ export function SubmitForm({handleSubmit, isLoading, defaultCommunity, showMyCom
                               onSelect={() => {
                                 form.setValue("community", community.value)
                                 setSelectedCommunityAvatar(community.avatar)
+                                setSelectedCommunity(community)
+                                setSelectedTag({color:"", name: ""})
+                                form.setValue("tag", "")
                                 setOpen(false)
                               }}
                             >
@@ -296,6 +316,61 @@ export function SubmitForm({handleSubmit, isLoading, defaultCommunity, showMyCom
                       <Button type="submit" onClick={()=>{if(communityDescription !== "" && isAvailable){createCommunity()} }}>Confirm</Button>
                     </DialogFooter>
                   </DialogContent>
+                </Dialog>
+
+                <FormMessage/>
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="tag"
+            render={({field})=> (
+              <FormItem className="flex flex-col">
+                <Dialog>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant="round_outline"
+                          role="combobox"
+                          className="max-w-[250px] justify-between"
+                          >
+                          {field.value
+                            ? //communities.find((communities) => communities.value === field.value)?.label
+                            <>
+                              <Badge className={"h-5 ml-1 text-center text-white"} style={{backgroundColor: selectedTag.color}} variant={"secondary"}>{selectedTag.name}</Badge>
+                            </>
+                            : <span className="mr-auto"><Tag strokeWidth={1.3} className="inline"></Tag> Tag</span>}
+                          <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="max-w-[250px] p-0">
+                      <Command className="max-w-[250px]">
+                        <CommandInput className="max-w-[310px]" placeholder="Search tags..."/>
+                        <CommandEmpty>No tags found.</CommandEmpty>
+                        { selectedCommunity && selectedCommunity.tags.length>0 && <CommandGroup>
+                          { selectedCommunity.value !== "" && selectedCommunity.tags &&
+                          selectedCommunity.tags.map((tag) => (
+                            <CommandItem
+                              value={tag.name}
+                              key={tag.name}
+                              onSelect={() => {
+                                form.setValue("tag", tag.name)
+                                setSelectedTag({color: tag.color, name: tag.name})
+                              }}
+                            >
+                              <Badge className={"h-5 ml-1 text-center text-white"} style={{backgroundColor: tag.color}} variant={"secondary"}>{tag.name}</Badge>
+                            </CommandItem>
+                          ))
+                                }
+                        </CommandGroup> }
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                  
                 </Dialog>
 
                 <FormMessage/>

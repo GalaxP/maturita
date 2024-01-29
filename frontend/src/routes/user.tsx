@@ -12,7 +12,7 @@ import { useParams } from "react-router-dom"
 import { PostSchema } from "schemas/postSchema"
 
 const User = () => {
-    const [user, setUser] = useState<{id: string, displayName:string, provider: string, createdAt:number, avatar:string, posts_length:number, posts: PostSchema[]}>({avatar:"",displayName:"", id:"", createdAt:0, provider:"", posts_length:0, posts: [{author:{id:"",displayName:"", avatar:""}, title:"", createdAt: new Date(), body:"", _id:"", community: {name: "", avatar:""}, votes_likes:0, votes_dislikes:0, user_vote:0, comments:[], comment_length :0}]})
+    const [user, setUser] = useState<{id: string, displayName:string, provider: string, createdAt:number, avatar:string, posts_length:number, posts: PostSchema[]}>({avatar:"",displayName:"", id:"", createdAt:0, provider:"", posts_length:0, posts: [{author:{id:"",displayName:"", avatar:"", provider: ""}, title:"", createdAt: new Date(), body:"", _id:"", community: {name: "", avatar:""}, votes_likes:0, votes_dislikes:0, user_vote:0, comments:[], comment_length :0}]})
     const { userId } = useParams()
     const [error, setError] = useState("")
     const auth = useContext(AuthContext)

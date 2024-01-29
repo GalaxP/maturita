@@ -14,7 +14,7 @@ const Submit = () => {
     const [commParams] = useSearchParams();
     const comm = commParams.get("comm")
     
-    async function handleSubmit(forms:{ body: string; title: string; }) {
+    async function handleSubmit(forms:{ body: string; title: string; tag?:string}) {
         grecaptcha.ready(function() {
           grecaptcha.execute(process.env.REACT_APP_RECAPTCHA_SITE_KEY, {action: 'post'}).then(function(token:string) {
             auth?.protectedAction(()=> {

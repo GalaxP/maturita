@@ -35,7 +35,8 @@ router.post('/post', verifyAccessToken, verifyRecaptcha("post"), async function 
       author: req.payload.aud,
       body: result.body,
       title: result.title,
-      community: result.community
+      community: result.community,
+      tag: result.tag
     })
 
     _post.save().then(()=>{
@@ -43,6 +44,7 @@ router.post('/post', verifyAccessToken, verifyRecaptcha("post"), async function 
     }).catch((err)=>{
       if(err) {
         //console.log(err)
+        console.log(err)
         err.status = 500;
         return next(createError.InternalServerError());
       }

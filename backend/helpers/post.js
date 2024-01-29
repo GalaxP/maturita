@@ -25,7 +25,7 @@ const getPostById = async (postId, authorized, userId, getComments) => {
         const author = await User.findOne({uid:_post.author})
         if(!author || await IsUserBanned(_post.author)) return null
         
-        result.author = {id: author.uid, displayName: author.displayName, avatar: author.provider==="google" ? author.google.picture : author.avatar}
+        result.author = {id: author.uid, displayName: author.displayName, avatar: author.provider==="google" ? author.google.picture : author.avatar, provider: author.provider}
         const comments_ids = _post.comments;
         var comments = [];
         var commentsLength = 0;
@@ -53,6 +53,11 @@ const getPostById = async (postId, authorized, userId, getComments) => {
             if(!await IsUserBanned(comment.author)) commentsLength += await getAmountOfComments(comment._id) //note: not very optimized since this runs twice if you want to load all comments
         }
         result.comment_length = commentsLength
+        const tagIndex = comm.tags.findIndex(x=>x.name === _post.tag)
+        if(tagIndex !== -1) result.tag={
+            name: comm.tags[tagIndex].name,
+            color: comm.tags[tagIndex].color
+        }
 
         comments.sort((a, b) => {
             return b.votes_likes - a.votes_likes;

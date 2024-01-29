@@ -49,7 +49,7 @@ router.post("/search", verifyAccessTokenIfProvided, async (req, res, next)=> {
     if(communities.length === 0) return res.send({})
     var communities_result = []
     communities.map((community, index)=>{
-        communities_result[index] = pick(community, "name", "avatar")
+        communities_result[index] = pick(community, "name", "avatar", "tags")
         communities_result[index].members = community.members.length
         if(req.payload.authenticated) communities_result[index].isMember = community.members.findIndex((mem)=>mem===req.payload.aud) !== -1
     })

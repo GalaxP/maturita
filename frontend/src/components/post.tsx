@@ -9,7 +9,7 @@ import { Button } from "../components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
 import { useToast } from "./ui/use-toast";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
-import { GetCommunityAvatar } from "helpers/getAvatar";
+import GetAvatar, { GetCommunityAvatar, getStringAvatar } from "helpers/getAvatar";
 import prettyDate from "helpers/dateFormat";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../components/ui/tooltip";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "./ui/dialog";
@@ -188,7 +188,15 @@ const Post = ({props, showLinkToPost, width, showCommunity=true}: Iprop) => {
                         <Link to={"/community/"+props.community.name} className="hover:underline py-auto text-black flex-inline flex-row" key={props._id+ "community"}>
                     {props.community.name}</Link>
                 <span className="dot-separator mx-1"></span></>}
+
+                {!showCommunity&& <><Avatar className="shadow-md cursor-pointer w-[20px] h-[20px] inline-block mr-1">
+                            <AvatarImage src={getStringAvatar(props.author.avatar, props.author.provider)} alt="@shadcn" />
+                            <AvatarFallback>AVATAR</AvatarFallback>
+                        </Avatar>
+                    </>}
+
                     <Link to={"/user/"+props.author.id} className="hover:underline sm:block hidden" key={props._id+" user"}>{props.author.displayName}</Link> 
+                    
                 <span className="dot-separator mx-1 sm:block hidden"></span>
                     <TooltipProvider>
                         <Tooltip>
@@ -198,10 +206,12 @@ const Post = ({props, showLinkToPost, width, showCommunity=true}: Iprop) => {
                             <TooltipContent>
                                 {new Date(props.createdAt).toLocaleDateString() + " " + new Date(props.createdAt).toLocaleTimeString()}
                             </TooltipContent>
-                            <Badge className="h-5 ml-1 text-center bg-indigo-400 text-white" variant={"secondary"}>MEMES</Badge>
                         </Tooltip>
                     </TooltipProvider>
+                    {props.tag && <Badge className="h-5 ml-1 text-center hidden sm:block text-white" style={{backgroundColor: props.tag.color}} variant={"secondary"}>{props.tag.name}</Badge>}
+
                 </CardDescription>
+                {props.tag && <Badge className="h-5 w-max text-center block sm:hidden text-white" style={{backgroundColor: props.tag.color}} variant={"secondary"}>{props.tag.name}</Badge>}
                 {!showLinkToPost &&<Link to={"/user/"+props.author.id} className="hover:underline sm:hidden block text-xs text-primary">u/{props.author.displayName}</Link>}
 
                 <CardTitle>{props.title}</CardTitle>
@@ -224,8 +234,6 @@ const Post = ({props, showLinkToPost, width, showCommunity=true}: Iprop) => {
                     }
 
                 </div>
-                {/*<div className="h-1 w-16 bg-black"></div> */}
-                {/*<Progress value={votes.votes_likes / (votes.votes_likes+votes.votes_dislikes) * 100} className="w-[80px] mt-1 ml-2 h-[3px] bg-slate-200"></Progress>*/}
             </CardContent>
         </Card>
     </>

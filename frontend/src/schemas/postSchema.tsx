@@ -15,7 +15,12 @@ export interface PostSchema {
     author: {
         id: string,
         displayName: string,
-        avatar: string
+        avatar: string,
+        provider: string
+    }
+    tag?: {
+        name:string
+        color:string
     }
     createdAt: Date
     votes_likes: number

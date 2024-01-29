@@ -274,7 +274,7 @@ router.post ('/upload', jwt.verifyAccessToken, async (req, res) => {
 
 router.get('/communities', jwt.verifyAccessToken, async (req,res,next) => {
     const usr = req.payload.aud
-    const membered_communities = await Community.find({members: {$all: [usr]}}, 'name description avatar members')
+    const membered_communities = await Community.find({members: {$all: [usr]}}, 'name description avatar members tags')
     for(let i = 0; i < membered_communities.length; i++) {
         membered_communities[i].members = membered_communities[i].members.length
     }

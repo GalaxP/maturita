@@ -24,7 +24,7 @@ const postSchema = new Schema({
         required: true
     },
     tag: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: String,
     },
     comments: [{
         type: mongoose.Schema.Types.ObjectId,

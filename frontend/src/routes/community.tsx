@@ -13,15 +13,18 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { useToast } from "../components/ui/use-toast"
 import GetAvatar, { GetCommunityAvatar } from "helpers/getAvatar";
 import { ChangeAvatar } from "components/changeAvatar";
-import { NoResult } from "components/noResult";
 import { NoPosts } from "components/noPosts";
 import HomeSkeleton from "components/skeleton/home";
 import { Badge } from "components/ui/badge";
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../components/ui/dialog";
+import { DialogTrigger } from "components/ui/dialog";
+import { CreateTagForm } from "components/forms/createTagForm";
+
 
 const Community = () => {
     const community_name = useParams().community;
     const [loaded, setLoaded] = useState(false);
-    const [posts, setPosts] = useState<PostSchema[]>([{author:{id:"",displayName:"", avatar:""}, title:"", createdAt: new Date(), body:"", _id:"", community: {name:"", avatar:""}, votes_likes:0, votes_dislikes:0, user_vote:0, comments:[], comment_length :0}]);
+    const [posts, setPosts] = useState<PostSchema[]>([{author:{id:"",displayName:"", avatar:"", provider: ""}, title:"", createdAt: new Date(), body:"", _id:"", community: {name:"", avatar:""}, votes_likes:0, votes_dislikes:0, user_vote:0, comments:[], comment_length :0}]);
     const [error, setError] = useState("");
     const [communityInfo, setCommunityInfo] = useState({description: "", members: 0, tags: [{name: "", color:""}], moderators: [{uid: "", displayName:"", avatar: "", provider: ""}], isModerator:false, isMember: false, avatar: ""})
     const [documentTitle, setDocumentTitle] = useDocumentTitle("")
@@ -29,7 +32,8 @@ const Community = () => {
     const navigate = useNavigate();
     const { toast } = useToast()
     const [sortToggle, setSortToggle] = useState(false)
-
+    const [tagLoading, setTagLoading] = useState(false)
+    const [refresh, setRefresh] = useState(0)
 
     const auth = useContext(AuthContext)
     useEffect(()=>{
@@ -45,7 +49,7 @@ const Community = () => {
             else setError(err)
             setLoaded(true);
         })
-    }, [sortBy])
+    }, [sortBy, refresh])
 
     const handleJoinButton = () => {
         auth?.protectedAction(()=>{
@@ -79,6 +83,21 @@ const Community = () => {
     const changeAvatar = (avatar:string) => {
         setCommunityInfo({...communityInfo, avatar: avatar})
         window.location.reload()
+    }
+
+    const createTag = (name: string, color: string) => {
+        setTagLoading(true)
+        post_data("/community/"+community_name+"/add-tag", {name: name, color: color}, {}, true)
+        .then((res)=>{
+            setTagLoading(false)
+            setRefresh(refresh+1)
+        })
+        .catch(()=>{
+            toast({
+                description: "Something went wrong",
+                variant: "destructive"
+            })
+        })
     }
 
     const handleNotiButton = () => {
@@ -178,13 +197,21 @@ const Community = () => {
                         </CardHeader>
                         <CardContent>
                             {communityInfo.tags.map((tag)=>{
-                                return <>
-                                        <Badge className={"h-5 ml-1 text-center text-white"} style={{backgroundColor: tag.color}} variant={"secondary"}>{tag.name}</Badge>
-                                </> 
+                                return <Badge className={"h-5 ml-1 text-center text-white"} style={{backgroundColor: tag.color}} variant={"secondary"} key={tag.name}>{tag.name}</Badge>
                             })}
+                            {communityInfo.tags.length === 0 && <p className="text-sm">There are no tags for this community. Ask the moderators of this community to add them</p>}
                         </CardContent>
                         { communityInfo.isModerator &&<CardFooter>
-                                <Button className="flex justify-start" variant={"round_outline"}><PlusCircle strokeWidth={1.5} className="mr-2"></PlusCircle> Add Tag</Button>
+                                <Dialog>
+                                    <DialogTrigger asChild>
+                                        <Button className="flex justify-start" variant={"round_outline"}><PlusCircle strokeWidth={1.5} className="mr-2"></PlusCircle> Add Tag</Button>
+                                    </DialogTrigger>
+                                    <DialogContent className="sm:max-w-[425px]">
+                                        <DialogHeader>
+                                            <CreateTagForm isLoading={tagLoading} handleSubmit={(e)=>{createTag(e.name, e.color)}}/>
+                                        </DialogHeader>
+                                    </DialogContent>
+                                </Dialog>
                         </CardFooter>}
                     </Card>
                     <Card className="my-2">
