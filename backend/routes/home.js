@@ -31,6 +31,7 @@ router.post('/post', verifyAccessToken, verifyRecaptcha("post"), async function 
     const community = await Community.findOne({name: result.community})
     if(!community) return next(createError.BadRequest("community does not exist or was not specified"))
 
+    if(!result.tag) result.tag=null
     const _post = new Post({
       author: req.payload.aud,
       body: result.body,

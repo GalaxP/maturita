@@ -6,7 +6,7 @@ import { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { PostSchema } from "schemas/postSchema";
 import { Button } from "../components/ui/button"
-import { ArrowBigUp, ArrowDownWideNarrowIcon, BadgePlus, Bell, Pencil, PlusCircle, Shield, Users } from "lucide-react";
+import { ArrowBigUp, ArrowDownWideNarrowIcon, BadgePlus, Pencil, PlusCircle, Shield, Users } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import CreatePost from "components/createPost";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../components/ui/card";
@@ -16,10 +16,20 @@ import { ChangeAvatar } from "components/changeAvatar";
 import { NoPosts } from "components/noPosts";
 import HomeSkeleton from "components/skeleton/home";
 import { Badge } from "components/ui/badge";
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader } from "../components/ui/dialog";
 import { DialogTrigger } from "components/ui/dialog";
 import { CreateTagForm } from "components/forms/createTagForm";
-
+import { AddModeratorForm } from "components/forms/addModsForm";
+import {   AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger } from "components/ui/alert-dialog"
+  
 
 const Community = () => {
     const community_name = useParams().community;
@@ -33,7 +43,10 @@ const Community = () => {
     const { toast } = useToast()
     const [sortToggle, setSortToggle] = useState(false)
     const [tagLoading, setTagLoading] = useState(false)
+    const [moderatorLoading, setModeratorLoading] = useState(false)
     const [refresh, setRefresh] = useState(0)
+    const [mod, setMod] = useState<{id: string, displayName: string}>({id:"", displayName:""})
+    const [confirm, setConfirm] = useState(false)
 
     const auth = useContext(AuthContext)
     useEffect(()=>{
@@ -100,10 +113,43 @@ const Community = () => {
         })
     }
 
-    const handleNotiButton = () => {
-        alert('notied')
-        console.log(GetCommunityAvatar(communityInfo.avatar))
+    const contrastingColor = (hex: string) => {
+        const r = parseInt(hex.slice(1, 3), 16);
+        const g = parseInt(hex.slice(3, 5), 16);
+        const b = parseInt(hex.slice(5, 7), 16);
+        if ((r*0.299 + g*0.587 + b*0.114) > 186 ) {
+            return "black"
+        }
+        return "white"
     }
+
+    const addModerator = (id: string, displayName: string) => {
+        setModeratorLoading(true)
+        setMod({id: id, displayName: displayName});
+        setConfirm(true)
+        /*
+        post_data("/community/"+community_name+"/add-moderator", {id: id}, {}, true)
+        .then((res)=>{
+            setModeratorLoading(false)
+            setRefresh(refresh + 1)
+        })
+        .catch((err)=>{
+            if(err.response.data.error.message) toast({"variant": "destructive", description: err.response.data.error.message})
+            setModeratorLoading(false)});*/
+    } 
+
+    const confirmAddModerator = (id: string) => {
+        post_data("/community/"+community_name+"/add-moderator", {id: id}, {}, true)
+        .then((res)=>{
+            setModeratorLoading(false)
+            setRefresh(refresh + 1)
+        })
+        .catch((err)=>{
+            if(err.response.data.error.message) toast({"variant": "destructive", description: err.response.data.error.message})
+            setModeratorLoading(false)
+        });
+    }
+
     return ( loaded ? <> 
             <div className="px-0 w-full bg-slate-50 p-4" > 
                 <div className="w-11/12 lg:max-w-[975px] m:w-11/12 sm:w-11/12 mx-auto">
@@ -135,7 +181,6 @@ const Community = () => {
             </div>
             <div className="mt-6">
                 <div className="flex flex-row w-full justify-center">
-                    
                     <div className="w-11/12 lg:w-[650px] sm:w-11/12 space-y-2">
 
                         {auth?.isAuthenticated && <div className="w-full"><CreatePost defaultCommunity={community_name}/></div>}
@@ -197,7 +242,7 @@ const Community = () => {
                         </CardHeader>
                         <CardContent>
                             {communityInfo.tags.map((tag)=>{
-                                return <Badge className={"h-5 ml-1 text-center text-white"} style={{backgroundColor: tag.color}} variant={"secondary"} key={tag.name}>{tag.name}</Badge>
+                                return <Badge className={"h-5 ml-1 text-center shadow-sm"} style={{backgroundColor: tag.color, color: contrastingColor(tag.color)}} variant={"secondary"} key={tag.name}>{tag.name}</Badge>
                             })}
                             {communityInfo.tags.length === 0 && <p className="text-sm">There are no tags for this community. Ask the moderators of this community to add them</p>}
                         </CardContent>
@@ -223,20 +268,43 @@ const Community = () => {
                         </CardHeader>
                         <CardContent>
                             {communityInfo.moderators.map((mod)=>{
-                                return <>
-                                    <div className="flex items-center cursor-pointer hover:underline text-sm" onClick={()=>navigate("/user/"+mod.uid)}>
+                                return <div className="flex items-center cursor-pointer hover:underline text-sm" onClick={()=>navigate("/user/"+mod.uid)} key={mod.uid}>
                                         <Avatar className="shadow-md inline-block h-7 w-7 mr-1 mt-1">
                                             <AvatarImage src={GetAvatar({user: mod, provider: mod.provider})} />
                                             <AvatarFallback>MOD</AvatarFallback>
                                         </Avatar>
                                         <span>{mod.displayName}</span>
                                     </div>
-                                </> 
                             })}
                         </CardContent>
+                        { communityInfo.isModerator &&<CardFooter>
+                                <Dialog>
+                                    <DialogTrigger asChild>
+                                        <Button className="flex justify-start" variant={"round_outline"}><PlusCircle strokeWidth={1.5} className="mr-2"></PlusCircle> Add Moderator</Button>
+                                    </DialogTrigger>
+                                    <DialogContent className="sm:max-w-[425px]">
+                                        <DialogHeader>
+                                            <AddModeratorForm isLoading={moderatorLoading} handleSubmit={(values)=>addModerator(values.id, values.displayName)}/>
+                                        </DialogHeader>
+                                    </DialogContent>
+                                </Dialog>
+                        </CardFooter>}
                     </Card>
-                    
                     </div>
+                    <AlertDialog open={confirm} onOpenChange={setConfirm}>
+                        <AlertDialogContent>
+                            <AlertDialogHeader>
+                            <AlertDialogTitle>Are you sure you want to add a user as a moderator?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                                Are you sure that you want to add the user {mod.displayName} as a moderator of this community?
+                            </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                            <AlertDialogCancel onClick={()=>{setModeratorLoading(false)}}>Cancel</AlertDialogCancel>
+                            <AlertDialogAction onClick={()=>confirmAddModerator(mod.id)}>Continue</AlertDialogAction>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
                 </div>
             </div>
             </>

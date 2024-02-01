@@ -1,10 +1,10 @@
 const Joi = require('joi')
 
 const postSchema = Joi.object({
-    title: Joi.string().required().min(5).max(70),
+    title: Joi.string().required().min(5).max(100),
     body: Joi.string().required().max(700),
     community: Joi.string().required(),
-    tag: Joi.string(),
+    tag: Joi.string().optional(),
     token: Joi.string().required()
 })
 

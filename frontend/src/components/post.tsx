@@ -158,6 +158,16 @@ const Post = ({props, showLinkToPost, width, showCommunity=true}: Iprop) => {
             })
         })
     }
+    
+    const contrastingColor = (hex: string) => {
+        const r = parseInt(hex.slice(1, 3), 16);
+        const g = parseInt(hex.slice(3, 5), 16);
+        const b = parseInt(hex.slice(5, 7), 16);
+        if ((r*0.299 + g*0.587 + b*0.114) > 186 ) {
+            return "black"
+        }
+        return "white"
+    }
 
     var width_class = `${width ? width : "w-11/12 lg:w-[700px] sm:w-11/12"} mx-auto`;
     return <>
@@ -195,9 +205,9 @@ const Post = ({props, showLinkToPost, width, showCommunity=true}: Iprop) => {
                         </Avatar>
                     </>}
 
-                    <Link to={"/user/"+props.author.id} className="hover:underline sm:block hidden" key={props._id+" user"}>{props.author.displayName}</Link> 
+                    <Link to={"/user/"+props.author.id} className="hover:underline" key={props._id+" user"}>{props.author.displayName}</Link> 
                     
-                <span className="dot-separator mx-1 sm:block hidden"></span>
+                <span className="dot-separator mx-1"></span>
                     <TooltipProvider>
                         <Tooltip>
                             <TooltipTrigger asChild>
@@ -208,10 +218,10 @@ const Post = ({props, showLinkToPost, width, showCommunity=true}: Iprop) => {
                             </TooltipContent>
                         </Tooltip>
                     </TooltipProvider>
-                    {props.tag && <Badge className="h-5 ml-1 text-center hidden sm:block text-white" style={{backgroundColor: props.tag.color}} variant={"secondary"}>{props.tag.name}</Badge>}
+                    {props.tag && <Badge className="h-5 ml-1 text-center hidden sm:block text-white" style={{backgroundColor: props.tag.color, color: contrastingColor(props.tag.color)}} variant={"secondary"}>{props.tag.name}</Badge>}
 
                 </CardDescription>
-                {props.tag && <Badge className="h-5 w-max text-center block sm:hidden text-white" style={{backgroundColor: props.tag.color}} variant={"secondary"}>{props.tag.name}</Badge>}
+                {props.tag && <Badge className="h-5 w-max text-center block sm:hidden text-white" style={{backgroundColor: props.tag.color, color: contrastingColor(props.tag.color)}} variant={"secondary"}>{props.tag.name}</Badge>}
                 {!showLinkToPost &&<Link to={"/user/"+props.author.id} className="hover:underline sm:hidden block text-xs text-primary">u/{props.author.displayName}</Link>}
 
                 <CardTitle>{props.title}</CardTitle>

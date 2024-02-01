@@ -46,7 +46,7 @@ import { Badge } from "components/ui/badge"
 
 const formSchema = z.object({
   community: z.string(),
-  title: z.string().min(6, "Title must contain at least 6 characters").max(70, "Title must not exceed 70 characters."),
+  title: z.string().min(6, "Title must contain at least 6 characters").max(100, "Title must not exceed 100 characters."),
   body: z.string().max(700, "Body must not exceed 700 characters."),
   tag: z.string().optional()
 })
@@ -179,8 +179,19 @@ export function SubmitForm({handleSubmit, isLoading, defaultCommunity, showMyCom
 
  
   function onSubmit(values: z.infer<typeof formSchema>) {
+    if(values.tag === "") values.tag = undefined
     handleSubmit(values)
   }
+
+  const contrastingColor = (hex: string) => {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    if ((r*0.299 + g*0.587 + b*0.114) > 186 ) {
+        return "black"
+    }
+    return "white"
+}
 
   useEffect(()=>{
   }, [communities])
@@ -340,7 +351,7 @@ export function SubmitForm({handleSubmit, isLoading, defaultCommunity, showMyCom
                           {field.value
                             ? //communities.find((communities) => communities.value === field.value)?.label
                             <>
-                              <Badge className={"h-5 ml-1 text-center text-white"} style={{backgroundColor: selectedTag.color}} variant={"secondary"}>{selectedTag.name}</Badge>
+                              <Badge className={"h-5 ml-1 text-center text-white"} style={{backgroundColor: selectedTag.color, color: contrastingColor(selectedTag.color)}} variant={"secondary"}>{selectedTag.name}</Badge>
                             </>
                             : <span className="mr-auto"><Tag strokeWidth={1.3} className="inline"></Tag> Tag</span>}
                           <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -362,7 +373,7 @@ export function SubmitForm({handleSubmit, isLoading, defaultCommunity, showMyCom
                                 setSelectedTag({color: tag.color, name: tag.name})
                               }}
                             >
-                              <Badge className={"h-5 ml-1 text-center text-white"} style={{backgroundColor: tag.color}} variant={"secondary"}>{tag.name}</Badge>
+                              <Badge className={"h-5 ml-1 text-center text-white"} style={{backgroundColor: tag.color, color: contrastingColor(tag.color)}} variant={"secondary"}>{tag.name}</Badge>
                             </CommandItem>
                           ))
                                 }

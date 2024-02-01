@@ -17,6 +17,7 @@ const Submit = () => {
     async function handleSubmit(forms:{ body: string; title: string; tag?:string}) {
         grecaptcha.ready(function() {
           grecaptcha.execute(process.env.REACT_APP_RECAPTCHA_SITE_KEY, {action: 'post'}).then(function(token:string) {
+            console.log(forms.tag)
             auth?.protectedAction(()=> {
                 post_data("/post", {...forms, token: token}, {}, true).then((res)=>{
                 if(res.status===200)

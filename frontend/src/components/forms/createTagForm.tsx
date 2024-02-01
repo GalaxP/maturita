@@ -13,7 +13,10 @@ import {
 import { Input } from "../../components/ui/input"
 import { useForm } from "react-hook-form"
 import { Loader2 } from "lucide-react"
- 
+import { SketchPicker, ChromePicker, PhotoshopPicker, HuePicker  } from 'react-color';
+import { useState } from "react"
+import CharacterCounter from "components/characterCounter"
+
 const formSchema = z.object({
   name: z.string().max(15, 'name cannot be longer than 15 characters'),
   color: z.string()
@@ -23,6 +26,8 @@ interface props {
     isLoading : boolean,
 }
 export function CreateTagForm({handleSubmit, isLoading}: props) {
+  const [color, setColor] = useState("")
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema)
   })
@@ -42,7 +47,10 @@ export function CreateTagForm({handleSubmit, isLoading}: props) {
               <FormItem>
                 <FormLabel>Name</FormLabel>
                 <FormControl>
-                  <Input disabled={isLoading} {...field} />
+                  <>
+                    <Input className="pr-20" disabled={isLoading} {...field} />
+                    <CharacterCounter className="absolute top-[55px] right-8" characterLimit={15} currentLength={field.value?.length} showAt={5}></CharacterCounter>
+                  </>
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -55,7 +63,8 @@ export function CreateTagForm({handleSubmit, isLoading}: props) {
               <FormItem>
                 <FormLabel>Color</FormLabel>
                 <FormControl>
-                  <Input disabled={isLoading} {...field} />
+                  {/* <Input disabled={isLoading} {...field} /> */}
+                  <ChromePicker className="min-w-full shadow-none" disableAlpha color={color} onChange={(e)=>{setColor(e.hex);form.setValue("color", e.hex)}}/>
                 </FormControl>
                 <FormMessage />
               </FormItem>

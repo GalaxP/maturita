@@ -5,6 +5,7 @@ type props = {
     characterLimit: number,
     currentLength: number,
     showAt: number,
+    className?: string
 }
 const CharacterCounter = (props:props) => {
     const [progress, setProgress] = useState(0)
@@ -13,7 +14,7 @@ const CharacterCounter = (props:props) => {
     }, [props.currentLength])
 
     return props.characterLimit - props.currentLength <= props.showAt ? 
-    <div className="flex flex-row space-x-2 items-center">
+    <div className={props.className+" flex flex-row space-x-2 items-center"}>
         <CircularProgress progress={progress}/>
         <p className={props.characterLimit - props.currentLength < 0 ? "text-destructive " : ""}>{props.characterLimit - props.currentLength}</p>
     </div>

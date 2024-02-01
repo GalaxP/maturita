@@ -244,10 +244,7 @@ router.post('/:communityName/remove-tag', verifyAccessToken, async (req, res, ne
     if(!id) return next(createError.BadRequest("id is required"));
 
     if(community.moderators.findIndex(x=>x===req.payload.aud) === -1) return next(createError.Forbidden("you are not a moderator of this community"))
-    //const index = community.tags.findIndex(x=>x.name === id)
-    //console.log(index +community.tags[0]+" "+`new ObjectId("${id}")`)
-    //if(index === -1) return next(createError.Forbidden("this tag does not exist"))
-    //const test = community.tags.findIndex(x=>x._id === new mongoose.Types.ObjectId("65b68f39c33527388f0daaf9"))
+
     const test = await Community.findOne({_id: new mongoose.Types.ObjectId(community.id),"tags._id": new mongoose.Types.ObjectId(id) })
     if(!test) return next(createError.BadRequest("tag does not exist"))
 
@@ -256,7 +253,30 @@ router.post('/:communityName/remove-tag', verifyAccessToken, async (req, res, ne
         res.send("success")
     }
     catch(err){
-        console.log(err)
+        return next(createError.InternalServerError())
+    }
+})
+
+router.post('/:communityName/add-moderator', verifyAccessToken, async (req, res, next) => {
+    if(!req.params.communityName) return next(createError.BadRequest())
+    const community = await Community.findOne({name: req.params.communityName})
+    if(!community) return next(createError.BadRequest("community does not exist"))
+    const id = req.body.id
+    if(!id) return next(createError.BadRequest("id is required"));
+
+    if(community.moderators.findIndex(x=>x===req.payload.aud) === -1) return next(createError.Forbidden("you are not a moderator of this community"))
+
+    const user = await User.findOne({uid: id, banned: false})
+    if(!user) return next(createError.BadRequest("user does not exist"))
+
+    if(community.moderators.findIndex(x=>x===id) !== -1) return next(createError.Forbidden("the user is already a moderator of this community"))
+
+    community.moderators.push(id)
+    try {
+        await community.save();
+        res.send("success")
+    }
+    catch(err){
         return next(createError.InternalServerError())
     }
 })
