@@ -218,10 +218,10 @@ const Post = ({props, showLinkToPost, width, showCommunity=true}: Iprop) => {
                             </TooltipContent>
                         </Tooltip>
                     </TooltipProvider>
-                    {props.tag && <Badge className="h-5 ml-1 text-center hidden sm:block text-white" style={{backgroundColor: props.tag.color, color: contrastingColor(props.tag.color)}} variant={"secondary"}>{props.tag.name}</Badge>}
+                    {props.tag && <Badge onClick={()=>{navigate("/community/"+props.community.name+"?tag="+props.tag?.name)}} className="h-5 ml-1 text-center hidden sm:block cursor-pointer" style={{backgroundColor: props.tag.color, color: contrastingColor(props.tag.color)}} variant={"secondary"}>{props.tag.name}</Badge>}
 
                 </CardDescription>
-                {props.tag && <Badge className="h-5 w-max text-center block sm:hidden text-white" style={{backgroundColor: props.tag.color, color: contrastingColor(props.tag.color)}} variant={"secondary"}>{props.tag.name}</Badge>}
+                {props.tag && <Badge className="h-5 w-max text-center block sm:hidden cursor-pointer" style={{backgroundColor: props.tag.color, color: contrastingColor(props.tag.color)}} variant={"secondary"}>{props.tag.name}</Badge>}
                 {!showLinkToPost &&<Link to={"/user/"+props.author.id} className="hover:underline sm:hidden block text-xs text-primary">u/{props.author.displayName}</Link>}
 
                 <CardTitle>{props.title}</CardTitle>

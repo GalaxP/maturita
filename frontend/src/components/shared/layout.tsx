@@ -108,7 +108,7 @@ const Layout = ({children, openNewsletter}: LayoutProps) => {
                         <LocaleSwitcher/>
                     </div>
                     <div className="flex items-center mx-2">
-                        {auth?.isAuthenticated ? <UserNav displayName={auth?.getUser().user.displayName} email={auth?.getUser().user.email} avatar={GetAvatar(auth?.getUser())} />: <Button variant={"ghost"} onClick={()=>navigate("/account/login")}><User2 strokeWidth={1.5} className="mr-1"></User2>{localeContext.localize("LOGIN")}</Button>}
+                        {auth?.isAuthenticated ? <UserNav displayName={auth?.getUser().user && auth?.getUser().user.displayName} email={auth?.getUser().user && auth?.getUser().user.email} avatar={GetAvatar(auth?.getUser())} />: <Button variant={"ghost"} onClick={()=>navigate("/account/login")}><User2 strokeWidth={1.5} className="mr-1"></User2>{localeContext.localize("LOGIN")}</Button>}
                     </div>
                     
                 </div>

@@ -3,10 +3,10 @@ import AuthContext from "contexts/AuthContext";
 import { get_data, post_data } from "helpers/api";
 import { useDocumentTitle } from "hooks/setDocuemntTitle";
 import { useContext, useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { PostSchema } from "schemas/postSchema";
 import { Button } from "../components/ui/button"
-import { ArrowBigUp, ArrowDownWideNarrowIcon, BadgePlus, Pencil, PlusCircle, Shield, Users } from "lucide-react";
+import { ArrowBigUp, ArrowDownWideNarrowIcon, BadgePlus, Check, ChevronDown, Cross, Pencil, PlusCircle, Shield, Tag, Users, X } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import CreatePost from "components/createPost";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../components/ui/card";
@@ -29,10 +29,28 @@ import {   AlertDialog,
     AlertDialogHeader,
     AlertDialogTitle,
     AlertDialogTrigger } from "components/ui/alert-dialog"
-  
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+    } from "components/ui/popover"
+import {
+        Command,
+        CommandDialog,
+        CommandEmpty,
+        CommandGroup,
+        CommandInput,
+        CommandItem,
+        CommandList,
+        CommandSeparator,
+        CommandShortcut,
+      } from "components/ui/command"
+import { cn } from "../components/ui/lib/utils";
+      
 
 const Community = () => {
     const community_name = useParams().community;
+    const [searchParams] = useSearchParams();
     const [loaded, setLoaded] = useState(false);
     const [posts, setPosts] = useState<PostSchema[]>([{author:{id:"",displayName:"", avatar:"", provider: ""}, title:"", createdAt: new Date(), body:"", _id:"", community: {name:"", avatar:""}, votes_likes:0, votes_dislikes:0, user_vote:0, comments:[], comment_length :0}]);
     const [error, setError] = useState("");
@@ -47,22 +65,27 @@ const Community = () => {
     const [refresh, setRefresh] = useState(0)
     const [mod, setMod] = useState<{id: string, displayName: string}>({id:"", displayName:""})
     const [confirm, setConfirm] = useState(false)
+    const [tag, setTag] = useState("")
 
     const auth = useContext(AuthContext)
     useEffect(()=>{
         setSortToggle(false)
+        //wtf
         if(community_name) setDocumentTitle(community_name)
+        let tag_name = searchParams.get("tag")
+        if(!tag && tag_name) {setTag(tag_name)}
         setLoaded(false)
-        get_data("/community/"+community_name+"/posts?sort="+sortBy.type+"&t="+sortBy.timeFrame, {}, auth?.isAuthenticated).then((res)=>{
+        get_data("/community/"+community_name+"/posts?sort="+sortBy.type+"&t="+sortBy.timeFrame+ (tag!==undefined && ("&tag="+tag)), {}, auth?.isAuthenticated).then((res)=>{
             setPosts(res.data.post);
             setCommunityInfo(res.data.community)
             setLoaded(true)
           }).catch((err)=>{
-            if(err.response.data.error.message==="community does not exist") {setError(err.response.data.error.message)}
+            console.log(err)
+            if(err.response && err.response.data.error.message==="community does not exist") {setError(err.response.data.error.message)}
             else setError(err)
             setLoaded(true);
         })
-    }, [sortBy, refresh])
+    }, [sortBy, refresh, tag])
 
     const handleJoinButton = () => {
         auth?.protectedAction(()=>{
@@ -127,15 +150,6 @@ const Community = () => {
         setModeratorLoading(true)
         setMod({id: id, displayName: displayName});
         setConfirm(true)
-        /*
-        post_data("/community/"+community_name+"/add-moderator", {id: id}, {}, true)
-        .then((res)=>{
-            setModeratorLoading(false)
-            setRefresh(refresh + 1)
-        })
-        .catch((err)=>{
-            if(err.response.data.error.message) toast({"variant": "destructive", description: err.response.data.error.message})
-            setModeratorLoading(false)});*/
     } 
 
     const confirmAddModerator = (id: string) => {
@@ -208,6 +222,49 @@ const Community = () => {
                                         <Button variant={sortBy.timeFrame==="alltime" ? "secondary" : "outline"}  className="block w-full border-0 text-left" onClick={()=>{setSortBy({type: "best", timeFrame: "alltime"}); setSortToggle(c=>!c)}}>All Time</Button>
                                     </div>
                                 </div>
+                                <Popover>
+                                    <PopoverTrigger asChild>
+                                        <Button
+                                        variant="round_outline"
+                                        role="combobox"
+                                        className="max-w-[250px] justify-between font-semibold"
+                                        >
+                                        {tag
+                                            ? //communities.find((communities) => communities.value === field.value)?.label
+                                            <>
+                                            <Badge className={"h-5 ml-1 text-center text-white"} style={{backgroundColor: communityInfo.tags.find(x=>x.name===tag)?.color, color: contrastingColor(communityInfo.tags.find(x=>x.name===tag)?.color ?? "")}} variant={"secondary"}>{tag} <X className="rounded-full ml-2 bg-primary-foreground/50 w-4 h-4 hover:bg-primary-foreground/20" onClick={()=>{setTag("");navigate("/community/"+community_name)}}/></Badge>
+                                            </>
+                                            : <span className="mr-auto"><Tag strokeWidth={1.8} className="inline w-5 h-5"></Tag> Tag</span>}
+                                        <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                        </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="max-w-[250px] p-0">
+                                    <Command className="max-w-[250px]">
+                                        <CommandInput className="max-w-[310px]" placeholder="Search tags..."/>
+                                        <CommandEmpty>No tags found.</CommandEmpty>
+                                        { <CommandGroup>
+                                        { communityInfo.tags &&
+                                        communityInfo.tags.map((_tag) => (
+                                            <CommandItem
+                                            value={_tag.name}
+                                            key={_tag.name}
+                                            onSelect={() => {
+                                                if(_tag.name === tag) {navigate("/community/"+community_name);setTag("")}
+                                                else {
+                                                    setTag(_tag.name)
+                                                    navigate("/community/"+community_name+"?tag="+_tag.name)
+                                                }
+                                            }}
+                                            >
+                                            <Badge className={"h-5 ml-1 text-center text-white"} style={{backgroundColor: _tag.color, color: contrastingColor(_tag.color)}} variant={"secondary"}>{_tag.name}</Badge>
+                                            <Check className={cn("ml-auto h-4 w-4", _tag.name === tag ? "opacity-100" : "opacity-0")}/>
+                                            </CommandItem>
+                                        ))
+                                                }
+                                        </CommandGroup> }
+                                    </Command>
+                                    </PopoverContent>
+                                </Popover>
 
                             </div>
                             </CardContent>
@@ -242,7 +299,7 @@ const Community = () => {
                         </CardHeader>
                         <CardContent>
                             {communityInfo.tags.map((tag)=>{
-                                return <Badge className={"h-5 ml-1 text-center shadow-sm"} style={{backgroundColor: tag.color, color: contrastingColor(tag.color)}} variant={"secondary"} key={tag.name}>{tag.name}</Badge>
+                                return <Badge className={"h-5 ml-1 text-center shadow-sm cursor-pointer"} onClick={()=>{setTag(tag.name); navigate("/community/"+community_name+"?tag="+tag.name)}} style={{backgroundColor: tag.color, color: contrastingColor(tag.color)}} variant={"secondary"} key={tag.name}>{tag.name}</Badge>
                             })}
                             {communityInfo.tags.length === 0 && <p className="text-sm">There are no tags for this community. Ask the moderators of this community to add them</p>}
                         </CardContent>

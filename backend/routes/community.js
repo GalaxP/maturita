@@ -70,17 +70,32 @@ router.get('/:communityName/posts', verifyAccessTokenIfProvided, async (req, res
     var posts = [{}];
     const _date = new Date()
     //_date.setFullYear(_date.getFullYear(), _date.getMonth(), 1)
-
-    if(req.query.sort==="newest" || req.query.sort==="best") {
-        if(req.query.sort === "best") {
-            if(req.query.t==="alltime") { posts = await Post.find({community: community.name})}
-            else if(req.query.t==="day") { posts = await Post.find({community: community.name, createdAt: {$gte: new Date(_date.setHours(0,0,0,0)) }})}
-            else if(req.query.t==="week") { posts = await Post.find({community: community.name, createdAt: {$gte: new Date(getMonday(_date)) }})}
-            else if(req.query.t==="month") { posts = await Post.find({community: community.name, createdAt: {$gte: new Date(_date.getFullYear(), _date.getMonth(), 1) }})}
-            else if(req.query.t==="year") { posts = await Post.find({community: community.name, createdAt: {$gte: _date.setFullYear(_date.getFullYear(), 0, 1) }})}
-            else return next(createError.BadRequest("incorrect sort"))
-        } else {posts = await Post.find({community: community.name}).sort({createdAt: 'desc'})}
-    } else {return next(createError.BadRequest("incorrect sort"))}
+    let tag = req.query.tag
+    if(tag) if(community.tags.findIndex(x=>x.name===tag) === -1) return next(createError.BadRequest("tag does not exist"))
+    if(!tag) {
+        if(req.query.sort==="newest" || req.query.sort==="best") {
+            if(req.query.sort === "best") {
+                if(req.query.t==="alltime") { posts = await Post.find({community: community.name})}
+                else if(req.query.t==="day") { posts = await Post.find({community: community.name, createdAt: {$gte: new Date(_date.setHours(0,0,0,0)) }})}
+                else if(req.query.t==="week") { posts = await Post.find({community: community.name, createdAt: {$gte: new Date(getMonday(_date)) }})}
+                else if(req.query.t==="month") { posts = await Post.find({community: community.name, createdAt: {$gte: new Date(_date.getFullYear(), _date.getMonth(), 1) }})}
+                else if(req.query.t==="year") { posts = await Post.find({community: community.name, createdAt: {$gte: _date.setFullYear(_date.getFullYear(), 0, 1) }})}
+                else return next(createError.BadRequest("incorrect sort"))
+            } else {posts = await Post.find({community: community.name}).sort({createdAt: 'desc'})}
+        } else {return next(createError.BadRequest("incorrect sort"))}
+    }
+    else {
+        if(req.query.sort==="newest" || req.query.sort==="best") {
+            if(req.query.sort === "best") {
+                if(req.query.t==="alltime") { posts = await Post.find({community: community.name, tag: tag})}
+                else if(req.query.t==="day") { posts = await Post.find({community: community.name, tag: tag, createdAt: {$gte: new Date(_date.setHours(0,0,0,0)) }})}
+                else if(req.query.t==="week") { posts = await Post.find({community: community.name, tag: tag, createdAt: {$gte: new Date(getMonday(_date)) }})}
+                else if(req.query.t==="month") { posts = await Post.find({community: community.name, tag: tag, createdAt: {$gte: new Date(_date.getFullYear(), _date.getMonth(), 1) }})}
+                else if(req.query.t==="year") { posts = await Post.find({community: community.name, tag: tag, createdAt: {$gte: _date.setFullYear(_date.getFullYear(), 0, 1) }})}
+                else return next(createError.BadRequest("incorrect sort"))
+            } else {posts = await Post.find({community: community.name, tag: tag}).sort({createdAt: 'desc'})}
+        } else {return next(createError.BadRequest("incorrect sort"))}
+    }
     if(!posts) return res.send("No posts yet")
     var returns = []
     var index = 0
