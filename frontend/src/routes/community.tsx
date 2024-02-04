@@ -74,7 +74,7 @@ const Community = ({about}: {about?:boolean}) => {
         let tag_name = searchParams.get("tag")
         if(tag_name) {setTag(tag_name)}
         setLoaded(false)
-        get_data("/community/"+community_name+"/posts?sort="+sortBy.type+"&t="+sortBy.timeFrame+ (tag_name!==null && ("&tag="+tag_name)), {}, auth?.isAuthenticated).then((res)=>{
+        get_data("/community/"+community_name+"/posts?sort="+sortBy.type+"&t="+sortBy.timeFrame+ (tag_name!==null ? ("&tag="+tag_name) : ""), {}, auth?.isAuthenticated).then((res)=>{
             setPosts(res.data.post);
             setCommunityInfo(res.data.community)
             setLoaded(true)
