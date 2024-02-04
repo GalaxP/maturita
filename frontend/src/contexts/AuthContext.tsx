@@ -144,7 +144,7 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
         if (user) {
             return user
         }
-        return null;
+        return undefined;
     }
 
     const setUserForcefully = (user: any) => {

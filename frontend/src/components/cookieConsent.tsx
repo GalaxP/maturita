@@ -23,9 +23,9 @@ export const CookieConsent = () => {
             <CardHeader className="pb-3">
                 <CardTitle className="flex items-center"><Cookie className="inline-block mr-2"/> We use cookies</CardTitle>
             </CardHeader>
-            <CardContent>Blah Blah some jargon about cookies and how we like totally care about your privacy but in reality we are forced to show this popup. <Link to="/legal/cookies" className="font-semibold border-dotted border-b-2 border-black pb-0.5 hover:border-0">Privacy Policy</Link></CardContent>
+            <CardContent>Cookies help us deliver the best experience on our website. By using our website, you agree to the use of cookies. <Link to="/privacy-policy" className="font-semibold border-dotted border-b-2 border-black pb-0.5 hover:border-0">Privacy Policy</Link></CardContent>
             <CardFooter className="justify-end">
-                <Button className="font-semibold text-sm mr-2" variant={"secondary"}>Settings</Button>
+                {/* <Button className="font-semibold text-sm mr-2" variant={"secondary"}>Settings</Button> */}
                 <Button className="font-semibold" onClick={giveConsent}>Accept</Button>
             </CardFooter>
         </Card>

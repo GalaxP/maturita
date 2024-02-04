@@ -38,7 +38,7 @@ export function AddModeratorForm({handleSubmit, isLoading}: props) {
     resolver: zodResolver(formSchema)
   })
   function onSubmit(values: z.infer<typeof formSchema>) {
-    if(!users || !selectedUserIndex) return
+    if(!users || selectedUserIndex===undefined) return
     handleSubmit({id: values.moderator, displayName: users[selectedUserIndex].displayName})
   }
 
@@ -79,6 +79,7 @@ export function AddModeratorForm({handleSubmit, isLoading}: props) {
                                     { selectedUserIndex === i && <Check className="my-auto mr-2" /> }
                                 </div>
                             })}
+                            {/*NOTE: BUGGING WHEN TYPING FAST*/}
                             {!fetching && !users && <p className="mx-auto mt-2">no users found</p>}
                             {fetching && <Loader2 className="mr-2 mt-2 w-full mx-auto animate-spin" />}
                         </>

@@ -61,3 +61,7 @@
 .rounded-md-b-0 {
   border-radius: calc(var(--radius) - 2px) calc(var(--radius) - 2px) 0px 0px;
 }
+
+.flex-flow-row-wrap {
+  flex-flow: row wrap;
+}

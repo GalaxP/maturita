@@ -13,8 +13,9 @@ import GetAvatar, { GetCommunityAvatar, getStringAvatar } from "helpers/getAvata
 import prettyDate from "helpers/dateFormat";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../components/ui/tooltip";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "./ui/dialog";
-import { Progress } from "./ui/progress";
+import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuLabel, DropdownMenuItem, DropdownMenuTrigger} from "../components/ui/dropdown-menu"
 import { Badge } from "./ui/badge";
+import { MoreHorizontal, Trash } from "lucide-react";
 
 declare var grecaptcha:any
 
@@ -32,6 +33,7 @@ const Post = ({props, showLinkToPost, width, showCommunity=true}: Iprop) => {
     const [votes, setVotes] = useState<any>({votes_likes: props.votes_likes, votes_dislikes: props.votes_dislikes, user_vote: props.user_vote})
     const [isVoting, setIsVoting] = useState(false)
     const [confirmOpen, setConfirmOpen] = useState(false)
+    const [menuOpen, setMenuOpen] = useState(false)
     const navigate = useNavigate()
     const { toast } = useToast()
 
@@ -116,8 +118,16 @@ const Post = ({props, showLinkToPost, width, showCommunity=true}: Iprop) => {
                     //console.log(e.target)
                     break;
                 default:
-                    navigate("/post/"+props._id)
-                    break;
+                    switch(e.target.ariaDescription) {
+                        case "tag":
+                            navigate("/community/"+props.community.name+"?tag="+props.tag?.name)
+                            break;
+                        case "donothing":
+                            break;
+                        default:
+                            navigate("/post/"+props._id)
+                        break;
+                    }
             }
         }
     }
@@ -197,7 +207,7 @@ const Post = ({props, showLinkToPost, width, showCommunity=true}: Iprop) => {
                         </Avatar>
                         <Link to={"/community/"+props.community.name} className="hover:underline py-auto text-black flex-inline flex-row" key={props._id+ "community"}>
                     {props.community.name}</Link>
-                <span className="dot-separator mx-1"></span></>}
+                    <span className="dot-separator mx-1"></span></>}
 
                 {!showCommunity&& <><Avatar className="shadow-md cursor-pointer w-[20px] h-[20px] inline-block mr-1">
                             <AvatarImage src={getStringAvatar(props.author.avatar, props.author.provider)} alt="@shadcn" />
@@ -207,7 +217,7 @@ const Post = ({props, showLinkToPost, width, showCommunity=true}: Iprop) => {
 
                     <Link to={"/user/"+props.author.id} className="hover:underline" key={props._id+" user"}>{props.author.displayName}</Link> 
                     
-                <span className="dot-separator mx-1"></span>
+                    <span className="dot-separator mx-1"></span>
                     <TooltipProvider>
                         <Tooltip>
                             <TooltipTrigger asChild>
@@ -218,31 +228,38 @@ const Post = ({props, showLinkToPost, width, showCommunity=true}: Iprop) => {
                             </TooltipContent>
                         </Tooltip>
                     </TooltipProvider>
-                    {props.tag && <Badge onClick={()=>{navigate("/community/"+props.community.name+"?tag="+props.tag?.name)}} className="h-5 ml-1 text-center hidden sm:block cursor-pointer" style={{backgroundColor: props.tag.color, color: contrastingColor(props.tag.color)}} variant={"secondary"}>{props.tag.name}</Badge>}
+                    {props.tag && <Link to={"/community/"+props.community.name+"?tag="+props.tag?.name}><Badge aria-description="tag" onClick={()=>{navigate("/community/"+props.community.name+"?tag="+props.tag?.name)}} className="h-5 ml-1 text-center hidden sm:block cursor-pointer" style={{backgroundColor: props.tag.color, color: contrastingColor(props.tag.color)}} variant={"secondary"}>{props.tag.name}</Badge></Link>}
 
+                    { auth?.isAuthenticated && auth?.getUser() && auth?.getUser().user.uid === props.author.id && 
+                        <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
+                            <DropdownMenuTrigger asChild>
+                                <Button className="ml-auto" size={"ultra_sm"} variant={"ghost"}>
+                                    <MoreHorizontal color={"black"} />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent>
+                                <DropdownMenuItem aria-description="donothing" onSelect={()=>{setMenuOpen(false) ;openConfirmBox()}}>
+                                    <Trash className="mr-2 h-4 w-4"/>
+                                    Delete
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    }
                 </CardDescription>
-                {props.tag && <Badge className="h-5 w-max text-center block sm:hidden cursor-pointer" style={{backgroundColor: props.tag.color, color: contrastingColor(props.tag.color)}} variant={"secondary"}>{props.tag.name}</Badge>}
+                {props.tag && <Badge aria-description="tag" className="h-5 w-max text-center block sm:hidden cursor-pointer" style={{backgroundColor: props.tag.color, color: contrastingColor(props.tag.color)}} variant={"secondary"}>{props.tag.name}</Badge>}
                 {!showLinkToPost &&<Link to={"/user/"+props.author.id} className="hover:underline sm:hidden block text-xs text-primary">u/{props.author.displayName}</Link>}
 
                 <CardTitle>{props.title}</CardTitle>
                 <p className="break-words whitespace-pre-line">{props.body}</p>
-                  
             </CardHeader>
             <CardContent className="pt-2 pb-4">
                 <div className="flex flex-row content-center space-x-1">
                     <VoteButton type="like" votes={votes.votes_likes} current_vote={votes.user_vote} onClick={vote} loading={isVoting}/>
                     <VoteButton type="dislike" votes={votes.votes_dislikes} current_vote={votes.user_vote} onClick={vote} loading={isVoting}/>
-                    {showLinkToPost && <Button variant="ghost" className="px-2">
+                    {showLinkToPost && <Button onClick={()=>navigate("/post/"+props._id)} variant="ghost" className="px-2">
                         <AiOutlineComment size={20} className="mr-1"/>
                         {props.comment_length}
                     </Button>}
-                    { auth?.isAuthenticated && auth?.getUser() && auth?.getUser().user.uid === props.author.id &&
-                    <Button variant="ghost" className="px-2" onClick={openConfirmBox}>
-                        <AiOutlineDelete size={20} className="mr-1"/>
-                        Delete
-                    </Button>
-                    }
-
                 </div>
             </CardContent>
         </Card>

@@ -53,7 +53,7 @@ export function UserNav({avatar, displayName, email}: {avatar: string, displayNa
             </DropdownMenuItem>
             
             {
-              auth?.getUser().user.roles && auth?.getUser().user.roles.includes('admin') &&
+              auth?.getUser()?.user?.roles && auth?.getUser()?.user?.roles?.includes('admin') &&
               <DropdownMenuItem>  
               <Link to="/admin" className="w-full">
                 Admin Panel

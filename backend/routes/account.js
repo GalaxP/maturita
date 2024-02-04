@@ -95,7 +95,7 @@ router.post('/login', verifyRecaptcha("login"), async function(req, res, next) {
         return next(createError(400));
     }
     
-    const user = await User.findOne({email: body.email, banned: false})
+    const user = await User.findOne({email: body.email, banned: false, provider: "local"})
     if(user === null)
         return next(createError.Unauthorized("Invalid Credentials"))
 

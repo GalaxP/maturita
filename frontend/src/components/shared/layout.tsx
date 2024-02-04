@@ -9,7 +9,7 @@ import LocaleSwitcher from "components/localeSwitcher";
 import LocalizationContext from "contexts/LocalizationContext";
 import { Input } from "../ui/input";
 import { MagnifyingGlassIcon, PersonIcon } from "@radix-ui/react-icons";
-import { Pencil, Search, SearchIcon, User, User2, UserCircle2, Users } from "lucide-react";
+import { Pencil, PlusCircle, Search, SearchIcon, User, User2, UserCircle2, Users } from "lucide-react";
 import { SearchBox } from "components/searchBox";
 import { CookieConsent } from "components/cookieConsent";
 import { UserNav } from "components/userNav";
@@ -103,7 +103,15 @@ const Layout = ({children, openNewsletter}: LayoutProps) => {
                         </Drawer>
                     </div>
                 </div>
-                <div className="flex">
+                <div className="flex items-center">
+                        {
+                            auth?.isAuthenticated &&
+                            <Button variant={"ghost"} className="p-2" size="sm" onClick={()=>{auth?.protectedAction(()=>navigate("/submit"))}}>
+                                <PlusCircle className="mr-1" strokeWidth={1.5}/>
+                                Create
+                            </Button>
+                        } 
+                        
                     <div>
                         <LocaleSwitcher/>
                     </div>

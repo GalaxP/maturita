@@ -51,6 +51,7 @@ function App() {
                   </Route>
                   <Route path="submit" element={<ProtectedRoute><Submit/></ProtectedRoute>}></Route>
                   <Route path="community/:community" element={<Community/>}></Route>
+                  <Route path="community/:community/about" element={<Community about/>}></Route>
                   <Route path="user/:userId" element={<User/>}></Route>
                   <Route path="/post/:postId" element={<PostId/>}></Route>
                   <Route path="/search" element={<Search/>}></Route>

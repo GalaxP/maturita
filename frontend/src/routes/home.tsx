@@ -87,7 +87,7 @@ const Home = ({openNewsletter}: {openNewsletter: ()=>void}) => {
             </CardContent>
         </Card>
         <Card className="sticky top-16">
-          <CardHeader><CardTitle>Useful links</CardTitle></CardHeader>
+          <CardHeader className="pb-2"><CardTitle>Useful links</CardTitle></CardHeader>
           <CardContent className="mt-2">
             <div className="flex flex-col">
             <Link to="/contact">Contact Us</Link>

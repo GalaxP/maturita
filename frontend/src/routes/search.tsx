@@ -56,8 +56,7 @@ export const Search = () => {
                     </TabsList>
                     <TabsContent value="community" className="w-full">
                         {communities?.length && communities.length > 0 ? communities.map((community, i)=> {
-                        return <>
-                            <div key={community.name} className={"bg-[10] border-gray-800 border-[1px] p-3 flex flex-row cursor-pointer "+(i !== 0 && "border-t-0")} onClick={()=>{navigate('/community/'+community.name)}}>
+                        return <div key={community.name} className={"bg-[10] border-[1px] p-3 flex flex-row cursor-pointer "+(i !== 0 && "border-t-0")} onClick={()=>{navigate('/community/'+community.name)}}>
                                 <Avatar className="shadow-md inline-block my-auto" key={"avatar "+community.name}>
                                     <AvatarImage src={GetCommunityAvatar(community.avatar)} />
                                     <AvatarFallback>{community.name}</AvatarFallback>
@@ -70,13 +69,12 @@ export const Search = () => {
 
                                         </div>
                                         <div>
-                                            <Button variant={"outline"} className="justify-end" key={"button "+community.name} onClick={()=>alert("je")}>{community.isMember ? "Leave" : "Join"}</Button>
+                                            {/* <Button variant={"outline"} className="justify-end" key={"button "+community.name} onClick={()=>alert("je")}>{community.isMember ? "Leave" : "Join"}</Button> */}
                                         </div>
                                     </div>
                                     
                                 </div>
                             </div>
-                        </>
                     }): searchParams.get("t")==="community" ? loaded ? <NoResult query={searchParams.get("q")}/> : <SearchSkeleton></SearchSkeleton> : <SearchSkeleton></SearchSkeleton>}
                     </TabsContent>
 
