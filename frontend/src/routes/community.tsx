@@ -52,7 +52,7 @@ const Community = ({about}: {about?:boolean}) => {
     const community_name = useParams().community;
     const [searchParams] = useSearchParams();
     const [loaded, setLoaded] = useState(false);
-    const [posts, setPosts] = useState<PostSchema[]>([{author:{id:"",displayName:"", avatar:"", provider: ""}, title:"", createdAt: new Date(), body:"", _id:"", community: {name:"", avatar:""}, votes_likes:0, votes_dislikes:0, user_vote:0, comments:[], comment_length :0}]);
+    const [posts, setPosts] = useState<PostSchema[]>([{author:{id:"",displayName:"", avatar:"", provider: ""}, locked: false, title:"", createdAt: new Date(), body:"", _id:"", community: {name:"", avatar:""}, votes_likes:0, votes_dislikes:0, user_vote:0, comments:[], comment_length :0}]);
     const [error, setError] = useState("");
     const [communityInfo, setCommunityInfo] = useState({description: "", members: 0, tags: [{name: "", color:""}], moderators: [{uid: "", displayName:"", avatar: "", provider: ""}], isModerator:false, isMember: false, avatar: ""})
     const [documentTitle, setDocumentTitle] = useDocumentTitle("")

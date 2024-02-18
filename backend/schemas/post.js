@@ -11,6 +11,11 @@ const postSchema = new Schema({
         type: String,
         required: true
     },
+    locked: {
+        type: Boolean,
+        required: true,
+        default: false
+    },
     author: {
         type: String,
         required: true

@@ -7,6 +7,20 @@ const IsUserBanned = async function(uid) {
     return false
 }
 
+const IsUserAdmin = function(roles) {
+    if(!roles) return false
+    if(roles.includes('admin')) return true
+    return false
+}
+
+const IsUserMod = function(user, community) {
+    try {
+        return community.moderators.findIndex(x=>x===user) !== -1
+    } catch{
+        return false
+    }
+}
+
 module.exports = {
-    IsUserBanned
+    IsUserBanned, IsUserAdmin, IsUserMod
 }

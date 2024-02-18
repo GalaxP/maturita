@@ -6,7 +6,8 @@ const Post = require('../schemas/post');
 const Comment = require('../schemas/comment');
 var createError = require("http-errors");
 const verifyRecaptcha = require('../helpers/recaptcha');
-const { IsUserBanned } = require('../helpers/account');
+const { IsUserBanned, IsUserAdmin, IsUserMod } = require('../helpers/account');
+const Community = require('../schemas/community');
 var router = express.Router();
 
 router.post("/action", verifyAccessToken, verifyRecaptcha("action"), async (req, res, next) => {
@@ -18,19 +19,25 @@ router.post("/action", verifyAccessToken, verifyRecaptcha("action"), async (req,
         if(result.type !== "vote" && result.type !== "comment") throw createError.UnprocessableEntity()
 
         var post;
+        var parrent;
         if(result.type === "comment") {
             post = await Comment.findById(result.postId)
+            
+            
             .catch(()=> {
                 throw createError.UnprocessableEntity()
             })
+            //console.log(await Post.findOne({comments: {$elemMatch: {_id}}}))
         } else {
             post = await Post.findById(result.postId)
             .catch(()=> {
                 throw createError.UnprocessableEntity()
             })
         }
-
         if(!post || await IsUserBanned(post.author)) return next(createError.UnprocessableEntity(`${result.type !== "vote" ? "comment" : "post"} with the id ${result.postId} doesn't exist`))
+        //const community = await Community.findOne({name: post.community})
+        
+        if(post.locked) return next(createError.Unauthorized("The post is locked"))
 
         const previousAction = await PostAction.findOne({userId: req.payload.aud, postId: result.postId})
         if(previousAction) {
@@ -67,7 +74,9 @@ router.post('/:postId/comment', verifyAccessToken, verifyRecaptcha("comment"), a
     if(!id) return next(createError.BadRequest())
     const post = await Post.findById(id).catch(()=> {})
     if(!post || await IsUserBanned(post.author)) return next(createError.BadRequest("post with the id "+id+" does not exist"))
-    
+    const community = await Community.findOne({name: post.community})
+    if(!(post.locked && (IsUserMod(community, req.payload.aud) || IsUserAdmin(req.payload.roles)))) return next(createError.Unauthorized("The post is locked"))
+
     const _comment = new Comment({
         author: req.payload.aud,
         body: req.body.body,
@@ -84,7 +93,8 @@ router.post('/:postId/delete', verifyAccessToken, verifyRecaptcha("delete"), asy
     if(!postId) return next(createError.BadRequest())
     const post = await Post.findById(postId).catch(()=> {})
     if(!post || await IsUserBanned(post.author)) return next(createError.BadRequest("post with the id "+postId+" does not exist"))
-    if(post.author !== post.author) return next(createError.Unauthorized())
+    const community = await Community.findOne({name: post.community})
+    if(!(post.author === req.payload.aud || IsUserAdmin(req.payload.roles) || community.moderators.findIndex(x=>x===req.payload.aud) !== -1 )) return next(createError.Unauthorized())
 
     try {
         await post.deleteOne()
@@ -95,6 +105,39 @@ router.post('/:postId/delete', verifyAccessToken, verifyRecaptcha("delete"), asy
     }
 })
 
+router.post('/:postId/lock', verifyAccessToken, async (req, res, next)=> {
+    const postId = req.params.postId
+    if(!postId) return next(createError.BadRequest())
+    const post = await Post.findById(postId).catch(()=> {})
+    if(!post || await IsUserBanned(post.author)) return next(createError.BadRequest("post with the id "+postId+" does not exist"))
+    const community = await Community.findOne({name: post.community})
+    if(!IsUserMod(req.payload.aud, community) || IsUserAdmin(req.payload.roles)) return next(createError.Unauthorized("you are not a moderator of this community"))
+
+    post.locked = true
+    try {
+        await post.save()
+        res.send("success")
+    } catch {
+        return next(createError.InternalServerError())
+    }
+})
+
+router.post('/:postId/unlock', verifyAccessToken, async (req, res, next)=> {
+    const postId = req.params.postId
+    if(!postId) return next(createError.BadRequest())
+    const post = await Post.findById(postId).catch(()=> {})
+    if(!post || await IsUserBanned(post.author)) return next(createError.BadRequest("post with the id "+postId+" does not exist"))
+    const community = await Community.findOne({name: post.community})
+    if(!IsUserMod(req.payload.aud, community) || IsUserAdmin(req.payload.roles)) return next(createError.Unauthorized("you are not a moderator of this community"))
+
+    post.locked = false
+    try {
+        await post.save()
+        res.send("success")
+    } catch {
+        return next(createError.InternalServerError())
+    }
+})
 
 router.post('/:postId/comment/:commentId', verifyAccessToken, verifyRecaptcha("reply"), async (req, res, next)=> {
     if(!req.body.body) return next(createError.BadRequest())

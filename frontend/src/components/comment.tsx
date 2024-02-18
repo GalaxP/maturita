@@ -29,6 +29,7 @@ export interface IComment {
     offset: number,
     onReply: (id:string, replyBody: string) => void,
     showLine?: boolean,
+    disbled: boolean
     isOp: boolean
 }
 
@@ -128,14 +129,14 @@ const Comment = (comment: IComment) => {
             
             <span className="text-sm pl-2 block break-words mt-1">{comment.body}</span>
             <div className="flex flex-row content-center space-x-1 pl-2 items-center">
-                <VoteButton type="like" current_vote={votes.user_vote} votes={votes.votes_likes} onClick={()=>vote(1)} loading={voting}/>
-                <VoteButton type="dislike" current_vote={votes.user_vote} votes={votes.votes_dislikes} onClick={()=>vote(-1)} loading={voting}/>
-                <Button variant="ghost" className="m-1" onClick={()=> {if(auth?.isAuthenticated) {setShowReply(r => !r)} else {navigate("/account/login")}}}>
+                <VoteButton type="like" current_vote={votes.user_vote} votes={votes.votes_likes} onClick={()=>vote(1)} loading={voting || comment.disbled}/>
+                <VoteButton type="dislike" current_vote={votes.user_vote} votes={votes.votes_dislikes} onClick={()=>vote(-1)} loading={voting || comment.disbled}/>
+                {!comment.disbled && <Button variant="ghost" className="m-1" onClick={()=> {if(auth?.isAuthenticated) {setShowReply(r => !r)} else {navigate("/account/login")}}}>
                     <MessageSquare strokeWidth={1.5} size={20} className="mr-1"/>
                     Reply
-                </Button>
+                </Button>}
             </div>
-            {showReply && <InteractiveTextArea buttonText="Reply" comment={reply} isAuthenticated={auth?.isAuthenticated} setComment={(e) => setReply(e)} submitComment={()=>comment.onReply(comment._id, reply)} placeholder="Type your reply here." />}
+            {showReply && <InteractiveTextArea disabled={comment.disbled} buttonText="Reply" comment={reply} isAuthenticated={auth?.isAuthenticated} setComment={(e) => setReply(e)} submitComment={()=>comment.onReply(comment._id, reply)} placeholder="Type your reply here." />}
         </div>
     </div>
         

@@ -57,7 +57,7 @@ const checkAvailability = (communityName: string) => {
 const checkAvailabilityDebounced = debouncePromise(checkAvailability, 500);
 
 const formSchema = z.object({
-  name: z.string().nonempty({message: "Required"}),
+  name: z.string().nonempty({message: "Required"}).max(40),
   description: z.string().nonempty({message: "Required"})
 })
 

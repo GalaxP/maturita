@@ -30,6 +30,7 @@ export interface PostSchema {
         name: string,
         avatar: string
     }
-    comments?: IComment[]
+    comments?: IComment[],
+    locked: boolean,
     comment_length?: number
 }

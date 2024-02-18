@@ -15,7 +15,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../com
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "./ui/dialog";
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuLabel, DropdownMenuItem, DropdownMenuTrigger} from "../components/ui/dropdown-menu"
 import { Badge } from "./ui/badge";
-import { MoreHorizontal, Trash } from "lucide-react";
+import { Lock, MoreHorizontal, Trash } from "lucide-react";
 
 declare var grecaptcha:any
 
@@ -149,6 +149,7 @@ const Post = ({props, showLinkToPost, width, showCommunity=true}: Iprop) => {
         if(!props._id) return
         grecaptcha.ready(function() {
             grecaptcha.execute(process.env.REACT_APP_RECAPTCHA_SITE_KEY, {action: 'delete'}).then(function(token:string) {
+                let z = 20;
                 post_data("/post/"+props._id+"/delete", {token: token}, {}, true).then((res)=>{
                     toast({
                         variant: "default",
@@ -229,24 +230,35 @@ const Post = ({props, showLinkToPost, width, showCommunity=true}: Iprop) => {
                         </Tooltip>
                     </TooltipProvider>
                     {props.tag && <Link to={"/community/"+props.community.name+"?tag="+props.tag?.name}><Badge aria-description="tag" onClick={()=>{navigate("/community/"+props.community.name+"?tag="+props.tag?.name)}} className="h-5 ml-1 text-center hidden sm:block cursor-pointer" style={{backgroundColor: props.tag.color, color: contrastingColor(props.tag.color)}} variant={"secondary"}>{props.tag.name}</Badge></Link>}
+                    <div className="ml-auto space-x-2 flex flex-row items-center">
 
-                    { auth?.isAuthenticated && auth?.getUser() && auth?.getUser().user.uid === props.author.id && 
-                        <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
-                            <DropdownMenuTrigger asChild>
-                                <Button className="ml-auto" size={"ultra_sm"} variant={"ghost"}>
-                                    <MoreHorizontal color={"black"} />
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent>
-                                <DropdownMenuItem aria-description="donothing" onSelect={()=>{setMenuOpen(false) ;openConfirmBox()}}>
-                                    <Trash className="mr-2 h-4 w-4"/>
-                                    Delete
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-                    }
+                        {props.locked && 
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Lock className="" size={16} ></Lock>
+                                </TooltipTrigger>
+                                <TooltipContent>This post has been locked by the moderators of this community</TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider> }
+                        { auth?.isAuthenticated && auth?.getUser() && auth?.getUser().user.uid === props.author.id && 
+                            <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
+                                <DropdownMenuTrigger asChild>
+                                    <Button className="" size={"ultra_sm"} variant={"ghost"}>
+                                        <MoreHorizontal color={"black"} />
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent>
+                                    <DropdownMenuItem aria-description="donothing" onSelect={()=>{setMenuOpen(false) ;openConfirmBox()}}>
+                                        <Trash className="mr-2 h-4 w-4"/>
+                                        Delete
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        }
+                    </div>
                 </CardDescription>
-                {props.tag && <Badge aria-description="tag" className="h-5 w-max text-center block sm:hidden cursor-pointer" style={{backgroundColor: props.tag.color, color: contrastingColor(props.tag.color)}} variant={"secondary"}>{props.tag.name}</Badge>}
+                {props.tag && <Badge aria-description="tag" onClick={()=>{navigate("/community/"+props.community.name+"?tag="+props.tag?.name)}} className="h-5 w-max text-center block sm:hidden cursor-pointer" style={{backgroundColor: props.tag.color, color: contrastingColor(props.tag.color)}} variant={"secondary"}>{props.tag.name}</Badge>}
                 {!showLinkToPost &&<Link to={"/user/"+props.author.id} className="hover:underline sm:hidden block text-xs text-primary">u/{props.author.displayName}</Link>}
 
                 <CardTitle>{props.title}</CardTitle>
@@ -254,8 +266,8 @@ const Post = ({props, showLinkToPost, width, showCommunity=true}: Iprop) => {
             </CardHeader>
             <CardContent className="pt-2 pb-4">
                 <div className="flex flex-row content-center space-x-1">
-                    <VoteButton type="like" votes={votes.votes_likes} current_vote={votes.user_vote} onClick={vote} loading={isVoting}/>
-                    <VoteButton type="dislike" votes={votes.votes_dislikes} current_vote={votes.user_vote} onClick={vote} loading={isVoting}/>
+                    <VoteButton type="like" votes={votes.votes_likes} current_vote={votes.user_vote} onClick={vote} loading={isVoting || props.locked}/>
+                    <VoteButton type="dislike" votes={votes.votes_dislikes} current_vote={votes.user_vote} onClick={vote} loading={isVoting|| props.locked}/>
                     {showLinkToPost && <Button onClick={()=>navigate("/post/"+props._id)} variant="ghost" className="px-2">
                         <AiOutlineComment size={20} className="mr-1"/>
                         {props.comment_length}

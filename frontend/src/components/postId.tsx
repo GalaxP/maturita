@@ -17,7 +17,7 @@ import { PostSkeleton } from "./skeleton/post";
 declare var grecaptcha:any
 
 const PostId = () => {
-const [post, setPost] = useState<PostSchema>({author:{id:"", displayName:"", avatar:"", provider: ""}, tag:{name:"", color:""}, title:"", createdAt: new Date(), body:"", community: {name: "", avatar: ""}, _id:"", votes_likes:0, votes_dislikes: 0, user_vote: 0, comments: [], comment_length: 0})
+const [post, setPost] = useState<PostSchema>({author:{id:"", displayName:"", avatar:"", provider: ""}, tag:{name:"", color:""}, locked: false, title:"", createdAt: new Date(), body:"", community: {name: "", avatar: ""}, _id:"", votes_likes:0, votes_dislikes: 0, user_vote: 0, comments: [], comment_length: 0})
     const [documentTitle, setDocumentTitle] = useDocumentTitle("")
     const [isLoading, setIsLoading] = useState(false)
     const id = useParams().postId;
@@ -110,7 +110,7 @@ const [post, setPost] = useState<PostSchema>({author:{id:"", displayName:"", ava
             /*if(depth > 0) comments.push(<div className="w-2 h-32 bg-primary"></div>)*/
             let comment = <div className="flex flex-row space-x-2 flex-shrink" key={"wrapper "+comm.id}>
                 {generateLines(depth)}
-                <Comment isOp={comm.author.id === post.author.id} showLine={comm.comments !== undefined} onReply={(id, body)=>reply(comm.id, body)} _id={comm.id} author={comm.author} body={comm.body} createdAt={comm.createdAt} offset={depth} votes_dislikes={comm.votes_dislikes} votes_likes={comm.votes_likes} user_vote={comm.user_vote} key={comm.id} />
+                <Comment disbled={post.locked} isOp={comm.author.id === post.author.id} showLine={comm.comments !== undefined} onReply={(id, body)=>reply(comm.id, body)} _id={comm.id} author={comm.author} body={comm.body} createdAt={comm.createdAt} offset={depth} votes_dislikes={comm.votes_dislikes} votes_likes={comm.votes_likes} user_vote={comm.user_vote} key={comm.id} />
             </div>
             comments.push(comment)
             if(comm.comments && comm.comments.length > 0) recursiveComment(comm.comments, depth+1);
@@ -119,7 +119,7 @@ const [post, setPost] = useState<PostSchema>({author:{id:"", displayName:"", ava
 
     if(post.comments && post.comments.length>0) {
         post.comments.map((comm:IComment)=>{
-            comments.push(<Comment isOp={comm.author.id === post.author.id} showLine={comm.comments !== undefined} onReply={(id, body)=>reply(comm.id, body)} _id={comm.id} author={comm.author} body={comm.body} createdAt={comm.createdAt} offset={0} votes_dislikes={comm.votes_dislikes} votes_likes={comm.votes_likes} user_vote={comm.user_vote} key={comm.id}/>)
+            comments.push(<Comment disbled={post.locked} isOp={comm.author.id === post.author.id} showLine={comm.comments !== undefined} onReply={(id, body)=>reply(comm.id, body)} _id={comm.id} author={comm.author} body={comm.body} createdAt={comm.createdAt} offset={0} votes_dislikes={comm.votes_dislikes} votes_likes={comm.votes_likes} user_vote={comm.user_vote} key={comm.id}/>)
             if(comm.comments && comm.comments.length > 0) recursiveComment(comm.comments, 1);
         })
     }
@@ -129,7 +129,7 @@ const [post, setPost] = useState<PostSchema>({author:{id:"", displayName:"", ava
     <div className="mt-6">
         <Post props={post} showLinkToPost={false}/>
         <div className="w-11/12 lg:w-[700px] sm:w-11/12 mx-auto mt-5" >
-            <InteractiveTextArea buttonText="Comment" comment={comment} isAuthenticated={authContext?.isAuthenticated} setComment={(e)=>setComment(e)} submitComment={submitComment} placeholder="Type your comment here." key={id}/>
+            <InteractiveTextArea disabled={post.locked} buttonText="Comment" comment={comment} isAuthenticated={authContext?.isAuthenticated} setComment={(e)=>setComment(e)} submitComment={submitComment} placeholder="Type your comment here." key={id}/>
             <div className="text-lg font-semibold my-2">{post.comment_length} {post.comment_length !== 1 ? localizeContext.localize("COMMENT_COUNT_P") : localizeContext.localize("COMMENT_COUNT_S")}</div>
             {comments}
         </div>

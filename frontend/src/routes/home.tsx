@@ -15,7 +15,7 @@ import HomeSkeleton from "../components/skeleton/home";
 
 const Home = ({openNewsletter}: {openNewsletter: ()=>void}) => {
   const [loaded, setLoaded] = useState(false);
-  const [posts, setPosts] = useState<PostSchema[]>([{author:{id:"",displayName:"", avatar:"", provider: ""}, title:"", createdAt: new Date(), body:"", _id:"", community: {name: "", avatar:""}, votes_likes:0, votes_dislikes:0, user_vote:0, comments:[], comment_length :0}]);
+  const [posts, setPosts] = useState<PostSchema[]>([{author:{id:"",displayName:"", avatar:"", provider: ""}, title:"", locked:false, createdAt: new Date(), body:"", _id:"", community: {name: "", avatar:""}, votes_likes:0, votes_dislikes:0, user_vote:0, comments:[], comment_length :0}]);
   const [error, setError] = useState();
   const auth = useContext(AuthContext)
   const navigate = useNavigate()

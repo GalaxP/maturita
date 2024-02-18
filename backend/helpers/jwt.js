@@ -42,7 +42,7 @@ const signRefreshToken = (userId, provider) => {
     return new Promise(async(resolve, reject)=>{
         const options = {
             expiresIn: "30d",
-            issuer: "odporuc.sk",
+            issuer: "api.maturita-forum.sk",
             audience: userId,
         };
         const banned = await IsUserBanned(userId)
