@@ -17,7 +17,7 @@ import { PostSkeleton } from "./skeleton/post";
 declare var grecaptcha:any
 
 const PostId = () => {
-const [post, setPost] = useState<PostSchema>({author:{id:"", displayName:"", avatar:"", provider: ""}, tag:{name:"", color:""}, locked: false, title:"", createdAt: new Date(), body:"", community: {name: "", avatar: ""}, _id:"", votes_likes:0, votes_dislikes: 0, user_vote: 0, comments: [], comment_length: 0})
+const [post, setPost] = useState<PostSchema>({author:{id:"", displayName:"", isMod: false, avatar:"", provider: ""}, tag:{name:"", color:""}, locked: false, title:"", createdAt: new Date(), body:"", community: {name: "", avatar: ""}, _id:"", votes_likes:0, votes_dislikes: 0, user_vote: 0, comments: [], comment_length: 0})
     const [documentTitle, setDocumentTitle] = useDocumentTitle("")
     const [isLoading, setIsLoading] = useState(false)
     const id = useParams().postId;

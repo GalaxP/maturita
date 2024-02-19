@@ -16,7 +16,8 @@ export interface PostSchema {
         id: string,
         displayName: string,
         avatar: string,
-        provider: string
+        provider: string,
+        isMod?: boolean
     }
     tag?: {
         name:string

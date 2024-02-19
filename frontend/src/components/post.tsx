@@ -34,6 +34,8 @@ const Post = ({props, showLinkToPost, width, showCommunity=true}: Iprop) => {
     const [isVoting, setIsVoting] = useState(false)
     const [confirmOpen, setConfirmOpen] = useState(false)
     const [menuOpen, setMenuOpen] = useState(false)
+
+    const [confirmLockOpen, setConfirmLockOpen] = useState(false)
     const navigate = useNavigate()
     const { toast } = useToast()
 
@@ -169,6 +171,28 @@ const Post = ({props, showLinkToPost, width, showCommunity=true}: Iprop) => {
             })
         })
     }
+
+    const lockOrUnlockPost = () => {
+        if(!props._id) return
+        post_data("/post/"+props._id+"/"+ (props.locked? "unlock":"lock"), {}, {}, true).then((res)=>{
+            toast({
+                variant: "default",
+                title: "successfully "+props.locked? "unlocked":"locked"+" your post.",
+            })
+            setConfirmOpen(false)
+            //if(window.location.pathname.includes("post")) navigate("/")
+            window.location.reload()
+        })
+        .catch((err:any)=>{
+            console.log(err)
+            toast({
+                variant: "destructive",
+                title: "Uh oh! Something went wrong.",
+            })
+            setConfirmOpen(false)
+        })
+
+    }
     
     const contrastingColor = (hex: string) => {
         const r = parseInt(hex.slice(1, 3), 16);
@@ -195,6 +219,22 @@ const Post = ({props, showLinkToPost, width, showCommunity=true}: Iprop) => {
                         <Button type="submit" variant={"secondary"}>Cancel</Button>
                     </DialogClose>
                     <Button type="submit" onClick={deletePost}>Yes</Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+        <Dialog open={confirmLockOpen} onOpenChange={setConfirmLockOpen}>
+            <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                    <DialogTitle>Are you sure you want to {props.locked ? "Unlock" : "Lock"} this post?</DialogTitle>
+                    <DialogDescription>
+                        Users will no longer have the ability to add comments or leave a reaction to the post or its comments. This action can be reversed
+                    </DialogDescription>
+                </DialogHeader>
+                <DialogFooter>
+                    <DialogClose asChild>
+                        <Button type="submit" variant={"secondary"}>Cancel</Button>
+                    </DialogClose>
+                    <Button type="submit" onClick={lockOrUnlockPost}>Yes</Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
@@ -241,7 +281,7 @@ const Post = ({props, showLinkToPost, width, showCommunity=true}: Iprop) => {
                                 <TooltipContent>This post has been locked by the moderators of this community</TooltipContent>
                             </Tooltip>
                         </TooltipProvider> }
-                        { auth?.isAuthenticated && auth?.getUser() && auth?.getUser().user.uid === props.author.id && 
+                        { auth?.isAuthenticated && auth?.getUser() && (auth?.getUser().user.uid === props.author.id || props.author.isMod) && 
                             <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
                                 <DropdownMenuTrigger asChild>
                                     <Button className="" size={"ultra_sm"} variant={"ghost"}>
@@ -253,6 +293,11 @@ const Post = ({props, showLinkToPost, width, showCommunity=true}: Iprop) => {
                                         <Trash className="mr-2 h-4 w-4"/>
                                         Delete
                                     </DropdownMenuItem>
+                                    { props.author.isMod && 
+                                    <DropdownMenuItem aria-description="donothing" onSelect={()=>{setMenuOpen(false) ;setConfirmLockOpen(true)}}>
+                                        <Lock className="mr-2 h-4 w-4"/>
+                                        {props.locked ? "Unlock" : "Lock"}
+                                    </DropdownMenuItem>}
                                 </DropdownMenuContent>
                             </DropdownMenu>
                         }

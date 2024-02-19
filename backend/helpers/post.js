@@ -5,7 +5,7 @@ const Comment = require("../schemas/comment")
 const User = require("../schemas/user")
 const mongoose = require('mongoose')
 const Community = require("../schemas/community")
-const { IsUserBanned } = require("./account")
+const { IsUserBanned, IsUserMod } = require("./account")
 
 const getPostById = async (postId, authorized, userId, getComments) => {
     try {
@@ -25,7 +25,7 @@ const getPostById = async (postId, authorized, userId, getComments) => {
         const author = await User.findOne({uid:_post.author})
         if(!author || await IsUserBanned(_post.author)) return null
         
-        result.author = {id: author.uid, displayName: author.displayName, avatar: author.provider==="google" ? author.google.picture : author.avatar, provider: author.provider}
+        result.author = {id: author.uid, displayName: author.displayName, avatar: author.provider==="google" ? author.google.picture : author.avatar, provider: author.provider, isMod: IsUserMod(userId, comm)}
         const comments_ids = _post.comments;
         var comments = [];
         var commentsLength = 0;

@@ -19,7 +19,6 @@ router.post("/action", verifyAccessToken, verifyRecaptcha("action"), async (req,
         if(result.type !== "vote" && result.type !== "comment") throw createError.UnprocessableEntity()
 
         var post;
-        var parrent;
         if(result.type === "comment") {
             post = await Comment.findById(result.postId)
             
@@ -111,7 +110,9 @@ router.post('/:postId/lock', verifyAccessToken, async (req, res, next)=> {
     const post = await Post.findById(postId).catch(()=> {})
     if(!post || await IsUserBanned(post.author)) return next(createError.BadRequest("post with the id "+postId+" does not exist"))
     const community = await Community.findOne({name: post.community})
-    if(!IsUserMod(req.payload.aud, community) || IsUserAdmin(req.payload.roles)) return next(createError.Unauthorized("you are not a moderator of this community"))
+    console.log(IsUserAdmin(req.payload.roles))
+    console.log(IsUserMod(req.payload.aud, community))
+    if(!(IsUserMod(req.payload.aud, community) || IsUserAdmin(req.payload.roles))) return next(createError.Unauthorized("you are not a moderator of this community"))
 
     post.locked = true
     try {
@@ -128,7 +129,7 @@ router.post('/:postId/unlock', verifyAccessToken, async (req, res, next)=> {
     const post = await Post.findById(postId).catch(()=> {})
     if(!post || await IsUserBanned(post.author)) return next(createError.BadRequest("post with the id "+postId+" does not exist"))
     const community = await Community.findOne({name: post.community})
-    if(!IsUserMod(req.payload.aud, community) || IsUserAdmin(req.payload.roles)) return next(createError.Unauthorized("you are not a moderator of this community"))
+    if(!(IsUserMod(req.payload.aud, community) || IsUserAdmin(req.payload.roles))) return next(createError.Unauthorized("you are not a moderator of this community"))
 
     post.locked = false
     try {
