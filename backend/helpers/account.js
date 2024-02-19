@@ -16,7 +16,7 @@ const IsUserAdmin = function(roles) {
 const IsUserMod = function(user, community) {
     try {
         return community.moderators.findIndex(x=>x===user) !== -1
-    } catch{
+    } catch (err){
         return false
     }
 }

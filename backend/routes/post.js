@@ -74,7 +74,8 @@ router.post('/:postId/comment', verifyAccessToken, verifyRecaptcha("comment"), a
     const post = await Post.findById(id).catch(()=> {})
     if(!post || await IsUserBanned(post.author)) return next(createError.BadRequest("post with the id "+id+" does not exist"))
     const community = await Community.findOne({name: post.community})
-    if(!(post.locked && (IsUserMod(community, req.payload.aud) || IsUserAdmin(req.payload.roles)))) return next(createError.Unauthorized("The post is locked"))
+
+    if(post.locked && !(IsUserMod(community, req.payload.aud, community) || IsUserAdmin(req.payload.roles))) return next(createError.Unauthorized("The post is locked"))
 
     const _comment = new Comment({
         author: req.payload.aud,
@@ -110,8 +111,6 @@ router.post('/:postId/lock', verifyAccessToken, async (req, res, next)=> {
     const post = await Post.findById(postId).catch(()=> {})
     if(!post || await IsUserBanned(post.author)) return next(createError.BadRequest("post with the id "+postId+" does not exist"))
     const community = await Community.findOne({name: post.community})
-    console.log(IsUserAdmin(req.payload.roles))
-    console.log(IsUserMod(req.payload.aud, community))
     if(!(IsUserMod(req.payload.aud, community) || IsUserAdmin(req.payload.roles))) return next(createError.Unauthorized("you are not a moderator of this community"))
 
     post.locked = true

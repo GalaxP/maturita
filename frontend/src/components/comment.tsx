@@ -127,7 +127,7 @@ const Comment = (comment: IComment) => {
                 { comment.isOp && <Badge className="h-5 ml-1 text-center" variant={"outline"}>Original Poster</Badge> }
             </div>
             
-            <span className="text-sm pl-2 block break-words mt-1">{comment.body}</span>
+            <span className="text-sm pl-2 block break-words whitespace-pre-line mt-1">{comment.body}</span>
             <div className="flex flex-row content-center space-x-1 pl-2 items-center">
                 <VoteButton type="like" current_vote={votes.user_vote} votes={votes.votes_likes} onClick={()=>vote(1)} loading={voting || comment.disbled}/>
                 <VoteButton type="dislike" current_vote={votes.user_vote} votes={votes.votes_dislikes} onClick={()=>vote(-1)} loading={voting || comment.disbled}/>

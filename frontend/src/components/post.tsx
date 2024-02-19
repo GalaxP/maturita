@@ -177,7 +177,7 @@ const Post = ({props, showLinkToPost, width, showCommunity=true}: Iprop) => {
         post_data("/post/"+props._id+"/"+ (props.locked? "unlock":"lock"), {}, {}, true).then((res)=>{
             toast({
                 variant: "default",
-                title: "successfully "+props.locked? "unlocked":"locked"+" your post.",
+                title: "successfully "+(props.locked? "unlocked":"locked")+" your post.",
             })
             setConfirmOpen(false)
             //if(window.location.pathname.includes("post")) navigate("/")
