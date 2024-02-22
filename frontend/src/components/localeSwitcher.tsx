@@ -20,19 +20,19 @@ const LocaleSwitcher = () => {
         return <div key={lang.name}>
         {lang.name === locale.getLocale() &&<Button variant="ghost" key={lang.name} className="px-2 w-full text-left items-center flex justify-start" onBlur={()=>setTimeout(()=>setLocaleToggle(false),200 )}  onClick={()=>setLocaleToggle(l => !l)}>
         {lang.Flag}
-        {lang.text}
+        <div className="hidden xs:block ml-1"> {lang.text}</div>
         {!localeToggle ? <ChevronDown key={lang.name+" up"} strokeWidth={1.5} color="gray"/> :
         <ChevronUp key={lang.name+" down"} strokeWidth={1.5} color="gray"/>}
         </Button>
         }
         </div>
     })}
-    <div key="languages" className={"bg-white absolute shadow-md w-[105px]" + (localeToggle ? " block" : " hidden")}>
+    <div key="languages" className={"bg-white absolute shadow-md min-w-[54px] xs:w-[105px]" + (localeToggle ? " block" : " hidden")}>
         {locales.map((lang, i)=>{
             return <div key={lang.name} >
                 {lang.name !== locale.getLocale() &&<Button variant="ghost" key={lang.name+i} className="px-2 w-full text-left items-center flex justify-start" onClick={()=>{localeContext.setLocaleCookie(lang.name); setReRender(true)}}>
                 {lang.Flag}  
-                {lang.text}
+                <div className="hidden xs:block ml-1"> {lang.text}</div>
             </Button>
             }
             </div>

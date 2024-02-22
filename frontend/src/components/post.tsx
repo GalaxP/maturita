@@ -246,7 +246,7 @@ const Post = ({props, showLinkToPost, width, showCommunity=true}: Iprop) => {
                             <AvatarImage src={GetCommunityAvatar(props.community.avatar)} alt="@shadcn" />
                             <AvatarFallback>AVATAR</AvatarFallback>
                         </Avatar>
-                        <Link to={"/community/"+props.community.name} className="hover:underline py-auto text-black flex-inline flex-row" key={props._id+ "community"}>
+                        <Link to={"/community/"+props.community.name} className="hover:underline py-auto text-black flex-inline flex-row max-w-[5rem] xs:max-w-none overflow-clip" key={props._id+ "community"}>
                     {props.community.name}</Link>
                     <span className="dot-separator mx-1"></span></>}
 
@@ -256,13 +256,16 @@ const Post = ({props, showLinkToPost, width, showCommunity=true}: Iprop) => {
                         </Avatar>
                     </>}
 
-                    <Link to={"/user/"+props.author.id} className="hover:underline" key={props._id+" user"}>{props.author.displayName}</Link> 
+                    <Link to={"/user/"+props.author.id} className="hover:underline max-w-[6rem] xs:max-w-none overflow-clip" key={props._id+" user"}>{props.author.displayName}</Link> 
                     
                     <span className="dot-separator mx-1"></span>
                     <TooltipProvider>
                         <Tooltip>
                             <TooltipTrigger asChild>
-                                <div>{prettyDate(new Date(props.createdAt).getTime())} ago</div> 
+                                <>
+                                    <div className="hidden xs:block">{prettyDate(new Date(props.createdAt).getTime())} ago</div> 
+                                    <div className="block xs:hidden">{prettyDate(new Date(props.createdAt).getTime(), true)} ago</div> 
+                                </>
                             </TooltipTrigger>
                             <TooltipContent>
                                 {new Date(props.createdAt).toLocaleDateString() + " " + new Date(props.createdAt).toLocaleTimeString()}
@@ -304,7 +307,6 @@ const Post = ({props, showLinkToPost, width, showCommunity=true}: Iprop) => {
                     </div>
                 </CardDescription>
                 {props.tag && <Badge aria-description="tag" onClick={()=>{navigate("/community/"+props.community.name+"?tag="+props.tag?.name)}} className="h-5 w-max text-center block sm:hidden cursor-pointer" style={{backgroundColor: props.tag.color, color: contrastingColor(props.tag.color)}} variant={"secondary"}>{props.tag.name}</Badge>}
-                {!showLinkToPost &&<Link to={"/user/"+props.author.id} className="hover:underline sm:hidden block text-xs text-primary">u/{props.author.displayName}</Link>}
 
                 <CardTitle>{props.title}</CardTitle>
                 <p className="break-words whitespace-pre-line">{props.body}</p>

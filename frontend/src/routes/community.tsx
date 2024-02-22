@@ -179,8 +179,8 @@ const Community = ({about}: {about?:boolean}) => {
                             </div>
                         </ChangeAvatar>}
                         <div className="flex flex-col ml-3 justify-start">
-                            <div className="flex flex-row items-top">
-                                <h2 className="mb-0 scroll-m-20 text-3xl font-semibold tracking-tight first:mt-0 inline-block">{community_name}</h2>
+                            <div className="flex flex-row items-top items-center">
+                                <h2 className="mb-0 scroll-m-20 text-xl font-semibold tracking-tight first:mt-0 inline-block xs:text-3xl">{community_name}</h2>
                                 <Button variant={"outline"} className="rounded-full w-20 ml-2" onClick={handleJoinButton}>
                                     {communityInfo.isMember ? "Leave" : "Join"}
                                 </Button>

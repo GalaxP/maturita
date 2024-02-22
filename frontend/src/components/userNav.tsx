@@ -48,10 +48,6 @@ export function UserNav({avatar, displayName, email}: {avatar: string, displayNa
                 Profile
               </Link>
             </DropdownMenuItem>
-            <DropdownMenuItem>
-              Settings
-            </DropdownMenuItem>
-            
             {
               auth?.getUser()?.user?.roles && auth?.getUser()?.user?.roles?.includes('admin') &&
               <DropdownMenuItem>  

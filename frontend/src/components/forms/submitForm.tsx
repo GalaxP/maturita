@@ -250,10 +250,10 @@ export function SubmitForm({handleSubmit, isLoading, defaultCommunity, showMyCom
                               }}
                             >
                               <Avatar className="h-6 w-6 mr-1">
-                                <AvatarImage src={GetCommunityAvatar(community.avatar)} alt="@shadcn" />
+                                <AvatarImage src={GetCommunityAvatar(community.avatar)} />
                                 <AvatarFallback>NA</AvatarFallback>
                               </Avatar>
-                              <span className="text-black font-semibold">{community.label}</span>
+                              <span className="text-black font-semibold max-w-[125px] overflow-clip">{community.label}</span>
                               <span className="dot-separator mx-1"></span>
                               {community.members} members
                               <Check className={cn("ml-auto h-4 w-4", community.value === field.value ? "opacity-100" : "opacity-0")}/>
@@ -281,7 +281,7 @@ export function SubmitForm({handleSubmit, isLoading, defaultCommunity, showMyCom
                                 <AvatarImage src={GetCommunityAvatar(community.avatar)} alt="@shadcn" />
                                 <AvatarFallback>NA</AvatarFallback>
                               </Avatar>
-                              <span className="text-black font-semibold">{community.label}</span>
+                              <span className="text-black font-semibold max-w-[125px] overflow-clip">{community.label}</span>
                               <span className="dot-separator mx-1"></span>
                               {community.members} members
                               <Check className={cn("ml-auto h-4 w-4", community.value === field.value ? "opacity-100" : "opacity-0")}/>
@@ -374,6 +374,7 @@ export function SubmitForm({handleSubmit, isLoading, defaultCommunity, showMyCom
                               }}
                             >
                               <Badge className={"h-5 ml-1 text-center text-white"} style={{backgroundColor: tag.color, color: contrastingColor(tag.color)}} variant={"secondary"}>{tag.name}</Badge>
+                              <Check className={cn("ml-auto h-4 w-4", form.getValues().tag === tag.name ? "opacity-100" : "opacity-0")}/>
                             </CommandItem>
                           ))
                                 }
