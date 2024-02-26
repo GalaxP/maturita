@@ -8,21 +8,12 @@ const { v4 } = require('uuid');
 const jwt = require('../helpers/jwt');
 const Token = require('../schemas/token');
 const pick = require('../helpers/pick')
-const rateLimit = require('express-rate-limit');
 const {OAuth2Client} = require('google-auth-library');
 const verifyRecaptcha = require('../helpers/recaptcha');
 const Avatar = require('../schemas/avatar')
 const path = require('node:path'); 
 const { createDefaultAvatar } = require('../helpers/avatar')
 require('dotenv').config()
-
-const rateLimiterUsingThirdParty = rateLimit({
-    windowMs: 100, // 1 second
-    max: 1,
-    message: 'You have exceeded the 1 requests in 10 ms limit!', 
-    standardHeaders: true,
-    legacyHeaders: false,
-});
 
 
 const multer = require('multer');
@@ -141,7 +132,6 @@ router.post("/logout", async function (req, res, next) {
         if (!refreshToken) throw createError.BadRequest();
         const token = await jwt.verifyRefreshToken(refreshToken);
         Token.deleteMany({ uid: token.aud }).catch((err) => {
-          //console.log(err);
           throw createError.InternalServerError();
         });
         res.clearCookie("refreshToken")
@@ -184,11 +174,8 @@ async function verify(token) {
   const ticket = await client.verifyIdToken({
       idToken: token,
       audience: process.env.GOOGLE_CLIENT_ID,  // Specify the CLIENT_ID of the app that accesses the backend
-      // Or, if multiple clients access the backend:
-      //[CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3]
   });
   const payload = ticket.getPayload();
-  const userid = payload['sub'];
   return payload;
 }
 
@@ -269,7 +256,6 @@ router.post ('/upload', jwt.verifyAccessToken, async (req, res) => {
             console.log(error)
         }
     })
-    // You can perform additional operations with the uploaded image here.
 });
 
 router.get('/communities', jwt.verifyAccessToken, async (req,res,next) => {

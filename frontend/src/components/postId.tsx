@@ -17,7 +17,7 @@ import { PostSkeleton } from "./skeleton/post";
 declare var grecaptcha:any
 
 const PostId = () => {
-const [post, setPost] = useState<PostSchema>({author:{id:"", displayName:"", isMod: false, avatar:"", provider: ""}, tag:{name:"", color:""}, locked: false, title:"", createdAt: new Date(), body:"", community: {name: "", avatar: ""}, _id:"", votes_likes:0, votes_dislikes: 0, user_vote: 0, comments: [], comment_length: 0})
+const [post, setPost] = useState<PostSchema>({author:{id:"", displayName:"", isMod: false, avatar:"", provider: ""}, tag:{name:"", color:""}, locked: false, photos: undefined, title:"", createdAt: new Date(), body:"", community: {name: "", avatar: ""}, _id:"", votes_likes:0, votes_dislikes: 0, user_vote: 0, comments: [], comment_length: 0})
     const [documentTitle, setDocumentTitle] = useDocumentTitle("")
     const [isLoading, setIsLoading] = useState(false)
     const id = useParams().postId;
@@ -129,7 +129,7 @@ const [post, setPost] = useState<PostSchema>({author:{id:"", displayName:"", isM
     <div className="mt-6">
         <Post props={post} showLinkToPost={false}/>
         <div className="w-11/12 lg:w-[700px] sm:w-11/12 mx-auto mt-5" >
-            <InteractiveTextArea disabled={post.locked} buttonText="Comment" comment={comment} isAuthenticated={authContext?.isAuthenticated} setComment={(e)=>setComment(e)} submitComment={submitComment} placeholder="Type your comment here." key={id}/>
+            <InteractiveTextArea disabled={post.locked} buttonText="Comment" comment={comment} isAuthenticated={authContext?.isAuthenticated} setComment={(e)=>setComment(e)} submitComment={submitComment} placeholder="Type your comment here." id={id ? "textarea"+ id : ""} key={post._id ? "textarea"+ post._id : ""}/>
             <div className="text-lg font-semibold my-2">{post.comment_length} {post.comment_length !== 1 ? localizeContext.localize("COMMENT_COUNT_P") : localizeContext.localize("COMMENT_COUNT_S")}</div>
             {comments}
         </div>

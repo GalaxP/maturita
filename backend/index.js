@@ -16,6 +16,7 @@ const deleteRouter = require('./routes/delete')
 const avatarsRouter = require('./routes/avatars')
 const communityRouter = require('./routes/community')
 const userRouter = require('./routes/user')
+const cdnRouter = require('./routes/cdn')
 
 var app = express();
 app.set("view engine", "jade");
@@ -35,6 +36,7 @@ app.use("/delete", deleteRouter);
 app.use("/avatars", avatarsRouter);
 app.use("/community", communityRouter);
 app.use("/user", userRouter);
+app.use("/cdn", cdnRouter);
 
 app.use(function (req, res, next) {
     next(createError(404));

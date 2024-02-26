@@ -136,7 +136,7 @@ const Comment = (comment: IComment) => {
                     Reply
                 </Button>}
             </div>
-            {showReply && <InteractiveTextArea disabled={comment.disbled} buttonText="Reply" comment={reply} isAuthenticated={auth?.isAuthenticated} setComment={(e) => setReply(e)} submitComment={()=>comment.onReply(comment._id, reply)} placeholder="Type your reply here." />}
+            {showReply && <InteractiveTextArea id={"textarea"+comment._id} disabled={comment.disbled} buttonText="Reply" comment={reply} isAuthenticated={auth?.isAuthenticated} setComment={(e) => setReply(e)} submitComment={()=>comment.onReply(comment._id, reply)} placeholder="Type your reply here." />}
         </div>
     </div>
         

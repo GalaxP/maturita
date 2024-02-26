@@ -48,7 +48,8 @@ const formSchema = z.object({
   community: z.string(),
   title: z.string().min(6, "Title must contain at least 6 characters").max(100, "Title must not exceed 100 characters."),
   body: z.string().max(700, "Body must not exceed 700 characters."),
-  tag: z.string().optional()
+  tag: z.string().optional(),
+  photos: z.string().optional()
 })
 interface props {
     handleSubmit: (values: z.infer<typeof formSchema>) => void,
@@ -69,6 +70,8 @@ export function SubmitForm({handleSubmit, isLoading, defaultCommunity, showMyCom
   const [selectedCommunityAvatar, setSelectedCommunityAvatar] = useState("")
   const [selectedTag, setSelectedTag] = useState<{name: string, color: string}>({name:"", color:""})
   const [isAvailable, setIsAvailable] = useState(false)
+  const [image, setImage] = useState("")
+
   const [selectedCommunity, setSelectedCommunity] = useState({
     value: "",
     label: "",
@@ -410,6 +413,20 @@ export function SubmitForm({handleSubmit, isLoading, defaultCommunity, showMyCom
                 <FormLabel>Body</FormLabel>
                 <FormControl>
                   <Textarea disabled={isLoading} placeholder="Type your message here." {...field}/>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+          control={form.control}
+            name="photos"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Image</FormLabel>
+                <FormControl>
+                  <input type="file" onChange={(e:any)=>{console.log(e.target.files[0])}} value={image} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

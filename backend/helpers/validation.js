@@ -5,11 +5,12 @@ const postSchema = Joi.object({
     body: Joi.string().required().max(700),
     community: Joi.string().required(),
     tag: Joi.string().optional(),
+    photos: Joi.array().items(Joi.string()).optional().max(1),
     token: Joi.string().required()
 })
 
 const userSchema = Joi.object({
-    email: Joi.string().required().email().lowercase(),
+    email: Joi.string().required().email().lowercase().max(100),
     firstName: Joi.string().required().max(50),
     lastName: Joi.string().required().max(50),
     displayName: Joi.string().required().min(3).max(25).regex(/^[a-zA-Z0-9_]+$/),

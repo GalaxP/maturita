@@ -16,6 +16,7 @@ import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, Di
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuLabel, DropdownMenuItem, DropdownMenuTrigger} from "../components/ui/dropdown-menu"
 import { Badge } from "./ui/badge";
 import { Lock, MoreHorizontal, Trash } from "lucide-react";
+import { AspectRatio } from "./ui/aspect-ratio";
 
 declare var grecaptcha:any
 
@@ -309,6 +310,13 @@ const Post = ({props, showLinkToPost, width, showCommunity=true}: Iprop) => {
                 {props.tag && <Badge aria-description="tag" onClick={()=>{navigate("/community/"+props.community.name+"?tag="+props.tag?.name)}} className="h-5 w-max text-center block sm:hidden cursor-pointer" style={{backgroundColor: props.tag.color, color: contrastingColor(props.tag.color)}} variant={"secondary"}>{props.tag.name}</Badge>}
 
                 <CardTitle>{props.title}</CardTitle>
+                
+                {
+                    props.photos &&
+                    <div className="aspect-[0.9] object-contain max-h-[450px] bg-primary-foreground" style={{marginTop: "1rem"}}>
+                        <img className="aspect-square w-full max-h-[450px] object-contain h-full" src={props.photos[0]}/>
+                    </div>
+                }
                 <p className="break-words whitespace-pre-line">{props.body}</p>
             </CardHeader>
             <CardContent className="pt-2 pb-4">

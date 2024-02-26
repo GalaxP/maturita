@@ -22,7 +22,8 @@ export interface PostSchema {
     tag?: {
         name:string
         color:string
-    }
+    },
+    photos?: [string]
     createdAt: Date
     votes_likes: number
     votes_dislikes: number

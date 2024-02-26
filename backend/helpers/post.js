@@ -18,7 +18,7 @@ const getPostById = async (postId, authorized, userId, getComments) => {
             userVote = await PostAction.findOne({postId: postId, userId: userId})
         }
         
-        const result = pick(_post._doc, "_id", "title", "body", "createdAt", "locked")
+        const result = pick(_post._doc, "_id", "title", "body", "createdAt", "locked", "photos")
         const comm = await Community.findOne({name: _post.community})
         result.community = {name: _post.community, avatar: comm.avatar}
         
