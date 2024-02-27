@@ -28,7 +28,7 @@ const upload = multer({storage: storage, fileFilter: function (req, file, callba
 }, limits: {fileSize: process.env.CDN_UPLOAD_LIMIT}}).single('file')
 
 
-router.post('/upload', verifyAccessToken, verifyRecaptcha("uploadCDN"), async function (req, res, next) {
+router.post('/upload', verifyAccessToken, /*verifyRecaptcha("uploadCDN"),*/ async function (req, res, next) {
     const imageID = v4()
     req.name = imageID
     upload(req, res, async function (err) {
@@ -36,6 +36,7 @@ router.post('/upload', verifyAccessToken, verifyRecaptcha("uploadCDN"), async fu
             if(err.code==='LIMIT_FILE_SIZE') return res.status(400).send("File must be under 5Mb")
             else {console.log(err);return res.status(400).send('unknown error')}
         } else if (err) {
+            console.log("test")
             return res.status(400).send(err)
         }
 
@@ -69,10 +70,10 @@ router.get("/:file", async function(req, res, next) {
         root: path.dirname(require.main.filename)
     };
     res.sendFile(filePath.path, options, function (err) {
-        if (err.status === 404) {
+        if (err?.status === 404) {
             return next(createError.NotFound("File not found"))
         }
-        else {
+        else if(err) {
             return next(createError.InternalServerError())
         }
     });

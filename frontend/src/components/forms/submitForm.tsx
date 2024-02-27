@@ -12,7 +12,7 @@ import {
 } from "../../components/ui/form"
 import { Input } from "../../components/ui/input"
 import { useForm } from "react-hook-form"
-import { ChevronDown, ChevronsDown, Loader2, Tag } from "lucide-react"
+import { ChevronDown, ChevronsDown, FileImage, Loader2, Tag, Upload, X } from "lucide-react"
 import { Textarea } from "../ui/textarea"
 
 import {
@@ -43,13 +43,17 @@ import { useNavigate } from "react-router-dom"
 import { Avatar, AvatarFallback, AvatarImage } from "../../components/ui/avatar"
 import GetAvatar, { GetCommunityAvatar } from "helpers/getAvatar"
 import { Badge } from "components/ui/badge"
+import InteractiveTextArea from "components/interactiveTextArea"
+import { AddButton } from "components/ui/add-button"
+import { Progress } from "components/ui/progress"
+declare var grecaptcha:any
 
 const formSchema = z.object({
   community: z.string(),
   title: z.string().min(6, "Title must contain at least 6 characters").max(100, "Title must not exceed 100 characters."),
   body: z.string().max(700, "Body must not exceed 700 characters."),
   tag: z.string().optional(),
-  photos: z.string().optional()
+  photos: z.string().array().optional()
 })
 interface props {
     handleSubmit: (values: z.infer<typeof formSchema>) => void,
@@ -70,8 +74,6 @@ export function SubmitForm({handleSubmit, isLoading, defaultCommunity, showMyCom
   const [selectedCommunityAvatar, setSelectedCommunityAvatar] = useState("")
   const [selectedTag, setSelectedTag] = useState<{name: string, color: string}>({name:"", color:""})
   const [isAvailable, setIsAvailable] = useState(false)
-  const [image, setImage] = useState("")
-
   const [selectedCommunity, setSelectedCommunity] = useState({
     value: "",
     label: "",
@@ -94,7 +96,38 @@ export function SubmitForm({handleSubmit, isLoading, defaultCommunity, showMyCom
     tags: [{name: "", color: ""}],
     members: 0
   },], isEmpty : false})
+  const [image, setImage] = useState<File>()
 
+  const [uploadProgress, setUploadProgress] = useState(0)
+  const handleImageUpload = (file: File) => {
+    setUploadProgress(0)
+    form.clearErrors("photos")
+    if(file.type.split("/")[0] !== "image") { setImage(undefined); return form.setError("photos",{message:"File must be an image"}) }
+    if(file.size > (process.env.REACT_APP_PHOTOS_UPLOAD_LIMIT_BYTES as unknown as number)) return form.setError("photos",{message:"File must be smaller than "+process.env.REACT_APP_PHOTOS_UPLOAD_LIMIT_STRING})
+
+    let data = new FormData()
+    data.append("file", file)
+
+    
+    //clear to upload
+    grecaptcha.ready(function() {
+      grecaptcha.execute(process.env.REACT_APP_RECAPTCHA_SITE_KEY, {action: 'uploadCDN'}).then(function(token:string) {
+          data.append("token", token)
+          setUploadProgress(20)
+          post_data("/cdn/upload", data, {}, true).then((res)=>{
+            if(res.status === 200) {
+              let photos = [process.env.REACT_APP_API_URL+"/cdn/"+res.data]
+              form.setValue("photos", photos)
+              setUploadProgress(100)
+            }
+          })
+          .catch(()=>{
+            setUploadProgress(0)
+          })
+        }
+      )
+    })
+  }
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema)
@@ -126,6 +159,10 @@ export function SubmitForm({handleSubmit, isLoading, defaultCommunity, showMyCom
       })
       .catch(()=>{})
       
+    }
+    for(let i = 0; i < 370; i++) {
+      setUploadProgress(v => v + 1)
+      //if(uploadProgress>100) setUploadProgress(0)
     }
   }, [])
   const createCommunity = () => {
@@ -341,12 +378,12 @@ export function SubmitForm({handleSubmit, isLoading, defaultCommunity, showMyCom
             control={form.control}
             name="tag"
             render={({field})=> (
-              <FormItem className="flex flex-col">
+              <FormItem>
                 <Dialog>
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>
-                        <Button
+                        { /*<Button
                           variant="round_outline"
                           role="combobox"
                           className="max-w-[250px] justify-between"
@@ -358,6 +395,12 @@ export function SubmitForm({handleSubmit, isLoading, defaultCommunity, showMyCom
                             </>
                             : <span className="mr-auto"><Tag strokeWidth={1.3} className="inline"></Tag> Tag</span>}
                           <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                        </Button> */}
+                        
+                        <Button role="combobox" disabled={form.getValues("community") ? false : true} style={{backgroundColor: selectedTag.color, color: field.value ? contrastingColor(selectedTag.color ) : "black"}} variant={"round_outline"} className={"font-semibold text-white"}>
+                              <Tag strokeWidth={1.8} size={20} className="mr-2"></Tag>
+                            {field.value ? field.value : "Flair"}
+                            <ChevronDown strokeWidth={1.3} className="ml-auto"></ChevronDown>
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
@@ -412,7 +455,7 @@ export function SubmitForm({handleSubmit, isLoading, defaultCommunity, showMyCom
               <FormItem>
                 <FormLabel>Body</FormLabel>
                 <FormControl>
-                  <Textarea disabled={isLoading} placeholder="Type your message here." {...field}/>
+                  <InteractiveTextArea isLoading={isLoading} disabled={isLoading} buttonText="Submit" comment={form.getValues("body") || ""} submitComment={()=>{}} setComment={(e)=>{form.setValue("body", e)}} id="submitTextArea" isAuthenticated placeholder="Type your message here." />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -424,19 +467,25 @@ export function SubmitForm({handleSubmit, isLoading, defaultCommunity, showMyCom
             name="photos"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Image</FormLabel>
                 <FormControl>
-                  <input type="file" onChange={(e:any)=>{console.log(e.target.files[0])}} value={image} />
+                  <div className="float-left">
+                    <input type="file" id="imageupload" className="hidden" accept="image/*" onChange={(e:any)=>{setImage(e.target.files[0]);handleImageUpload(e.target.files[0])}}/>
+                    <Button variant={"round_outline"} className={"font-semibold w-auto flex flex-col"} onClick={(e)=>{e.preventDefault();if(image) return; document.getElementById("imageupload")?.click()}}>
+                      <div className="flex flex-row items-center">
+                        <Upload size={20} className="mr-1"></Upload>
+                        {image ? image.name: "Upload an image"}
+                        {image && <X className="p-0 pl-1 h-4" onClick={(e)=>{e.preventDefault();setImage(undefined)}} aria-description="prevent" size={15}></X>}
+                      </div>
+                    </Button>
+                      { image && <div className="w-full mt-[-4px] h-1 px-4"> <Progress value={uploadProgress} className=" h-1"></Progress> </div>}
+
+                  </div>
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
         </div>
-        <Button type="submit" disabled={isLoading} className="w-full mt-6">
-            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" /> }
-            Post
-        </Button>
       </form>
     </Form>
   )

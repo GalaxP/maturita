@@ -122,6 +122,7 @@ const Post = ({props, showLinkToPost, width, showCommunity=true}: Iprop) => {
                     break;
                 default:
                     switch(e.target.ariaDescription) {
+                        
                         case "tag":
                             navigate("/community/"+props.community.name+"?tag="+props.tag?.name)
                             break;
@@ -273,7 +274,7 @@ const Post = ({props, showLinkToPost, width, showCommunity=true}: Iprop) => {
                             </TooltipContent>
                         </Tooltip>
                     </TooltipProvider>
-                    {props.tag && <Link to={"/community/"+props.community.name+"?tag="+props.tag?.name}><Badge aria-description="tag" onClick={()=>{navigate("/community/"+props.community.name+"?tag="+props.tag?.name)}} className="h-5 ml-1 text-center hidden sm:block cursor-pointer" style={{backgroundColor: props.tag.color, color: contrastingColor(props.tag.color)}} variant={"secondary"}>{props.tag.name}</Badge></Link>}
+                    {props.tag && <Link to={"/community/"+props.community.name+"?tag="+props.tag?.name}><Badge aria-description="tag" onClick={()=>{navigate("/community/"+props.community.name+"?tag="+props.tag?.name)}} className="h-5 ml-1 text-center hidden sm:flex cursor-pointer" style={{backgroundColor: props.tag.color, color: contrastingColor(props.tag.color)}} variant={"secondary"}>{props.tag.name}</Badge></Link>}
                     <div className="ml-auto space-x-2 flex flex-row items-center">
 
                         {props.locked && 
@@ -293,28 +294,30 @@ const Post = ({props, showLinkToPost, width, showCommunity=true}: Iprop) => {
                                     </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent>
-                                    <DropdownMenuItem aria-description="donothing" onSelect={()=>{setMenuOpen(false) ;openConfirmBox()}}>
-                                        <Trash className="mr-2 h-4 w-4"/>
-                                        Delete
-                                    </DropdownMenuItem>
                                     { props.author.isMod && 
                                     <DropdownMenuItem aria-description="donothing" onSelect={()=>{setMenuOpen(false) ;setConfirmLockOpen(true)}}>
                                         <Lock className="mr-2 h-4 w-4"/>
                                         {props.locked ? "Unlock" : "Lock"}
                                     </DropdownMenuItem>}
+                                    <DropdownMenuItem aria-description="donothing" onSelect={()=>{setMenuOpen(false) ;openConfirmBox()}}>
+                                        <Trash className="mr-2 h-4 w-4"/>
+                                        Delete
+                                    </DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>
                         }
                     </div>
                 </CardDescription>
-                {props.tag && <Badge aria-description="tag" onClick={()=>{navigate("/community/"+props.community.name+"?tag="+props.tag?.name)}} className="h-5 w-max text-center block sm:hidden cursor-pointer" style={{backgroundColor: props.tag.color, color: contrastingColor(props.tag.color)}} variant={"secondary"}>{props.tag.name}</Badge>}
+                {props.tag && <Badge aria-description="tag" onClick={()=>{navigate("/community/"+props.community.name+"?tag="+props.tag?.name)}} className="h-5 w-max text-center flex sm:hidden cursor-pointer" style={{backgroundColor: props.tag.color, color: contrastingColor(props.tag.color)}} variant={"secondary"}>{props.tag.name}</Badge>}
 
                 <CardTitle>{props.title}</CardTitle>
                 
                 {
-                    props.photos &&
-                    <div className="aspect-[0.9] object-contain max-h-[450px] bg-primary-foreground" style={{marginTop: "1rem"}}>
-                        <img className="aspect-square w-full max-h-[450px] object-contain h-full" src={props.photos[0]}/>
+                    props.photos && props.photos.length > 0 &&
+                    <div aria-description="donothing" className="aspect-[0.9] object-contain max-h-[450px] bg-primary-foreground cursor-pointer" style={{marginTop: "1rem"}}>
+                        <a aria-description="donothing" href={props.photos[0]} target="_blank">
+                            <img aria-description="donothing" className="aspect-square w-full max-h-[450px] object-contain h-full" src={props.photos[0]} onError={(e:any)=>{e.target.src=process.env.REACT_APP_API_URL+"/cdn/404.png"}}/>
+                        </a>
                     </div>
                 }
                 <p className="break-words whitespace-pre-line">{props.body}</p>

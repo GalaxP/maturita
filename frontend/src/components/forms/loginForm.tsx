@@ -32,8 +32,6 @@ export function LoginForm({handleSubmit, googleSignIn , isLoading, incorrectCred
     resolver: zodResolver(formSchema)
   })
   function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
     handleSubmit(values)
   }
   function onGoogleSignIn() {

@@ -31,6 +31,10 @@ const postSchema = new Schema({
     tag: {
         type: String,
     },
+    photos: {
+        type: [String],
+        required: false
+    },
     comments: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Comment'
