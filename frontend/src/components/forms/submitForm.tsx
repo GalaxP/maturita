@@ -102,8 +102,8 @@ export function SubmitForm({handleSubmit, isLoading, defaultCommunity, showMyCom
   const handleImageUpload = (file: File) => {
     setUploadProgress(0)
     form.clearErrors("photos")
-    if(file.type.split("/")[0] !== "image") { setImage(undefined); return form.setError("photos",{message:"File must be an image"}) }
-    if(file.size > (process.env.REACT_APP_PHOTOS_UPLOAD_LIMIT_BYTES as unknown as number)) return form.setError("photos",{message:"File must be smaller than "+process.env.REACT_APP_PHOTOS_UPLOAD_LIMIT_STRING})
+    if(file.type.split("/")[0] !== "image") { setUploadProgress(0);setImage(undefined); return form.setError("body",{message:"File must be an image"}) }
+    if(file.size > (process.env.REACT_APP_PHOTOS_UPLOAD_LIMIT_BYTES as unknown as number)){setUploadProgress(0);setImage(undefined);return form.setError("body",{message:"File must be smaller than "+process.env.REACT_APP_PHOTOS_UPLOAD_LIMIT_STRING})}
 
     let data = new FormData()
     data.append("file", file)
@@ -123,6 +123,9 @@ export function SubmitForm({handleSubmit, isLoading, defaultCommunity, showMyCom
           })
           .catch(()=>{
             setUploadProgress(0)
+            form.setError("body", {message:"something went wrong"})
+            form.setValue("photos", undefined)
+            setImage(undefined)
           })
         }
       )
@@ -455,14 +458,29 @@ export function SubmitForm({handleSubmit, isLoading, defaultCommunity, showMyCom
               <FormItem>
                 <FormLabel>Body</FormLabel>
                 <FormControl>
-                  <InteractiveTextArea isLoading={isLoading} disabled={isLoading} buttonText="Submit" comment={form.getValues("body") || ""} submitComment={()=>{}} setComment={(e)=>{form.setValue("body", e)}} id="submitTextArea" isAuthenticated placeholder="Type your message here." />
+                  <InteractiveTextArea customButtonHeight="10" extraButton=
+                  {
+                    <div className="float-left">
+                      <input type="file" id="imageupload" className="hidden" accept="image/*" onChange={(e:any)=>{setImage(e.target.files[0]);handleImageUpload(e.target.files[0])}}/>
+                      <Button variant={"round_outline"} className={"font-semibold w-auto flex flex-col"} onClick={(e)=>{e.preventDefault();if(image) return; document.getElementById("imageupload")?.click()}}>
+                        <div className="flex flex-row items-center">
+                          <Upload size={20} className="mr-1"></Upload>
+                          {image ? image.name: "Upload an image"}
+                          {image && uploadProgress < 100 && <Loader2 className="mx-1 h-4 w-4 animate-spin" />}
+                          {image && <X className="p-0 pl-1 h-4" onClick={(e)=>{e.preventDefault();setUploadProgress(0); setImage(undefined);form.setValue("photos", undefined)}} aria-description="prevent" size={15}></X>}
+                        </div>
+                      </Button>
+                      { image && <div className="w-full mt-[-4px] h-1 px-4"> <Progress value={uploadProgress} className=" h-1"></Progress> </div>}
+                    </div>
+                  }
+                  isLoading={isLoading} disabled={isLoading} buttonText="Submit" comment={form.getValues("body") || ""} submitComment={()=>{}} setComment={(e)=>{form.setValue("body", e)}} id="submitTextArea" isAuthenticated placeholder="Type your message here." />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
 
-          <FormField
+          {/* <FormField
           control={form.control}
             name="photos"
             render={({ field }) => (
@@ -474,7 +492,7 @@ export function SubmitForm({handleSubmit, isLoading, defaultCommunity, showMyCom
                       <div className="flex flex-row items-center">
                         <Upload size={20} className="mr-1"></Upload>
                         {image ? image.name: "Upload an image"}
-                        {image && <X className="p-0 pl-1 h-4" onClick={(e)=>{e.preventDefault();setImage(undefined)}} aria-description="prevent" size={15}></X>}
+                        {image && <X className="p-0 pl-1 h-4" onClick={(e)=>{e.preventDefault();setImage(undefined);form.setValue("photos", undefined)}} aria-description="prevent" size={15}></X>}
                       </div>
                     </Button>
                       { image && <div className="w-full mt-[-4px] h-1 px-4"> <Progress value={uploadProgress} className=" h-1"></Progress> </div>}
@@ -484,7 +502,7 @@ export function SubmitForm({handleSubmit, isLoading, defaultCommunity, showMyCom
                 <FormMessage />
               </FormItem>
             )}
-          />
+          /> */}
         </div>
       </form>
     </Form>

@@ -36,7 +36,6 @@ router.post('/upload', verifyAccessToken, /*verifyRecaptcha("uploadCDN"),*/ asyn
             if(err.code==='LIMIT_FILE_SIZE') return res.status(400).send("File must be under 5Mb")
             else {console.log(err);return res.status(400).send('unknown error')}
         } else if (err) {
-            console.log("test")
             return res.status(400).send(err)
         }
 

@@ -32,7 +32,6 @@ router.post('/post', verifyAccessToken, verifyRecaptcha("post"), async function 
     if(!community) return next(createError.BadRequest("community does not exist or was not specified"))
 
     if(!result.tag) result.tag=null
-    console.log(result.photos)
     const _post = new Post({
       author: req.payload.aud,
       body: result.body,
