@@ -8,6 +8,7 @@ var createError = require("http-errors");
 const verifyRecaptcha = require('../helpers/recaptcha');
 const { IsUserBanned, IsUserAdmin, IsUserMod } = require('../helpers/account');
 const Community = require('../schemas/community');
+const Deleted = require('../schemas/deleted');
 var router = express.Router();
 
 router.post("/action", verifyAccessToken, verifyRecaptcha("action"), async (req, res, next) => {
@@ -96,7 +97,13 @@ router.post('/:postId/delete', verifyAccessToken, verifyRecaptcha("delete"), asy
     const community = await Community.findOne({name: post.community})
     if(!(post.author === req.payload.aud || IsUserAdmin(req.payload.roles) || community.moderators.findIndex(x=>x===req.payload.aud) !== -1 )) return next(createError.Unauthorized())
 
+    const deleted = new Deleted({
+        type: "post",
+        deletedBy: req.payload.aud,
+        deleted: post
+    })
     try {
+        await deleted.save()
         await post.deleteOne()
         res.send("success")
     }

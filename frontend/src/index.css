@@ -113,3 +113,7 @@
 .grecaptcha-badge { 
   visibility: hidden;
 }
+
+.anchor-none {
+  overflow-anchor: none;
+}

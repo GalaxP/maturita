@@ -286,7 +286,7 @@ const Post = ({props, showLinkToPost, width, showCommunity=true}: Iprop) => {
                                 <TooltipContent>This post has been locked by the moderators of this community</TooltipContent>
                             </Tooltip>
                         </TooltipProvider> }
-                        { auth?.isAuthenticated && auth?.getUser() && (auth?.getUser().user.uid === props.author.id || props.author.isMod) && 
+                        { auth?.isAuthenticated && auth?.getUser() && (auth?.getUser().user.uid === props.author.id || props.author.isMod || auth?.isUserAdmin()) && 
                             <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
                                 <DropdownMenuTrigger asChild>
                                     <Button className="" size={"ultra_sm"} variant={"ghost"}>

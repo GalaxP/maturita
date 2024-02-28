@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { JSXElementConstructor, ReactElement, ReactNode, useContext, useEffect, useState } from "react";
 import { post_data, get_data } from "../helpers/api"
 import { Post } from "../components/post"
 import { PostSchema } from "../schemas/postSchema";
@@ -12,6 +12,8 @@ import { Button } from "../components/ui/button";
 import { Dialog, DialogDescription, DialogHeader, DialogTitle, DialogContent, DialogTrigger} from "../components/ui/dialog";
 import { CreateCommunityForm } from "components/forms/createCommunityForm";
 import HomeSkeleton from "../components/skeleton/home";
+import { JSX } from "react/jsx-runtime";
+import { Skeleton } from "components/ui/skeleton";
 
 const Home = ({openNewsletter}: {openNewsletter: ()=>void}) => {
   const [loaded, setLoaded] = useState(false);
@@ -20,21 +22,53 @@ const Home = ({openNewsletter}: {openNewsletter: ()=>void}) => {
   const auth = useContext(AuthContext)
   const navigate = useNavigate()
   const [documentTitle, setDocumentTitle] = useDocumentTitle("Home")
+  const [cursor, setCursor] = useState<string>()
+  const [reachedEnd, setReachedEnd] = useState(false)
+  const [fetching, setFetching] = useState(false)
+
+  const depth = 3
 
   useEffect(() => {
+    window.scrollTo(0, 0)
     setLoaded(false)
     const controller = new AbortController();
-    getAllPosts(controller);
+    getPosts();
+    
     return () => {
       controller.abort()
     }
   }, [auth?.isAuthenticated]);
+  
+  useEffect(()=> {
+    const handleScroll = () => {
+      const { scrollTop, clientHeight, scrollHeight } =
+        document.documentElement;
+      if (scrollTop + clientHeight >= scrollHeight - 50) {
+        if(fetching) return
+        getPosts();
+      }
+    };
 
-  function getAllPosts(controller: AbortController) {
-    get_data("/postslist", {/*signal: controller.signal*/}, auth?.isAuthenticated).then((res)=>{
-      setPosts(res.data);
-      setLoaded(true)
-    }).catch((err)=>{setError(err);console.log(err); setLoaded(true);})
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [getPosts])
+
+  function getPosts() {
+    setFetching(true)
+    //setTimeout(() => {
+      if(reachedEnd) return
+      get_data("/postslist?depth="+depth+ (cursor ? ("&cursor="+cursor):""), {}, auth?.isAuthenticated).then((res)=>{
+        if(res.data.length === 0) {setReachedEnd(true); setLoaded(true); return}
+        if(!cursor) setPosts(res.data);
+        else setPosts([...posts, ...res.data])
+  
+        setCursor(btoa(res.data[res.data.length-1]._id));
+        setLoaded(true)
+        setFetching(false)
+      }).catch((err)=>{setError(err);console.log(err); setLoaded(true);setFetching(false)})
+    //}, 2000);
   }
 
   const createCommunity = (values: {description: string, name: string}) => {
@@ -47,16 +81,24 @@ const Home = ({openNewsletter}: {openNewsletter: ()=>void}) => {
     })
   }
   
-  const posts_obj = [];
-  for (let i = 0; i < posts.length; i++) {
-    posts_obj.push(<li key={posts[i]._id} className="w-full"><Post key={posts[i]._id} showLinkToPost={true} width="w-full" props={posts[i]}/> </li>);
-  }
-  return (loaded ? 
-  <div className="mt-6">
+  
+  
+  return ( /*loaded ?*/
+  <div className="mt-6 anchor-none" onScrollCapture={(e)=>{console.log(e)}}>
     <div className="flex flex-row w-full justify-center"> 
-      <ul className="w-11/12 lg:w-[650px] sm:w-11/12 space-y-2">
+      <ul className="w-11/12 lg:w-[650px] sm:w-11/12 space-y-2" onScroll={(e)=>console.log(e)}>
         {auth?.isAuthenticated &&<li key={"submit"} className="w-full"> <CreatePost/></li>}
-        {posts_obj}
+        {posts.map((post) => {
+          return <li key={post._id} className="w-full"><Post key={post._id} showLinkToPost={true} width="w-full" props={post}/> </li>
+        })}
+        { 
+         fetching && !reachedEnd && [...Array(depth)].map((e, i) => 
+                            <li className="w-full" key={i}> 
+                                <Skeleton className="w-full h-36 rounded-md"/>
+                            </li>  
+
+                            )
+        } 
       </ul>
       <div className="w-[300px] hidden sm:hidden md:hidden lg:block ml-6 space-y-2">
         <Card>
@@ -100,7 +142,7 @@ const Home = ({openNewsletter}: {openNewsletter: ()=>void}) => {
       </div>
     </div>
   </div>
-  : <HomeSkeleton/>);
+  /*: <HomeSkeleton/>*/);
 }
 
 export default Home;

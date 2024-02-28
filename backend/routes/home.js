@@ -99,16 +99,40 @@ router.get('/postsList', async function(req, res, next){
     })
   }
   if(error) return
+  const cursor = req.query.cursor
+  const depth = req.query.depth
+
+  if(!depth || depth > 15 || depth < 1) return next(createError.BadRequest("you need to specify a depth: 0 < depth < 15"))
+  var filterDate
+  if(cursor) {
+    try {
+    var decodedCursor = Buffer.from(cursor.toString(), 'base64').toString()
+    const cursorPost = await Post.findById(decodedCursor).catch((err)=>{return next(createError.BadRequest("cursor is invalid"))})
+    if(!cursorPost) return next(createError.BadRequest("cursor is invalid"))
+
+    filterDate = cursorPost.createdAt
+    } catch {
+      return next(createError.BadRequest("something in your request is not right"))
+    }
+  } else {
+    filterDate = Date.now()
+  }
+  
   const returns = []
   var index = 0
-  let posts = await Post.find({}).sort('-createdAt')
-  for(const _post of posts) {
-    const post = await getPostById(_post._id, isAuth, userId, false)
-    if(!post) continue
-    returns[index] = post
-    index++
+  try {
+    let posts = await Post.find({createdAt: {$lt: filterDate}}).sort('-createdAt').limit(depth)
+    for(const _post of posts) {
+      const post = await getPostById(_post._id, isAuth, userId, false)
+      if(!post) continue
+      returns[index] = post
+      index++
+    }
+    res.send(returns)
+  } catch{
+    return next(createError.BadRequest("something in your request is not right"))
   }
-  res.send(returns)
+
 });
 
 router.get('/avatar/:uid', async function (req, res) {

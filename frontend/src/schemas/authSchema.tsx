@@ -14,6 +14,7 @@ export type AuthContextType = {
     isAuthenticated: boolean
     /*accessToken: string
     refresh_token: () => Promise<any>*/
+    isUserAdmin: () => boolean
     protectedAction: (action: Function, onFail?: Function) => any
     login: (credentials: IAuth, token?: string) => Promise<any>
     googleLogin: (user: string, accessToken: string) => void

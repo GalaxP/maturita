@@ -147,6 +147,14 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
         return undefined;
     }
 
+    const isUserAdmin = () => {
+        if(!isAuthenticated) return false
+        console.log(user)
+        if(!user.user?.roles) return false
+        if(user.user?.roles?.includes('admin')) return true
+        return false
+    }
+
     const setUserForcefully = (user: any) => {
         cookies.set('account', JSON.stringify(user), { 
             path:"/",
@@ -159,7 +167,7 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
     }
 
     return (  
-        <AuthContext.Provider value={{ getUser, setUserForcefully, isAuthenticated, protectedAction, login, googleLogin, logout }}>
+        <AuthContext.Provider value={{ getUser, setUserForcefully, isAuthenticated, isUserAdmin, protectedAction, login, googleLogin, logout }}>
             {children}
         </AuthContext.Provider>
     );
