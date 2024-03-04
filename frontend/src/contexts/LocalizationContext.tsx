@@ -4,7 +4,7 @@ import { AuthContextProviderProps, AuthContextType, IAuth } from "../schemas/aut
 import Cookies from 'universal-cookie';
 import { languageKey, table, textKey } from "helpers/localTable";
  
-type LocalizationContextType = {
+export type LocalizationContextType = {
     localize: (property:textKey) => string
     getLocale: () => string
     setLocaleCookie: (locale: "en" | "sk") => void

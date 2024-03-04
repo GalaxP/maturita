@@ -58,14 +58,13 @@ const Layout = ({children, openNewsletter}: LayoutProps) => {
                             <SheetClose className="mt-3 justify-start" asChild>
                                 <Button className="w-full" variant={"ghost"} onClick={()=>setIsSearchOpen(true)}>
                                     <Search className="mr-2"/>
-                                    Search
+                                    {localeContext.localize("SEARCH")}
                                 </Button>
                             </SheetClose>
                             <SheetClose className="mt-1 justify-start" asChild>
                                 <Button className="w-full" variant={"ghost"} onClick={()=>navigate('/submit')}>
                                     <PlusCircle className="mr-2"/>
-                                    
-                                    Create
+                                    {localeContext.localize("CREATE")}
                                 </Button>
                             </SheetClose>
                         </SheetContent>
@@ -133,7 +132,7 @@ const Layout = ({children, openNewsletter}: LayoutProps) => {
                             auth?.isAuthenticated &&
                             <Button variant={"ghost"} className="p-2 hidden sm:flex" size="sm" onClick={()=>{auth?.protectedAction(()=>navigate("/submit"))}}>
                                 <PlusCircle className="mr-1" strokeWidth={1.5}/>
-                                Create
+                                {localeContext.localize("CREATE")}
                             </Button>
                         } 
                         

@@ -3,6 +3,7 @@ import HomeSkeleton from "components/skeleton/home"
 import { Avatar, AvatarFallback, AvatarImage } from "components/ui/avatar"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "components/ui/card"
 import AuthContext from "contexts/AuthContext"
+import LocalizationContext from "contexts/LocalizationContext"
 import { get_data } from "helpers/api"
 import prettyDate from "helpers/dateFormat"
 import GetAvatar, { getStringAvatar } from "helpers/getAvatar"
@@ -17,6 +18,8 @@ const User = () => {
     const [error, setError] = useState("")
     const auth = useContext(AuthContext)
     const [loaded, setLoaded] = useState(false)
+
+    const localizeContext = useContext(LocalizationContext)
 
     useEffect(()=>{
         if(!userId) return setError("404")
@@ -53,7 +56,7 @@ const User = () => {
                                         <p className="overflow-hidden text-ellipsis">{user.displayName}</p>
                                         <div className="flex flex-row mt-2 space-x-1">
                                             <CakeSlice size={20} strokeWidth={1.5}></CakeSlice>
-                                            <p className="text-sm font-normal">{prettyDate(new Date(user.createdAt).getTime())}</p>
+                                            <p className="text-sm font-normal">{prettyDate(new Date(user.createdAt).getTime(), localizeContext)}</p>
                                         </div>
                                         
                                     </div>
@@ -84,7 +87,7 @@ const User = () => {
                                         <p className="whitespace-nowrap text-ellipsis">{user.displayName}</p>
                                         <div className="flex flex-row mt-2 space-x-1">
                                             <CakeSlice size={20} strokeWidth={1.5}></CakeSlice>
-                                            <p className="text-sm font-normal">{prettyDate(new Date(user.createdAt).getTime())}</p>
+                                            <p className="text-sm font-normal">{prettyDate(new Date(user.createdAt).getTime(), localizeContext)}</p>
                                         </div>
                                         
                                     </div>

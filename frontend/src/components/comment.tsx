@@ -15,6 +15,7 @@ import prettyDate from "helpers/dateFormat";
 import CharacterCounter from "./characterCounter";
 import { Badge } from "./ui/badge";
 import { HiMicrophone } from "react-icons/hi";
+import LocalizationContext from "contexts/LocalizationContext";
 
 declare var grecaptcha:any
 
@@ -47,6 +48,8 @@ const Comment = (comment: IComment) => {
     const { toast } = useToast()
     const [reply, setReply] = useState("")
     const [voting, setVoting] = useState(false)
+
+    const localizeContext = useContext(LocalizationContext)
     
     const vote = (dir: number) => {
         if(!auth?.isAuthenticated) return navigate("/account/login")
@@ -116,7 +119,7 @@ const Comment = (comment: IComment) => {
                     <TooltipProvider>
                         <Tooltip>
                             <TooltipTrigger asChild>
-                                <>{prettyDate(new Date(comment.createdAt).getTime())} ago</>
+                                <>{prettyDate(new Date(comment.createdAt).getTime(), localizeContext)} ago</>
                             </TooltipTrigger>
                             <TooltipContent>
                                 {new Date(comment.createdAt).toLocaleDateString() + " " + new Date(comment.createdAt).toLocaleTimeString()}

@@ -14,19 +14,26 @@ import { Input } from "../../components/ui/input"
 import { useForm } from "react-hook-form"
 import { Loader2 } from "lucide-react"
 import { SketchPicker, ChromePicker, PhotoshopPicker, HuePicker  } from 'react-color';
-import { useState } from "react"
+import { useContext, useState } from "react"
 import CharacterCounter from "components/characterCounter"
+import LocalizationContext from "contexts/LocalizationContext"
 
-const formSchema = z.object({
+const _formSchema = z.object({
   name: z.string().max(15, 'name cannot be longer than 15 characters'),
   color: z.string()
 })
 interface props {
-    handleSubmit: (values: z.infer<typeof formSchema>) => void,
+    handleSubmit: (values: z.infer<typeof _formSchema>) => void,
     isLoading : boolean,
 }
 export function CreateTagForm({handleSubmit, isLoading}: props) {
   const [color, setColor] = useState("")
+  const localeContext = useContext(LocalizationContext)
+
+  const formSchema = z.object({
+    name: z.string({required_error: localeContext.localize("REQUIRED")}).max(15, localeContext.localize("NAME_LONG")),
+    color: z.string({required_error: localeContext.localize("REQUIRED")})
+  })
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema)
@@ -45,7 +52,7 @@ export function CreateTagForm({handleSubmit, isLoading}: props) {
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Name</FormLabel>
+                <FormLabel>{localeContext.localize("NAME")}</FormLabel>
                 <FormControl>
                   <>
                     <Input className="pr-20" disabled={isLoading} {...field} />
@@ -61,7 +68,7 @@ export function CreateTagForm({handleSubmit, isLoading}: props) {
             name="color"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Color</FormLabel>
+                <FormLabel>{localeContext.localize("COLOR")}</FormLabel>
                 <FormControl>
                   {/* <Input disabled={isLoading} {...field} /> */}
                   <ChromePicker className="min-w-full shadow-none" disableAlpha color={color} onChange={(e)=>{setColor(e.hex);form.setValue("color", e.hex)}}/>

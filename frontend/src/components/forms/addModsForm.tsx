@@ -15,13 +15,14 @@ import { useForm } from "react-hook-form"
 import { Check, ChevronsUpDown, Loader2 } from "lucide-react"
 
 
-import { useState } from "react"
+import { useContext, useState } from "react"
 import { post_data } from "helpers/api"
 import { Avatar, AvatarFallback, AvatarImage } from "components/ui/avatar"
 import GetAvatar from "helpers/getAvatar"
+import LocalizationContext from "contexts/LocalizationContext"
 declare var grecaptcha:any
  
-const formSchema = z.object({
+const _formSchema = z.object({
     moderator: z.string()
 })
 interface props {
@@ -33,8 +34,13 @@ export function AddModeratorForm({handleSubmit, isLoading}: props) {
     const [users, setUsers] = useState<[{uid: string, displayName: string, avatar: string, provider: string, posts: number}]>()
     const [selectedUserIndex, setSelectedUserIndex] = useState<number>()
     const [fetching, setFetching] = useState(false)
+    const localeContext = useContext(LocalizationContext)
 
-    const form = useForm<z.infer<typeof formSchema>>({
+    const formSchema = z.object({
+      moderator: z.string({required_error: localeContext.localize("FIELD_REQUIRED")})
+    })
+
+    const form = useForm<z.infer<typeof _formSchema>>({
     resolver: zodResolver(formSchema)
   })
   function onSubmit(values: z.infer<typeof formSchema>) {
@@ -74,13 +80,13 @@ export function AddModeratorForm({handleSubmit, isLoading}: props) {
                                         <AvatarFallback>{user.displayName}</AvatarFallback>
                                     </Avatar>
                                     <div className="ml-2 w-full items-center flex" key={user.displayName+"f"}>
-                                        {user.displayName}<span className="dot-separator mx-1"></span><span className="text-sm text-muted-foreground">{user.posts} Posts</span>
+                                        {user.displayName}<span className="dot-separator mx-1"></span><span className="text-sm text-muted-foreground">{user.posts} {localeContext.localize("POSTS_L")}</span>
                                     </div>
                                     { selectedUserIndex === i && <Check className="my-auto mr-2" /> }
                                 </div>
                             })}
                             {/*NOTE: BUGGING WHEN TYPING FAST*/}
-                            {!fetching && !users && <p className="mx-auto mt-2">no users found</p>}
+                            {!fetching && !users && <p className="mx-auto mt-2">{localeContext.localize("NO_USERS")}</p>}
                             {fetching && <Loader2 className="mr-2 mt-2 w-full mx-auto animate-spin" />}
                         </>
                     <FormMessage />
@@ -91,7 +97,7 @@ export function AddModeratorForm({handleSubmit, isLoading}: props) {
         </div>
         <Button disabled={isLoading || selectedUserIndex===undefined} variant={"default"} className="mt-6 d:w-28 sm:w-full ">
         {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" /> }
-        Add Moderator
+        {localeContext.localize("ADD_MODERATOR")}
         </Button>
       
         

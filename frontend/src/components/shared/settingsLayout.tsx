@@ -30,11 +30,11 @@ export const SettingsLayout = ({children, page} : {children: React.ReactNode, pa
             <div className="flex flex-row justify-stretch">
                 <nav className="flex flex-col w-32 sm:w-64">
                     {Object.keys(pages).map((_page)=>{
-                        return _page === page ?  <> 
-                        <Button className="justify-start bg-muted" variant={"ghost"} onClick={()=>{navigate("/account"+pages[_page].Url)}}>
+                        return _page === page ? 
+                        <Button key={_page} className="justify-start bg-muted" variant={"ghost"} onClick={()=>{navigate("/account"+pages[_page].Url)}}>
                         {_page}
-                    </Button>
-                        </> : <Button className="justify-start hover:bg-transparent hover:underline" variant={"ghost"} onClick={()=>{navigate("/account"+pages[_page as keyof typeof pages].Url)}}>
+                        </Button>
+                        : <Button key={_page} className="justify-start hover:bg-transparent hover:underline" variant={"ghost"} onClick={()=>{navigate("/account"+pages[_page as keyof typeof pages].Url)}}>
                         {_page}
                     </Button>
                     })}

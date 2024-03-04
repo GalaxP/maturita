@@ -11,6 +11,7 @@ import { Tabs, TabsContent, TabsTrigger, TabsList } from "../components/ui/tabs"
 import { NoResult } from "components/noResult";
 import { Skeleton } from "components/ui/skeleton";
 import SearchSkeleton from "components/skeleton/search";
+import LocalizationContext from "contexts/LocalizationContext";
 
 declare var grecaptcha:any
 
@@ -22,6 +23,8 @@ export const Search = () => {
     const [posts, setPosts] = useState<[PostSchema]>()
     const [users, setUsers] = useState<[{uid: string, displayName: string, avatar: string, provider: string, posts: number}]>()
     const navigate = useNavigate()
+
+    const localeContext = useContext(LocalizationContext)
 
     useEffect(()=>{
         const searchQuery = searchParams.get("q")
@@ -50,9 +53,9 @@ export const Search = () => {
             <div className="w-11/12 lg:w-[800px] sm:w-11/12 mx-auto mt-6">
                 <Tabs defaultValue={searchParams.get('t') || "community"} className="mx-auto items-center flex flex-col" activationMode="manual">
                     <TabsList>
-                        <TabsTrigger onClick={()=>navigate("/search?q="+searchParams.get("q")+"&t="+"community")} value="community" >Communities</TabsTrigger>
-                        <TabsTrigger onClick={()=>navigate("/search?q="+searchParams.get("q")+"&t="+"post")} value="post">Posts</TabsTrigger>
-                        <TabsTrigger onClick={()=>navigate("/search?q="+searchParams.get("q")+"&t="+"user")} value="user">Users</TabsTrigger>
+                        <TabsTrigger onClick={()=>navigate("/search?q="+searchParams.get("q")+"&t="+"community")} value="community">{localeContext.localize("COMMMUNITIES_P")}</TabsTrigger>
+                        <TabsTrigger onClick={()=>navigate("/search?q="+searchParams.get("q")+"&t="+"post")} value="post">{localeContext.localize("POSTS_P")}</TabsTrigger>
+                        <TabsTrigger onClick={()=>navigate("/search?q="+searchParams.get("q")+"&t="+"user")} value="user">{localeContext.localize("USERS_P")}</TabsTrigger>
                     </TabsList>
                     <TabsContent value="community" className="w-full">
                         {communities?.length && communities.length > 0 ? communities.map((community, i)=> {
@@ -64,7 +67,7 @@ export const Search = () => {
                                 <div className="ml-2 w-full" key={community.name+"f"}>
                                     <div className="flex flex-row">
                                         <div className="flex-grow">
-                                            {community.name}<span className="dot-separator mx-1"></span><span className="text-sm text-muted-foreground">{community.members} Members</span>
+                                            {community.name}<span className="dot-separator mx-1"></span><span className="text-sm text-muted-foreground">{community.members} {localeContext.localize("MEMBERS")}</span>
                                             <p className="text-sm text-muted-foreground">{community.description}</p>
 
                                         </div>
@@ -95,7 +98,7 @@ export const Search = () => {
                                     <AvatarFallback>{user.displayName}</AvatarFallback>
                                 </Avatar>
                                 <div className="ml-2 w-full items-center flex" key={user.displayName+"f"}>
-                                    {user.displayName}<span className="dot-separator mx-1"></span><span className="text-sm text-muted-foreground">{user.posts} Posts</span>
+                                    {user.displayName}<span className="dot-separator mx-1"></span><span className="text-sm text-muted-foreground">{user.posts} {localeContext.localize("POSTS_L")}</span>
                                 </div>
                             </div>
                         </>

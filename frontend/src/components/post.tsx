@@ -17,6 +17,7 @@ import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMe
 import { Badge } from "./ui/badge";
 import { Lock, MoreHorizontal, Trash } from "lucide-react";
 import { AspectRatio } from "./ui/aspect-ratio";
+import LocalizationContext from "contexts/LocalizationContext";
 
 declare var grecaptcha:any
 
@@ -39,6 +40,8 @@ const Post = ({props, showLinkToPost, width, showCommunity=true}: Iprop) => {
     const [confirmLockOpen, setConfirmLockOpen] = useState(false)
     const navigate = useNavigate()
     const { toast } = useToast()
+
+    const localeContext = useContext(LocalizationContext)
 
     const vote = (direction: number) => {
         var grecaptchaToken = ""
@@ -265,8 +268,8 @@ const Post = ({props, showLinkToPost, width, showCommunity=true}: Iprop) => {
                         <Tooltip>
                             <TooltipTrigger asChild>
                                 <>
-                                    <div className="hidden xs:block">{prettyDate(new Date(props.createdAt).getTime())} ago</div> 
-                                    <div className="block xs:hidden">{prettyDate(new Date(props.createdAt).getTime(), true)} ago</div> 
+                                    <div className="hidden xs:block">{localeContext.getLocale()==="sk"  && localeContext.localize("AGO")} {prettyDate(new Date(props.createdAt).getTime(), localeContext)} {localeContext.getLocale()!=="sk"  && localeContext.localize("AGO")}</div> 
+                                    <div className="block xs:hidden">{localeContext.getLocale()==="sk"  && localeContext.localize("AGO")} {prettyDate(new Date(props.createdAt).getTime(), localeContext, true)} {localeContext.getLocale()!=="sk"  && localeContext.localize("AGO")}</div> 
                                 </>
                             </TooltipTrigger>
                             <TooltipContent>
@@ -283,7 +286,7 @@ const Post = ({props, showLinkToPost, width, showCommunity=true}: Iprop) => {
                                 <TooltipTrigger asChild>
                                     <Lock className="" size={16} ></Lock>
                                 </TooltipTrigger>
-                                <TooltipContent>This post has been locked by the moderators of this community</TooltipContent>
+                                <TooltipContent>{localeContext.localize("LOCKED_DESCRIPTION")}</TooltipContent>
                             </Tooltip>
                         </TooltipProvider> }
                         { auth?.isAuthenticated && auth?.getUser() && (auth?.getUser().user.uid === props.author.id || props.author.isMod || auth?.isUserAdmin()) && 
@@ -294,14 +297,14 @@ const Post = ({props, showLinkToPost, width, showCommunity=true}: Iprop) => {
                                     </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent>
-                                    { props.author.isMod && 
+                                    { (props.author.isMod || auth?.isUserAdmin()) && 
                                     <DropdownMenuItem aria-description="donothing" onSelect={()=>{setMenuOpen(false) ;setConfirmLockOpen(true)}}>
                                         <Lock className="mr-2 h-4 w-4"/>
-                                        {props.locked ? "Unlock" : "Lock"}
+                                        {props.locked ? localeContext.localize("UNLOCK") : localeContext.localize("LOCK")}
                                     </DropdownMenuItem>}
                                     <DropdownMenuItem aria-description="donothing" onSelect={()=>{setMenuOpen(false) ;openConfirmBox()}}>
                                         <Trash className="mr-2 h-4 w-4"/>
-                                        Delete
+                                        {localeContext.localize("DELETE")}
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>

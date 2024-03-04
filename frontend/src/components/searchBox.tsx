@@ -23,10 +23,11 @@ import {
   } from "./ui/command"
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover"
 import { Button } from "./ui/button"
-import { useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { Input } from "./ui/input"
 import { useNavigate, useParams, useSearchParams } from "react-router-dom"
 import { HiOutlineUserGroup } from "react-icons/hi";
+import LocalizationContext from "contexts/LocalizationContext"
 
   
   export function SearchBox() {
@@ -34,6 +35,7 @@ import { HiOutlineUserGroup } from "react-icons/hi";
     const [searchQuery, setSearchQuery] = useState("")
     const navigate = useNavigate()
     const [searchParams] = useSearchParams();
+    const localeContext = useContext(LocalizationContext)
 
     useEffect(()=>{
       setSearchQuery("")
@@ -53,7 +55,7 @@ import { HiOutlineUserGroup } from "react-icons/hi";
         </Button> */}
         <div className="">
             <Search className="absolute top-[18px] ml-3 h-5 w-5" strokeWidth={1.3}></Search>
-            <Input placeholder="Search" className="w-full pl-9" onBlur={()=>setOpen(false)} onMouseDown={()=>setOpen(true)} value={searchQuery} onChange={(e)=>{setSearchQuery(e.target.value)}}/>
+            <Input placeholder={localeContext.localize("SEARCH")} className="w-full pl-9" onBlur={()=>setOpen(false)} onMouseDown={()=>setOpen(true)} value={searchQuery} onChange={(e)=>{setSearchQuery(e.target.value)}}/>
         </div>
 
       </PopoverTrigger>
@@ -63,15 +65,15 @@ import { HiOutlineUserGroup } from "react-icons/hi";
             <CommandEmpty>No results found.</CommandEmpty>
               <CommandItem onSelect={()=>{searchQuery.length > 0 && navigate('/search?q='+searchQuery+"&t=community")}}>
                 <HiOutlineUserGroup className="mr-2 h-4 w-4" />
-                <span>Search {searchQuery} in Communities</span>
+                <span>{localeContext.localize("SEARCH")} '{searchQuery}' {localeContext.localize("COMMUNITIES")}</span>
               </CommandItem>
               <CommandItem onSelect={()=>{searchQuery.length > 0 && navigate('/search?q='+searchQuery+"&t=post")}}>
                 <Pencil className="mr-2 h-4 w-4" />
-                <span>Search {searchQuery} in Posts</span>
+                <span>{localeContext.localize("SEARCH")} '{searchQuery}' {localeContext.localize("POSTS")}</span>
               </CommandItem>
               <CommandItem onSelect={()=>{searchQuery.length > 0 && navigate('/search?q='+searchQuery+"&t=user")}}>
                 <Users className="mr-2 h-4 w-4" />
-                <span>Search {searchQuery} in Users</span>
+                <span>{localeContext.localize("SEARCH")} '{searchQuery}' {localeContext.localize("USERS")}</span>
               </CommandItem>
           </CommandList>
         </Command>

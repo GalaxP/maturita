@@ -46,6 +46,7 @@ import {
         CommandShortcut,
       } from "components/ui/command"
 import { cn } from "../components/ui/lib/utils";
+import LocalizationContext from "contexts/LocalizationContext";
       
 
 const Community = ({about}: {about?:boolean}) => {
@@ -66,6 +67,8 @@ const Community = ({about}: {about?:boolean}) => {
     const [mod, setMod] = useState<{id: string, displayName: string}>({id:"", displayName:""})
     const [confirm, setConfirm] = useState(false)
     const [tag, setTag] = useState("")
+
+    const localeContext = useContext(LocalizationContext)
 
     const auth = useContext(AuthContext)
     useEffect(()=>{
@@ -91,7 +94,7 @@ const Community = ({about}: {about?:boolean}) => {
                 post_data("/community/"+community_name+"/leave", {}, {}, true)
                 .then(()=>{
                     toast({
-                        description: "Left "+community_name+" as a member!"
+                        description: localeContext.localize("LEFT").replace("COMMUNITY", community_name || "")
                     })
                     setCommunityInfo({...communityInfo, isMember : false})
                 })
@@ -102,7 +105,7 @@ const Community = ({about}: {about?:boolean}) => {
                 post_data("/community/"+community_name+"/join", {}, {}, true)
                 .then(()=>{
                     toast({
-                        description: "Joined "+community_name+" as a member!",
+                        description: localeContext.localize("JOINED").replace("COMMUNITY", community_name || "")
                         
                     })
                     setCommunityInfo({...communityInfo, isMember : true})
@@ -128,9 +131,10 @@ const Community = ({about}: {about?:boolean}) => {
         })
         .catch(()=>{
             toast({
-                description: "Something went wrong",
+                description: localeContext.localize("ERROR_GENERIC"),
                 variant: "destructive"
             })
+            setTagLoading(false)
         })
     }
 
@@ -181,8 +185,8 @@ const Community = ({about}: {about?:boolean}) => {
                         <div className="flex flex-col ml-3 justify-start">
                             <div className="flex flex-row items-top items-center">
                                 <h2 className="mb-0 scroll-m-20 text-xl font-semibold tracking-tight first:mt-0 inline-block xs:text-3xl">{community_name}</h2>
-                                <Button variant={"outline"} className="rounded-full w-20 ml-2" onClick={handleJoinButton}>
-                                    {communityInfo.isMember ? "Leave" : "Join"}
+                                <Button variant={"outline"} className="rounded-full w-22 ml-2" onClick={handleJoinButton}>
+                                    {communityInfo.isMember ? localeContext.localize("LEAVE") : localeContext.localize("JOIN")}
                                 </Button>
                             </div>
                             <p className="text-left">{communityInfo && communityInfo.description}</p>
@@ -194,11 +198,11 @@ const Community = ({about}: {about?:boolean}) => {
                 <div className="flex flex-row w-full justify-center lg:hidden">
                     <div className="w-11/12 lg:w-[974px] mb-2">
                         { !about ? <>
-                                <Button className="mr-2" variant={"round_outline"}>Posts</Button>
-                                <Button variant={"ghost_round"} onClick={()=>navigate("./about")}>About</Button>
+                                <Button className="mr-2" variant={"round_outline"}>{localeContext.localize("POSTS_P")}</Button>
+                                <Button variant={"ghost_round"} onClick={()=>navigate("./about")}>{localeContext.localize("COMMUNITY_ABOUT")}</Button>
                             </> : <>
-                                <Button className="mr-2" variant={"ghost_round"} onClick={()=>navigate("/community/"+community_name)}>Posts</Button>
-                                <Button variant={"round_outline"}>About</Button>
+                                <Button className="mr-2" variant={"ghost_round"} onClick={()=>navigate("/community/"+community_name)}>{localeContext.localize("POSTS_P")}</Button>
+                                <Button variant={"round_outline"}>{localeContext.localize("COMMUNITY_ABOUT")}</Button>
                             </>
                         }
                     </div>
@@ -207,9 +211,9 @@ const Community = ({about}: {about?:boolean}) => {
                     <AlertDialog open={confirm} onOpenChange={setConfirm}>
                         <AlertDialogContent>
                             <AlertDialogHeader>
-                            <AlertDialogTitle>Are you sure you want to add a user as a moderator?</AlertDialogTitle>
+                            <AlertDialogTitle>{localeContext.localize("ADD_MOD_CONFIRM")}</AlertDialogTitle>
                             <AlertDialogDescription>
-                                Are you sure that you want to add the user {mod.displayName} as a moderator of this community?
+                                {localeContext.localize("ADD_MOD_CONFIRM_TEXT").replace("USER", mod.displayName)}
                             </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
@@ -227,23 +231,23 @@ const Community = ({about}: {about?:boolean}) => {
                                 <div className="flex flex-row items-center space-x-2 flex-flow-row-wrap">
                                     <div className="mr-2">
                                         <ArrowDownWideNarrowIcon className="inline-block"/>
-                                        Sort By
+                                        {localeContext.localize("SORT_BY")}
                                     </div>
                                     <Button variant={sortBy.type==="newest" ? "secondary" : "outline"} className="px-2 border-0 font-semibold" onClick={()=>setSortBy({type: "newest", timeFrame: "day"})}>
                                         <BadgePlus className="mr-1" strokeWidth={1.5}/>
-                                        Newest
+                                        {localeContext.localize("NEWEST")}
                                     </Button>
                                     <div className="block">
                                         <Button variant={sortBy.type==="best" ? "secondary" : "outline"} className="px-2 border-0 font-semibold" onClick={()=>{setSortToggle(c=>!c)}}>
                                             <ArrowBigUp className="mr-1" strokeWidth={1.5} size={25}/>
-                                            Best
+                                            {localeContext.localize("BEST")}
                                         </Button>
                                         <div className={"absolute bg-white shadow-md "+ (sortToggle ? "block" : "hidden")}>
-                                            <Button variant={sortBy.timeFrame==="day" ? "secondary" : "outline"} className="block w-full border-0 text-left" onClick={()=>{setSortBy({type: "best", timeFrame: "day"}); setSortToggle(c=>!c)}} >Today</Button>
-                                            <Button variant={sortBy.timeFrame==="week" ? "secondary" : "outline"}  className="block w-full border-0 text-left" onClick={()=>{setSortBy({type: "best", timeFrame: "week"}); setSortToggle(c=>!c)}} >This Week</Button>
-                                            <Button variant={sortBy.timeFrame==="month" ? "secondary" : "outline"}  className="block w-full border-0 text-left" onClick={()=>{setSortBy({type: "best", timeFrame: "month"}); setSortToggle(c=>!c)}}>This Month</Button>
-                                            <Button variant={sortBy.timeFrame==="year" ? "secondary" : "outline"}  className="block w-full border-0 text-left" onClick={()=>{setSortBy({type: "best", timeFrame: "year"}); setSortToggle(c=>!c)}}>This Year</Button>
-                                            <Button variant={sortBy.timeFrame==="alltime" ? "secondary" : "outline"}  className="block w-full border-0 text-left" onClick={()=>{setSortBy({type: "best", timeFrame: "alltime"}); setSortToggle(c=>!c)}}>All Time</Button>
+                                            <Button variant={sortBy.timeFrame==="day" ? "secondary" : "outline"} className="block w-full border-0 text-left" onClick={()=>{setSortBy({type: "best", timeFrame: "day"}); setSortToggle(c=>!c)}} >{localeContext.localize("TODAY")}</Button>
+                                            <Button variant={sortBy.timeFrame==="week" ? "secondary" : "outline"}  className="block w-full border-0 text-left" onClick={()=>{setSortBy({type: "best", timeFrame: "week"}); setSortToggle(c=>!c)}} >{localeContext.localize("WEEK")}</Button>
+                                            <Button variant={sortBy.timeFrame==="month" ? "secondary" : "outline"}  className="block w-full border-0 text-left" onClick={()=>{setSortBy({type: "best", timeFrame: "month"}); setSortToggle(c=>!c)}}>{localeContext.localize("MONTH")}</Button>
+                                            <Button variant={sortBy.timeFrame==="year" ? "secondary" : "outline"}  className="block w-full border-0 text-left" onClick={()=>{setSortBy({type: "best", timeFrame: "year"}); setSortToggle(c=>!c)}}>{localeContext.localize("YEAR")}</Button>
+                                            <Button variant={sortBy.timeFrame==="alltime" ? "secondary" : "outline"}  className="block w-full border-0 text-left" onClick={()=>{setSortBy({type: "best", timeFrame: "alltime"}); setSortToggle(c=>!c)}}>{localeContext.localize("ALL_TIME")}</Button>
                                         </div>
                                     </div>
                                     <Popover>
@@ -258,14 +262,14 @@ const Community = ({about}: {about?:boolean}) => {
                                                 <>
                                                 <Badge className={"h-5 ml-1 text-center text-white"} style={{backgroundColor: communityInfo.tags.find(x=>x.name===tag)?.color, color: contrastingColor(communityInfo.tags.find(x=>x.name===tag)?.color ?? "")}} variant={"secondary"}>{tag} <X className="rounded-full ml-2 bg-primary-foreground/50 w-4 h-4 hover:bg-primary-foreground/20" onClick={()=>{setTag("");navigate("/community/"+community_name)}}/></Badge>
                                                 </>
-                                                : <span className="mr-auto"><Tag strokeWidth={1.8} className="inline w-5 h-5"></Tag> Tag</span>}
+                                                : <span className="mr-auto"><Tag strokeWidth={1.8} className="inline w-5 h-5"></Tag> {localeContext.localize("TAG").charAt(0).toUpperCase() + localeContext.localize("TAG").slice(1).toLowerCase()}</span>}
                                             <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                                             </Button>
                                         </PopoverTrigger>
                                         <PopoverContent className="max-w-[250px] p-0">
                                         <Command className="max-w-[250px]">
-                                            <CommandInput className="max-w-[310px]" placeholder="Search tags..."/>
-                                            <CommandEmpty>No tags found.</CommandEmpty>
+                                            <CommandInput className="max-w-[310px]" placeholder={localeContext.localize("SEARCH_TAGS")}/>
+                                            <CommandEmpty>{localeContext.localize("NO_TAGS")}</CommandEmpty>
                                             { <CommandGroup>
                                             { communityInfo.tags &&
                                             communityInfo.tags.map((_tag) => (
@@ -303,34 +307,34 @@ const Community = ({about}: {about?:boolean}) => {
                         <div className="w-[300px] hidden sm:hidden md:hidden lg:block ml-6">
                         <Card>
                             <CardHeader>
-                                <CardTitle>About community</CardTitle>
+                                <CardTitle>{localeContext.localize("ABOUT_COMMUNITY")}</CardTitle>
                                 <CardDescription>
                                     {communityInfo.description} 
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
                                 <div className="align-center flex">
-                                    <Users className="inline-block pr-1"/>{communityInfo.members} member{communityInfo.members!==1 && "s"}
+                                    <Users className="inline-block pr-1"/>{communityInfo.members} {localeContext.localize("MEMBER")}{communityInfo.members!==1 && localeContext.getLocale() === "en" && "s"}
                                 </div>
                             </CardContent>
                         </Card>
                         <Card className="my-2">
                             <CardHeader>
-                                <CardTitle>Tags</CardTitle>
+                                <CardTitle>{localeContext.localize("TAGS")}</CardTitle>
                                 <CardDescription>
-                                    These are the tags used for filtering posts
+                                    {localeContext.localize("TAGS_TEXT")}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
                                 {communityInfo.tags.map((tag)=>{
                                     return <Badge className={"h-5 ml-1 text-center shadow-sm cursor-pointer"} onClick={()=>{setTag(tag.name); navigate("/community/"+community_name+"?tag="+tag.name)}} style={{backgroundColor: tag.color, color: contrastingColor(tag.color)}} variant={"secondary"} key={tag.name}>{tag.name}</Badge>
                                 })}
-                                {communityInfo.tags.length === 0 && <p className="text-sm">There are no tags for this community. Ask the moderators of this community to add them</p>}
+                                {communityInfo.tags.length === 0 && <p className="text-sm">{localeContext.localize("COMMUNITY_NO_TAGS")}</p>}
                             </CardContent>
-                            { communityInfo.isModerator &&<CardFooter>
+                            { (communityInfo.isModerator || auth?.isUserAdmin()) &&<CardFooter>
                                     <Dialog>
                                         <DialogTrigger asChild>
-                                            <Button className="flex justify-start" variant={"round_outline"}><PlusCircle strokeWidth={1.5} className="mr-2"></PlusCircle> Add Tag</Button>
+                                            <Button className="flex justify-start" variant={"round_outline"}><PlusCircle strokeWidth={1.5} className="mr-2"></PlusCircle> {localeContext.localize("ADD_TAG")}</Button>
                                         </DialogTrigger>
                                         <DialogContent className="sm:max-w-[425px]">
                                             <DialogHeader>
@@ -342,9 +346,9 @@ const Community = ({about}: {about?:boolean}) => {
                         </Card>
                         <Card className="my-2">
                             <CardHeader>
-                                <CardTitle>Moderators <Shield className="inline w-6 h-6"/></CardTitle>
+                                <CardTitle>{localeContext.localize("MODERATORS")} <Shield className="inline w-6 h-6"/></CardTitle>
                                 <CardDescription>
-                                    These are the people that enforce the rules of this community
+                                    {localeContext.localize("MODERATORS_TEXT")}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
@@ -358,10 +362,10 @@ const Community = ({about}: {about?:boolean}) => {
                                         </div>
                                 })}
                             </CardContent>
-                            { communityInfo.isModerator &&<CardFooter>
+                            { (communityInfo.isModerator || auth?.isUserAdmin()) &&<CardFooter>
                                     <Dialog>
                                         <DialogTrigger asChild>
-                                            <Button className="flex justify-start" variant={"round_outline"}><PlusCircle strokeWidth={1.5} className="mr-2"></PlusCircle> Add Moderator</Button>
+                                            <Button className="flex justify-start" variant={"round_outline"}><PlusCircle strokeWidth={1.5} className="mr-2"></PlusCircle> {localeContext.localize("ADD_MODERATOR")}</Button>
                                         </DialogTrigger>
                                         <DialogContent className="sm:max-w-[425px]">
                                             <DialogHeader>
@@ -377,34 +381,34 @@ const Community = ({about}: {about?:boolean}) => {
                         
                         <Card>
                             <CardHeader>
-                                <CardTitle>About community</CardTitle>
+                                <CardTitle>{localeContext.localize("ABOUT_COMMUNITY")}</CardTitle>
                                 <CardDescription>
                                     {communityInfo.description} 
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
                                 <div className="align-center flex">
-                                    <Users className="inline-block pr-1"/>{communityInfo.members} member{communityInfo.members!==1 && "s"}
+                                    <Users className="inline-block pr-1"/>{communityInfo.members} {localeContext.localize("MEMBER")}{communityInfo.members!==1 && localeContext.getLocale() === "en" && "s"}
                                 </div>
                             </CardContent>
                         </Card>
                         <Card className="my-2">
                             <CardHeader>
-                                <CardTitle>Tags</CardTitle>
+                                <CardTitle>{localeContext.localize("TAGS")}</CardTitle>
                                 <CardDescription>
-                                    These are the tags used for filtering posts
+                                    {localeContext.localize("TAGS_TEXT")}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
                                 {communityInfo.tags.map((tag)=>{
                                     return <Badge className={"h-5 ml-1 text-center shadow-sm cursor-pointer"} onClick={()=>{setTag(tag.name); navigate("/community/"+community_name+"?tag="+tag.name)}} style={{backgroundColor: tag.color, color: contrastingColor(tag.color)}} variant={"secondary"} key={tag.name}>{tag.name}</Badge>
                                 })}
-                                {communityInfo.tags.length === 0 && <p className="text-sm">There are no tags for this community. Ask the moderators of this community to add them</p>}
+                                {communityInfo.tags.length === 0 && <p className="text-sm">{localeContext.localize("COMMUNITY_NO_TAGS")}</p>}
                             </CardContent>
-                            { communityInfo.isModerator &&<CardFooter>
+                            { communityInfo.isModerator || auth?.isUserAdmin() &&<CardFooter>
                                     <Dialog>
                                         <DialogTrigger asChild>
-                                            <Button className="flex justify-start" variant={"round_outline"}><PlusCircle strokeWidth={1.5} className="mr-2"></PlusCircle> Add Tag</Button>
+                                            <Button className="flex justify-start" variant={"round_outline"}><PlusCircle strokeWidth={1.5} className="mr-2"></PlusCircle> {localeContext.localize("ADD_TAG")}</Button>
                                         </DialogTrigger>
                                         <DialogContent className="sm:max-w-[425px]">
                                             <DialogHeader>
@@ -416,9 +420,9 @@ const Community = ({about}: {about?:boolean}) => {
                         </Card>
                         <Card className="my-2">
                             <CardHeader>
-                                <CardTitle>Moderators <Shield className="inline w-6 h-6"/></CardTitle>
+                                <CardTitle>{localeContext.localize("MODERATORS")} <Shield className="inline w-6 h-6"/></CardTitle>
                                 <CardDescription>
-                                    These are the people that enforce the rules of this community
+                                    {localeContext.localize("MODERATORS_TEXT")}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
@@ -432,10 +436,10 @@ const Community = ({about}: {about?:boolean}) => {
                                         </div>
                                 })}
                             </CardContent>
-                            { communityInfo.isModerator &&<CardFooter>
+                            { communityInfo.isModerator || auth?.isUserAdmin() &&<CardFooter>
                                     <Dialog>
                                         <DialogTrigger asChild>
-                                            <Button className="flex justify-start" variant={"round_outline"}><PlusCircle strokeWidth={1.5} className="mr-2"></PlusCircle> Add Moderator</Button>
+                                            <Button className="flex justify-start" variant={"round_outline"}><PlusCircle strokeWidth={1.5} className="mr-2"></PlusCircle> {localeContext.localize("ADD_MODERATOR")}</Button>
                                         </DialogTrigger>
                                         <DialogContent className="sm:max-w-[425px]">
                                             <DialogHeader>

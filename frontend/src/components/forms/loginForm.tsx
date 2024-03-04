@@ -15,6 +15,8 @@ import { useForm } from "react-hook-form"
 import { AuthContextType } from "schemas/authSchema"
 import { Loader2 } from "lucide-react"
 import { AiOutlineGoogle } from "react-icons/ai"
+import { useContext } from "react"
+import LocalizationContext from "contexts/LocalizationContext"
  
 const formSchema = z.object({
   email: z.string(),
@@ -27,7 +29,8 @@ interface auth {
     incorrectCredentials: boolean
 }
 export function LoginForm({handleSubmit, googleSignIn , isLoading, incorrectCredentials}: auth) {
-  // ...
+  const localeContext = useContext(LocalizationContext)
+  
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema)
   })
@@ -60,19 +63,19 @@ export function LoginForm({handleSubmit, googleSignIn , isLoading, incorrectCred
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Password</FormLabel>
+                <FormLabel>{localeContext.localize("PASSWORD")}</FormLabel>
                 <FormControl>
-                  <Input disabled={isLoading} type="password" placeholder="Enter your password"{...field} />
+                  <Input disabled={isLoading} type="password" placeholder={localeContext.localize("PASSWORD_PLACEHOLDER")}{...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
         </div>
-        <p className="text-destructive w-full text-center" hidden={!incorrectCredentials}>wrong email or password</p>
+        <p className="text-destructive w-full text-center" hidden={!incorrectCredentials}>{localeContext.localize("INCORRECT_CREDENTIALS")}</p>
         <Button type="submit" disabled={isLoading} className="w-full mt-6">
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" /> }
-            Log In
+            {localeContext.localize("LOGIN_BUTTON")}
         </Button>
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
@@ -80,13 +83,9 @@ export function LoginForm({handleSubmit, googleSignIn , isLoading, incorrectCred
               </span>
           </div>
           <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
+            <span className="bg-background px-2 text-muted-foreground">{localeContext.localize("ADDITIONAL_LOGIN_OPTIONS")}</span>
           </div>
-        </div>         
-        {/* <Button variant="outline" type='button' className="w-full" onClick={onGoogleSignIn}>
-          <AiOutlineGoogle size={25} className="mr-2"/>
-          Google
-        </Button> */}
+        </div>
       </form>
     </Form>
   )

@@ -6,6 +6,7 @@ import { LoginForm } from "components/forms/loginForm";
 import { useDocumentTitle } from "hooks/setDocuemntTitle";
 import { post_data } from "helpers/api";
 import axios from "axios";
+import LocalizationContext from "contexts/LocalizationContext";
 declare var grecaptcha:any
 declare var google:any
 
@@ -16,6 +17,7 @@ const Login = () => {
     const [documentTitle, setDocumentTitle] = useDocumentTitle("Login")
     const [error, setError] = useState(false)
     //const [isInitialized, ]
+    const localeContext = useContext(LocalizationContext)
 
     useEffect(()=>{
         google.accounts.id.initialize({
@@ -61,7 +63,7 @@ const Login = () => {
             <LoginForm handleSubmit={onSubmit} isLoading={isLoading} googleSignIn={googleLogin} incorrectCredentials={error}/>
 
             <div id="buttonDiv" className="mt-3"></div>
-            <div className="text-center mt-3"><p>Don't have an account? <Link to={"/account/register"} className="text-primary">Register here.</Link></p></div>
+            <div className="text-center mt-3"><p>{localeContext.localize("REGISTER_PROMPT")} <Link to={"/account/register"} className="text-primary">{localeContext.localize("REGISTER_HERE")} </Link></p></div>
         </div>
     </div>
 }

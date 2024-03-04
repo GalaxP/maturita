@@ -33,7 +33,7 @@ import {
 } from "../ui/popover"
 import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "../ui/lib/utils";
-import { useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { get_data, post_data } from "helpers/api"
 import { waitFor } from "@testing-library/react"
 import { PlusCircledIcon } from "@radix-ui/react-icons"
@@ -46,9 +46,10 @@ import { Badge } from "components/ui/badge"
 import InteractiveTextArea from "components/interactiveTextArea"
 import { AddButton } from "components/ui/add-button"
 import { Progress } from "components/ui/progress"
+import LocalizationContext from "contexts/LocalizationContext"
 declare var grecaptcha:any
 
-const formSchema = z.object({
+const _formSchema = z.object({
   community: z.string(),
   title: z.string().min(6, "Title must contain at least 6 characters").max(100, "Title must not exceed 100 characters."),
   body: z.string().max(700, "Body must not exceed 700 characters."),
@@ -56,7 +57,7 @@ const formSchema = z.object({
   photos: z.string().array().optional()
 })
 interface props {
-    handleSubmit: (values: z.infer<typeof formSchema>) => void,
+    handleSubmit: (values: z.infer<typeof _formSchema>) => void,
     isLoading : boolean,
     defaultCommunity?: string,
     showMyCommunities?: boolean
@@ -65,6 +66,17 @@ interface props {
 
 
 export function SubmitForm({handleSubmit, isLoading, defaultCommunity, showMyCommunities}: props) {
+  const localeContext = useContext(LocalizationContext)
+
+  const formSchema = z.object({
+    community: z.string({required_error:localeContext.localize("FIELD_REQUIRED")}),
+    title: z.string({required_error:localeContext.localize("FIELD_REQUIRED")}).min(6, {message:localeContext.localize("TITLE_SHORT")}).max(100, {message:localeContext.localize("TITLE_LONG")}),
+    body: z.string({required_error:localeContext.localize("FIELD_REQUIRED")}).max(700, {message:localeContext.localize("BODY_LONG")}),
+    tag: z.string().optional(),
+    photos: z.string().array().optional()
+  })
+
+
   const navigate = useNavigate()
   const [openDialog, setOpenDialog] = useState(false)
   const [open, setOpen] = useState(false)
@@ -108,7 +120,6 @@ export function SubmitForm({handleSubmit, isLoading, defaultCommunity, showMyCom
     let data = new FormData()
     data.append("file", file)
 
-    
     //clear to upload
     grecaptcha.ready(function() {
       grecaptcha.execute(process.env.REACT_APP_RECAPTCHA_SITE_KEY, {action: 'uploadCDN'}).then(function(token:string) {
@@ -131,6 +142,8 @@ export function SubmitForm({handleSubmit, isLoading, defaultCommunity, showMyCom
       )
     })
   }
+
+  
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema)
@@ -249,7 +262,7 @@ export function SubmitForm({handleSubmit, isLoading, defaultCommunity, showMyCom
             name="community"
             render={({field})=> (
               <FormItem className="flex flex-col">
-                <FormLabel className="mb-1">Community</FormLabel>
+                <FormLabel className="mb-1">{localeContext.localize("COMMUNITY")}</FormLabel>
                 <Dialog open={showNewTeamDialog} onOpenChange={setShowNewTeamDialog}>
                   <Popover open={open} onOpenChange={(e)=>{setOpen(e); setCommunityDescription(""); setQuery(""); setCommunities({communities:[],isEmpty:true}) }}>
                     <PopoverTrigger asChild>
@@ -268,16 +281,16 @@ export function SubmitForm({handleSubmit, isLoading, defaultCommunity, showMyCom
                           </Avatar>
 
                             <span className="mr-auto">{field.value}</span></>
-                            : <span className="mr-auto">Select communities</span>}
+                            : <span className="mr-auto">{localeContext.localize("SELECT_COMMUNITIES")}</span>}
                           <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
                     <PopoverContent className="max-w-[310px] p-0">
                       <Command className="max-w-[310px]">
-                        <CommandInput className="max-w-[310px]" placeholder="Search communities..." onValueChange={(e)=>{debounced(e);setQuery(e);}}/>
-                        <CommandEmpty>No communities found.</CommandEmpty>
-                        { !communities.isEmpty && <CommandGroup heading="Others">
+                        <CommandInput className="max-w-[310px]" placeholder={localeContext.localize("SEARCH_COMMUNITIES")} onValueChange={(e)=>{debounced(e);setQuery(e);}}/>
+                        <CommandEmpty>{localeContext.localize("NO_COMMUNITIES")}</CommandEmpty>
+                        { !communities.isEmpty && <CommandGroup heading={localeContext.localize("OTHERS")}>
                           {!communities.isEmpty &&
                           communities.communities.map((community) => (
                             <CommandItem
@@ -298,14 +311,14 @@ export function SubmitForm({handleSubmit, isLoading, defaultCommunity, showMyCom
                               </Avatar>
                               <span className="text-black font-semibold max-w-[125px] overflow-clip">{community.label}</span>
                               <span className="dot-separator mx-1"></span>
-                              {community.members} members
+                              {community.members} {localeContext.localize("MEMBERS")}
                               <Check className={cn("ml-auto h-4 w-4", community.value === field.value ? "opacity-100" : "opacity-0")}/>
                             </CommandItem>
                           ))
                                 }
                         </CommandGroup> }
 
-                        <CommandGroup heading="My Communities">
+                        <CommandGroup heading={localeContext.localize("MY_COMMUNITIES")}>
                           {!mycommunities.isEmpty && query === "" &&
                           mycommunities.communities.map((community) => (
                             <CommandItem
@@ -326,7 +339,7 @@ export function SubmitForm({handleSubmit, isLoading, defaultCommunity, showMyCom
                               </Avatar>
                               <span className="text-black font-semibold max-w-[125px] overflow-clip">{community.label}</span>
                               <span className="dot-separator mx-1"></span>
-                              {community.members} members
+                              {community.members} {localeContext.localize("MEMBERS")}
                               <Check className={cn("ml-auto h-4 w-4", community.value === field.value ? "opacity-100" : "opacity-0")}/>
                             </CommandItem>
                           ))
@@ -339,7 +352,7 @@ export function SubmitForm({handleSubmit, isLoading, defaultCommunity, showMyCom
                             <CommandItem onSelect={() => {setOpenDialog(false);setShowNewTeamDialog(true)}}>
 
                               <PlusCircledIcon className="mr-2 h-5 w-5" />
-                              Create A Community
+                              {localeContext.localize("CREATE_COMMUNITY")}
                             </CommandItem>
                           </DialogTrigger>
                         </CommandGroup>
@@ -385,32 +398,18 @@ export function SubmitForm({handleSubmit, isLoading, defaultCommunity, showMyCom
                 <Dialog>
                   <Popover>
                     <PopoverTrigger asChild>
-                      <FormControl>
-                        { /*<Button
-                          variant="round_outline"
-                          role="combobox"
-                          className="max-w-[250px] justify-between"
-                          >
-                          {field.value
-                            ? //communities.find((communities) => communities.value === field.value)?.label
-                            <>
-                              <Badge className={"h-5 ml-1 text-center text-white"} style={{backgroundColor: selectedTag.color, color: contrastingColor(selectedTag.color)}} variant={"secondary"}>{selectedTag.name}</Badge>
-                            </>
-                            : <span className="mr-auto"><Tag strokeWidth={1.3} className="inline"></Tag> Tag</span>}
-                          <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                        </Button> */}
-                        
+                      <FormControl>        
                         <Button role="combobox" disabled={form.getValues("community") ? false : true} style={{backgroundColor: selectedTag.color, color: field.value ? contrastingColor(selectedTag.color ) : "black"}} variant={"round_outline"} className={"font-semibold text-white"}>
                               <Tag strokeWidth={1.8} size={20} className="mr-2"></Tag>
-                            {field.value ? field.value : "Flair"}
+                            {field.value ? field.value : localeContext.localize("TAG")}
                             <ChevronDown strokeWidth={1.3} className="ml-auto"></ChevronDown>
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
                     <PopoverContent className="max-w-[250px] p-0">
                       <Command className="max-w-[250px]">
-                        <CommandInput className="max-w-[310px]" placeholder="Search tags..."/>
-                        <CommandEmpty>No tags found.</CommandEmpty>
+                        <CommandInput className="max-w-[310px]" placeholder={localeContext.localize("SEARCH_TAGS")}/>
+                        <CommandEmpty>{localeContext.localize("NO_TAGS")}</CommandEmpty>
                         { selectedCommunity && selectedCommunity.tags.length>0 && <CommandGroup>
                           { selectedCommunity.value !== "" && selectedCommunity.tags &&
                           selectedCommunity.tags.map((tag) => (
@@ -443,9 +442,9 @@ export function SubmitForm({handleSubmit, isLoading, defaultCommunity, showMyCom
             name="title"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Title</FormLabel>
+                <FormLabel>{localeContext.localize("TITLE")}</FormLabel>
                 <FormControl>
-                  <Input disabled={isLoading} placeholder="Title" {...field} />
+                  <Input disabled={isLoading} placeholder={localeContext.localize("TITLE")} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -456,7 +455,7 @@ export function SubmitForm({handleSubmit, isLoading, defaultCommunity, showMyCom
             name="body"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Body</FormLabel>
+                <FormLabel>{localeContext.localize("BODY")}</FormLabel>
                 <FormControl>
                   <InteractiveTextArea customButtonHeight="10" extraButton=
                   {
@@ -465,7 +464,7 @@ export function SubmitForm({handleSubmit, isLoading, defaultCommunity, showMyCom
                       <Button variant={"round_outline"} className={"font-semibold w-auto flex flex-col"} onClick={(e)=>{e.preventDefault();if(image) return; document.getElementById("imageupload")?.click()}}>
                         <div className="flex flex-row items-center">
                           <Upload size={20} className="mr-1"></Upload>
-                          {image ? image.name: "Upload an image"}
+                          {image ? image.name: localeContext.localize("UPLOAD_IMAGE")}
                           {image && uploadProgress < 100 && <Loader2 className="mx-1 h-4 w-4 animate-spin" />}
                           {image && <X className="p-0 pl-1 h-4" onClick={(e)=>{e.preventDefault();setUploadProgress(0); setImage(undefined);form.setValue("photos", undefined)}} aria-description="prevent" size={15}></X>}
                         </div>
@@ -473,7 +472,7 @@ export function SubmitForm({handleSubmit, isLoading, defaultCommunity, showMyCom
                       { image && <div className="w-full mt-[-4px] h-1 px-4"> <Progress value={uploadProgress} className=" h-1"></Progress> </div>}
                     </div>
                   }
-                  isLoading={isLoading} disabled={isLoading} buttonText="Submit" comment={form.getValues("body") || ""} submitComment={()=>{}} setComment={(e)=>{form.setValue("body", e)}} id="submitTextArea" isAuthenticated placeholder="Type your message here." />
+                  isLoading={isLoading} disabled={isLoading} buttonText={localeContext.localize("SUBMIT")} comment={form.getValues("body") || ""} submitComment={()=>{}} setComment={(e)=>{form.setValue("body", e)}} id="submitTextArea" isAuthenticated placeholder={localeContext.localize("BODY_PLACEHOLDER")} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

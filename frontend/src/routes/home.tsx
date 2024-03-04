@@ -14,6 +14,7 @@ import { CreateCommunityForm } from "components/forms/createCommunityForm";
 import HomeSkeleton from "../components/skeleton/home";
 import { JSX } from "react/jsx-runtime";
 import { Skeleton } from "components/ui/skeleton";
+import LocalizationContext from "contexts/LocalizationContext";
 
 const Home = ({openNewsletter}: {openNewsletter: ()=>void}) => {
   const [loaded, setLoaded] = useState(false);
@@ -25,8 +26,9 @@ const Home = ({openNewsletter}: {openNewsletter: ()=>void}) => {
   const [cursor, setCursor] = useState<string>()
   const [reachedEnd, setReachedEnd] = useState(false)
   const [fetching, setFetching] = useState(false)
+  const localeContext = useContext(LocalizationContext)
 
-  const depth = 3
+  const depth = 15
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -83,8 +85,8 @@ const Home = ({openNewsletter}: {openNewsletter: ()=>void}) => {
   
   
   
-  return ( /*loaded ?*/
-  <div className="mt-6 anchor-none" onScrollCapture={(e)=>{console.log(e)}}>
+  return ( loaded ?
+  <div className="mt-6 anchor-none">
     <div className="flex flex-row w-full justify-center"> 
       <ul className="w-11/12 lg:w-[650px] sm:w-11/12 space-y-2" onScroll={(e)=>console.log(e)}>
         {auth?.isAuthenticated &&<li key={"submit"} className="w-full"> <CreatePost/></li>}
@@ -103,23 +105,23 @@ const Home = ({openNewsletter}: {openNewsletter: ()=>void}) => {
       <div className="w-[300px] hidden sm:hidden md:hidden lg:block ml-6 space-y-2">
         <Card>
             <CardHeader>
-                <CardTitle>Home</CardTitle>
+                <CardTitle>{localeContext.localize("HOME")}</CardTitle>
                 <CardDescription>
-                    This is your front page
+                  {localeContext.localize("HOME_DESCRIPTION")}
                 </CardDescription>
             </CardHeader>
             <CardContent>
               <div>
-                <Button className="w-full mb-2" variant={"round"} onClick={()=>navigate("/submit")}>Create A Post</Button>
+                <Button className="w-full mb-2" variant={"round"} onClick={()=>navigate("/submit")}>{localeContext.localize("CREATE_POST")}</Button>
                 <Dialog>
                   <DialogTrigger asChild>
-                    <Button className="w-full" variant={"round_outline"}>Create A Community</Button>
+                    <Button className="w-full" variant={"round_outline"}>{localeContext.localize("CREATE_COMMUNITY")}</Button>
                   </DialogTrigger>
                   <DialogContent>
                     <DialogHeader>
-                      <DialogTitle>Create a new community</DialogTitle>
+                      <DialogTitle>{localeContext.localize("CREATE_COMMUNITY")}</DialogTitle>
                       <DialogDescription>
-                        Create a place for people with similiar interest.
+                        {localeContext.localize("CREATE_COMMUNITY_DESCRIPTION")}
                       </DialogDescription>
                     </DialogHeader>
                     <CreateCommunityForm handleSubmit={(e)=>createCommunity(e)} isLoading={false}/>
@@ -129,20 +131,20 @@ const Home = ({openNewsletter}: {openNewsletter: ()=>void}) => {
             </CardContent>
         </Card>
         <Card className="sticky top-16">
-          <CardHeader className="pb-2"><CardTitle>Useful links</CardTitle></CardHeader>
+          <CardHeader className="pb-2"><CardTitle>{localeContext.localize("USEFUL_LINKS")}</CardTitle></CardHeader>
           <CardContent className="mt-2">
             <div className="flex flex-col">
-            <Link to="/contact">Contact Us</Link>
-            <Link to="/privacy-policy">Privacy Policy</Link>
-            <Link to="/terms-of-service">Terms of service</Link>
-            <a href="#newsletter" onClick={()=>{openNewsletter();localStorage.removeItem("newsletter");return false;}}>Newsletter</a>
+            <Link to="/contact">{localeContext.localize("CONTACT")}</Link>
+            <Link to="/privacy-policy">{localeContext.localize("PRIVACY_POLICY")}</Link>
+            <Link to="/terms-of-service">{localeContext.localize("TERMS_OF_SERVICE")}</Link>
+            <a href="#newsletter" onClick={()=>{openNewsletter();localStorage.removeItem("newsletter");return false;}}>{localeContext.localize("NEWSLETTER")}</a>
             </div>
           </CardContent>
         </Card>
       </div>
     </div>
   </div>
-  /*: <HomeSkeleton/>*/);
+  : <HomeSkeleton/>);
 }
 
 export default Home;

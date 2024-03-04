@@ -14,7 +14,8 @@ import { Input } from "../ui/input"
 import { useForm } from "react-hook-form"
 import { Check, Loader2, X } from "lucide-react"
 import { get_data } from "helpers/api"
-import { useState } from "react"
+import { useContext, useState } from "react"
+import LocalizationContext from "contexts/LocalizationContext"
 
 type FuncType = (...args: any) => Promise<any>;
 function debouncePromise<T>(
@@ -55,7 +56,6 @@ const checkAvailability = (communityName: string) => {
 }
 
 const checkAvailabilityDebounced = debouncePromise(checkAvailability, 500);
-
 const formSchema = z.object({
   name: z.string().nonempty({message: "Required"}).max(40),
   description: z.string().nonempty({message: "Required"})
@@ -70,6 +70,8 @@ export function CreateCommunityForm({handleSubmit, isLoading}: props) {
   const [community_name, setCommunity_name] = useState("")
   const [checking, setChecking] = useState(false)
   const [error, setError] = useState(false)
+
+  const localeContext = useContext(LocalizationContext)
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema)
@@ -89,7 +91,7 @@ export function CreateCommunityForm({handleSubmit, isLoading}: props) {
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Community Name</FormLabel>
+                <FormLabel>{localeContext.localize("COMMUNITY_NAME")}</FormLabel>
                 <FormControl>
                   <div className="flex flex-row justify-end items-center">
                     <Input disabled={isLoading} {...field} value={community_name} onChange={(i)=>{
@@ -102,7 +104,7 @@ export function CreateCommunityForm({handleSubmit, isLoading}: props) {
                         console.log(regex.test(i.target.value)+" "+i.target.value);
                         if(!regex.test(i.target.value)){
                           setChecking(false); 
-                          form.setError("name", {message:"name must only contain letters and numbers and underscore"});
+                          form.setError("name", {message:localeContext.localize("COMMUNITY_ERROR_FORMAT")});
                           setError(true);
                           return} 
                           else { 
@@ -113,9 +115,9 @@ export function CreateCommunityForm({handleSubmit, isLoading}: props) {
                           .catch(()=>{
                             setError(true);
                             setChecking(false);
-                            form.setError("name", { message: "community already exists"})
+                            form.setError("name", { message: localeContext.localize("COMMUNITY_ERROR_EXISTS")})
                             } ) 
-                      : setChecking(false); form.setError("name", {message:"name must only contain letters and numbers and underscore"});setError(true)}}/>
+                      : setChecking(false); form.setError("name", {message:localeContext.localize("COMMUNITY_ERROR_FORMAT")});setError(true)}}/>
                     { checking && <Loader2 className="mr-2 h-5 w-5 animate-spin absolute" />}
                     { !checking && ! error && community_name!== "" && <Check className="absolute mr-2 h-5 w-5" color="green"/> }
                     { !checking && error && <X className="absolute w-5 h-5 mr-2" color="red"/> }
@@ -130,9 +132,9 @@ export function CreateCommunityForm({handleSubmit, isLoading}: props) {
             name="description"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Community Description</FormLabel>
+                <FormLabel>{localeContext.localize("COMMUNITY_DESCRIPTION")}</FormLabel>
                 <FormControl>
-                  <Input disabled={isLoading} placeholder="What is this community about?"{...field} />
+                  <Input disabled={isLoading} placeholder={localeContext.localize("COMMUNITY_DESCRIPTION_PLACEHOLDER")}{...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

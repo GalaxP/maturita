@@ -164,6 +164,7 @@ router.post('/:communityName/leave', verifyAccessToken, async (req, res, next) =
 
 const multer = require('multer');
 const { default: mongoose } = require('mongoose');
+const { IsUserAdmin } = require('../helpers/account');
 const storage = multer.diskStorage({
   destination: function(req, file, callback) {
     callback(null, process.env.COMMUNITY_AVATAR_PATH);
@@ -234,7 +235,7 @@ router.post('/:communityName/add-tag', verifyAccessToken, async (req, res, next)
     const result = await tagSchema.validateAsync(req.body).catch((_err)=>{err = _err})
     if(!result) return next(createError.BadRequest(err.details[0].message));
 
-    if(community.moderators.findIndex(x=>x===req.payload.aud) === -1) return next(createError.Forbidden("you are not a moderator of this community"))
+    if(!(community.moderators.findIndex(x=>x===req.payload.aud) !== -1 || IsUserAdmin(req.payload.roles))) return next(createError.Forbidden("you are not a moderator of this community"))
     if(community.tags.findIndex(x=>x.name===result.name) !== -1) return next(createError.Forbidden("tag with the same name already exists"))
     community.tags.push({
         name: result.name,
@@ -279,7 +280,7 @@ router.post('/:communityName/add-moderator', verifyAccessToken, async (req, res,
     const id = req.body.id
     if(!id) return next(createError.BadRequest("id is required"));
 
-    if(community.moderators.findIndex(x=>x===req.payload.aud) === -1) return next(createError.Forbidden("you are not a moderator of this community"))
+    if(!(community.moderators.findIndex(x=>x===req.payload.aud) !== -1 || IsUserAdmin(req.payload.roles))) return next(createError.Forbidden("you are not a moderator of this community"))
 
     const user = await User.findOne({uid: id, banned: false})
     if(!user) return next(createError.BadRequest("user does not exist"))

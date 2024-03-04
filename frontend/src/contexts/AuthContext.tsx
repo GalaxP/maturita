@@ -149,7 +149,6 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
 
     const isUserAdmin = () => {
         if(!isAuthenticated) return false
-        console.log(user)
         if(!user.user?.roles) return false
         if(user.user?.roles?.includes('admin')) return true
         return false

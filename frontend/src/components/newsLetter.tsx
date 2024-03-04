@@ -5,8 +5,9 @@ import { Link } from "react-router-dom"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "./ui/dialog"
 import { Label } from "./ui/label"
 import { Input } from "./ui/input"
-import { useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { post_data } from "helpers/api"
+import LocalizationContext from "contexts/LocalizationContext"
 
 export const NewsLetter = (toggleNewsletter: {toggleNewsletter: (boolean)}) => {
     const [loaded, setLoaded] = useState(false)
@@ -16,7 +17,7 @@ export const NewsLetter = (toggleNewsletter: {toggleNewsletter: (boolean)}) => {
     const [loading, setLoading] = useState(false)
     const [isSignedUp, setIsSignedUp] = useState(false)
     
-
+    const localeContext = useContext(LocalizationContext)
     useEffect(()=>{
       let delay = toggleNewsletter.toggleNewsletter ? 0 : 5000
       if(toggleNewsletter.toggleNewsletter) {localStorage.removeItem("newsletter"); setClose(false); setLoaded(true);}
@@ -37,13 +38,13 @@ export const NewsLetter = (toggleNewsletter: {toggleNewsletter: (boolean)}) => {
 
     const subscribe = (email:string) => {
       if(!email) {
-        setError("This field is required")
+        setError(localeContext.localize("FIELD_REQUIRED"))
         return;
       }
       if((email.match(
         /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
       ))===null){
-        setError("Enter a valid email address")
+        setError(localeContext.localize("INVALID_EMAIL"))
         return;
       }
       setError("")
@@ -56,11 +57,11 @@ export const NewsLetter = (toggleNewsletter: {toggleNewsletter: (boolean)}) => {
       })
       .catch((err)=>{
         if(err.response.status === 409) {
-          setError("Already signed up")
+          setError(localeContext.localize("NEWSLETTER_ALREADY_SUBCRIBED"))
           setLoading(false)
           return
         }
-        setError("something went wrong.")
+        setError(localeContext.localize("ERROR_GENERIC"))
       })
       setLoading(false)
     }
@@ -71,9 +72,9 @@ export const NewsLetter = (toggleNewsletter: {toggleNewsletter: (boolean)}) => {
 
       <DialogContent className="sm:max-w-[425px]" >
         <DialogHeader>
-          <DialogTitle>Subscribe To Our Newsletter!</DialogTitle>
+          <DialogTitle>{localeContext.localize("NEWSLETTER_SUBSCRIBE_TITLE")}</DialogTitle>
           <DialogDescription>
-            Receive exclusive updates, insightful content delivered directly to your inbox
+            {localeContext.localize("NEWSLETTER_DESCRIPTION")}
           </DialogDescription>
         </DialogHeader>
         <div hidden={isSignedUp}>
@@ -101,12 +102,12 @@ export const NewsLetter = (toggleNewsletter: {toggleNewsletter: (boolean)}) => {
         <div hidden={!isSignedUp}>
           <div className="pt-4">
             <div className="flex items-center align-middle space-x-4">
-              Successfully signed up to our newsletter! Check you inbox to confirm your e-mail.
+              {localeContext.localize("NEWSLETTER_SUBSCRIBE_SUCCESS")}
             </div>
           </div>
         </div>
         <DialogFooter hidden={isSignedUp}>
-            <Button type="submit" onClick={()=>subscribe(email)}>Subscribe<Loader2 className={loading ? "ml-2 h-4 w-4 animate-spin" : "hidden"} /> </Button>
+            <Button type="submit" onClick={()=>subscribe(email)}>{localeContext.localize("NEWSLETTER_SUBSCRIBE")}<Loader2 className={loading ? "ml-2 h-4 w-4 animate-spin" : "hidden"} /> </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

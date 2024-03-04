@@ -14,9 +14,10 @@ import { Input } from "../../components/ui/input"
 import { UseFormReturn, useForm } from "react-hook-form"
 import { Loader2 } from "lucide-react"
 import { Checkbox } from "../../components/ui/checkbox"
-import { useEffect } from "react"
+import { useContext, useEffect } from "react"
+import LocalizationContext from "contexts/LocalizationContext"
  
-const formSchema = z.object({
+const _formSchema = z.object({
     firstName: z.string(),
     lastName: z.string(),
     email: z.string().email(),
@@ -27,17 +28,32 @@ const formSchema = z.object({
         message: "You must agree to the terms and conditions",
     }),
 })
-.refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords don't match",
-    path: ["confirmPassword"],
-})
 
 interface auth {
-    handleSubmit: (values: z.infer<typeof formSchema>) => void,
+    handleSubmit: (values: z.infer<typeof _formSchema>) => void,
     setError: {field: any, message: string} | null
     isLoading : boolean
 }
 export function RegisterForm({handleSubmit, isLoading, setError}: auth) {
+    const localeContext = useContext(LocalizationContext)
+
+    const formSchema = z.object({
+        firstName: z.string(),
+        lastName: z.string(),
+        email: z.string().email({message: localeContext.localize("INVALID_EMAIL")}),
+        displayName: z.string().min(3, localeContext.localize("USERNAME_SHORT")).max(25, localeContext.localize("USERNAME_LONG")).regex(/^[a-zA-Z0-9_]+$/, localeContext.localize("USERNAME_FORMAT")),
+        password: z.string().min(6, localeContext.localize("PASSWORD_SHORT")),
+        confirmPassword: z.string(),
+        tos: z.boolean().default(false).refine((value) => value === true, {
+            message: localeContext.localize("AGREE_ERROR"),
+        }),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+        message: localeContext.localize("PASSWORD_MISMATCH"),
+        path: ["confirmPassword"],
+    })
+
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema)
   })
@@ -62,7 +78,7 @@ export function RegisterForm({handleSubmit, isLoading, setError}: auth) {
                 name="firstName"
                 render={({ field }) => (
                 <FormItem>
-                    <FormLabel>First Name</FormLabel>
+                    <FormLabel>{localeContext.localize("FIRST_NAME")}</FormLabel>
                     <FormControl>
                     <Input disabled={isLoading} placeholder="" {...field} />
                     </FormControl>
@@ -76,7 +92,7 @@ export function RegisterForm({handleSubmit, isLoading, setError}: auth) {
                 name="lastName"
                 render={({ field }) => (
                 <FormItem>
-                    <FormLabel>Last Name</FormLabel>
+                    <FormLabel>{localeContext.localize("LAST_NAME")}</FormLabel>
                     <FormControl>
                     <Input disabled={isLoading} placeholder="" {...field} />
                     </FormControl>
@@ -104,7 +120,7 @@ export function RegisterForm({handleSubmit, isLoading, setError}: auth) {
                 name="displayName"
                 render={({ field }) => (
                 <FormItem>
-                    <FormLabel>User Name</FormLabel>
+                    <FormLabel>{localeContext.localize("USER_NAME")}</FormLabel>
                     <FormControl>
                     <Input disabled={isLoading} placeholder="" {...field} />
                     </FormControl>
@@ -117,9 +133,9 @@ export function RegisterForm({handleSubmit, isLoading, setError}: auth) {
                 name="password"
                 render={({ field }) => (
                 <FormItem>
-                    <FormLabel>Password</FormLabel>
+                    <FormLabel>{localeContext.localize("PASSWORD")}</FormLabel>
                     <FormControl>
-                    <Input disabled={isLoading} type="password" placeholder="Password"{...field} />
+                    <Input disabled={isLoading} type="password" placeholder={localeContext.localize("PASSWORD")}{...field} />
                     </FormControl>
                     <FormMessage />
                 </FormItem>
@@ -130,9 +146,9 @@ export function RegisterForm({handleSubmit, isLoading, setError}: auth) {
                 name="confirmPassword"
                 render={({ field }) => (
                 <FormItem>
-                    <FormLabel>Confirm Password</FormLabel>
+                    <FormLabel>{localeContext.localize("CONFIRM_PASSWORD")}</FormLabel>
                     <FormControl>
-                    <Input disabled={isLoading} type="password" placeholder="Password"{...field} />
+                    <Input disabled={isLoading} type="password" placeholder={localeContext.localize("PASSWORD")}{...field} />
                     </FormControl>
                     <FormMessage />
                 </FormItem>
@@ -153,7 +169,7 @@ export function RegisterForm({handleSubmit, isLoading, setError}: auth) {
                             <label
                                 htmlFor="tos"
                                 className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                                Accept <a className="text-primary" href="/terms-of-service" target="_blank"> terms and conditions </a> and <a className="text-primary" href="/privacy-policy" target="_blank"> privacy policy </a>
+                                {localeContext.localize("ACCEPT")} <a className="text-primary" href="/terms-of-service" target="_blank"> {localeContext.localize("TERMS_OF_SERVICE")} </a> {localeContext.localize("AND")} <a className="text-primary" href="/privacy-policy" target="_blank"> {localeContext.localize("PRIVACY_POLICY")} </a>
                             </label>
                         </div>
                     </FormControl>

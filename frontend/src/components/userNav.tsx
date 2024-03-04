@@ -17,10 +17,12 @@ import {
   } from "./ui/dropdown-menu"
 import { useContext } from "react";
 import AuthContext from "contexts/AuthContext";
+import LocalizationContext from "contexts/LocalizationContext";
 
 export function UserNav({avatar, displayName, email}: {avatar: string, displayName: string, email: string}) {
     const navigate = useNavigate();
     const auth = useContext(AuthContext)
+    const localeContext = useContext(LocalizationContext);
 
     return (
       <DropdownMenu>
@@ -45,7 +47,7 @@ export function UserNav({avatar, displayName, email}: {avatar: string, displayNa
           <DropdownMenuGroup>
             <DropdownMenuItem>  
               <Link to="/account/edit" className="w-full">
-                Profile
+                {localeContext.localize("PROFILE")}
               </Link>
             </DropdownMenuItem>
             {
@@ -59,7 +61,7 @@ export function UserNav({avatar, displayName, email}: {avatar: string, displayNa
           <DropdownMenuSeparator />
           <DropdownMenuItem>
             <Link to="/account/logout" className="w-full">
-                Log out
+              {localeContext.localize("LOG_OUT")}
             </Link>
           </DropdownMenuItem>
         </DropdownMenuContent>
