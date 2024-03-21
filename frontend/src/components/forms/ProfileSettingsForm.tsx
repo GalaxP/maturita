@@ -15,9 +15,10 @@ import { useForm } from "react-hook-form"
 import { AuthContextType } from "schemas/authSchema"
 import { Loader2 } from "lucide-react"
 import { AiOutlineGoogle } from "react-icons/ai"
+import { useContext } from "react"
+import LocalizationContext from "contexts/LocalizationContext"
  
 const formSchema = z.object({
-  //displayName: z.string(),
   email: z.string()
 })
 interface props {
@@ -27,18 +28,24 @@ interface props {
     isLoading : boolean
 }
 export function ProfileSettingsForm({handleSubmit, isLoading, originalEmail, originalDisplayName}: props) {
+  const localeContext = useContext(LocalizationContext)
+
+  const formSchema = z.object({
+    email: z.string({required_error: localeContext.localize("FIELD_REQUIRED")})
+  })
 
     const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema)
   })
+
   function onSubmit(values: z.infer<typeof formSchema>) {
     if(!values.email.match(/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)) {
-      form.setError("email", {message:"invalid email address"})
+      form.setError("email", {message:localeContext.localize("INVALID_EMAIL")})
       return
     }
     else form.clearErrors()
 
-    if(values.email === originalEmail) {form.setError("email", {message: "choose a new email"}); return}
+    if(values.email === originalEmail) {form.setError("email", {message: localeContext.localize("NEW_EMAIL")}); return}
 
     handleSubmit(values)
   }
@@ -77,7 +84,7 @@ export function ProfileSettingsForm({handleSubmit, isLoading, originalEmail, ori
         </div>
         <Button type="submit" disabled={isLoading} variant={"secondary"} className="mt-6" >
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" /> }
-            Save
+            {localeContext.localize("BUTTON_SAVE")}
         </Button>
       </form>
     </Form>

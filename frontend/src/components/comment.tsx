@@ -103,7 +103,7 @@ const Comment = (comment: IComment) => {
         });
     }
     return <>
-    <div className="flex flex-row mt-2" style={{paddingLeft: comment.offset*/*40*/0+"px"}}>
+    <div className="flex flex-row mt-2 w-full" style={{paddingLeft: comment.offset*/*40*/0+"px"}}>
         <div className="flex flex-col">
             <Avatar className="mt-2 shadow-md cursor-pointer">
                 <AvatarImage src={comment.author.avatar===null ? process.env.REACT_APP_API_URL+"/avatar.png" : comment.author.avatar?.search("googleusercontent") !== -1 ? comment.author.avatar : process.env.REACT_APP_API_URL + comment.author.avatar} alt="@shadcn" />
@@ -127,7 +127,7 @@ const Comment = (comment: IComment) => {
                         </Tooltip>
                     </TooltipProvider>
                 </span>
-                { comment.isOp && <Badge className="h-5 ml-1 text-center" variant={"outline"}>Original Poster</Badge> }
+                { comment.isOp && <Badge className="h-5 ml-1 text-center" variant={"outline"}>{localizeContext.localize("ORIGINAL_POSTER")}</Badge> }
             </div>
             
             <span className="text-sm pl-2 block break-words whitespace-pre-line mt-1">{comment.body}</span>
@@ -136,10 +136,10 @@ const Comment = (comment: IComment) => {
                 <VoteButton type="dislike" current_vote={votes.user_vote} votes={votes.votes_dislikes} onClick={()=>vote(-1)} loading={voting || comment.disbled}/>
                 {!comment.disbled && <Button variant="ghost" className="m-1" onClick={()=> {if(auth?.isAuthenticated) {setShowReply(r => !r)} else {navigate("/account/login")}}}>
                     <MessageSquare strokeWidth={1.5} size={20} className="mr-1"/>
-                    Reply
+                    {localizeContext.localize("REPLY_VERB")}
                 </Button>}
             </div>
-            {showReply && <InteractiveTextArea id={"textarea"+comment._id} disabled={comment.disbled} buttonText="Reply" comment={reply} isAuthenticated={auth?.isAuthenticated} setComment={(e) => setReply(e)} submitComment={()=>comment.onReply(comment._id, reply)} placeholder="Type your reply here." />}
+            {showReply && <InteractiveTextArea id={"textarea"+comment._id} disabled={comment.disbled} buttonText={localizeContext.localize("REPLY_VERB")} comment={reply} isAuthenticated={auth?.isAuthenticated} setComment={(e) => setReply(e)} submitComment={()=>comment.onReply(comment._id, reply)} placeholder={localizeContext.localize("REPLY_PLACEHOLDER")}/>}
         </div>
     </div>
         

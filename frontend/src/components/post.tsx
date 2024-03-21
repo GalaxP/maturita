@@ -214,32 +214,32 @@ const Post = ({props, showLinkToPost, width, showCommunity=true}: Iprop) => {
         <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
             <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
-                    <DialogTitle>Are you sure you want to delete your post?</DialogTitle>
+                    <DialogTitle>{localeContext.localize("DELETE_CONFIRM")}</DialogTitle>
                     <DialogDescription>
-                        This action cannot be reversed.
+                        {localeContext.localize("DELETE_CONFIRM_TEXT")}
                     </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>
                     <DialogClose asChild>
-                        <Button type="submit" variant={"secondary"}>Cancel</Button>
+                        <Button type="submit" variant={"secondary"}>{localeContext.localize("CANCEL")}</Button>
                     </DialogClose>
-                    <Button type="submit" onClick={deletePost}>Yes</Button>
+                    <Button type="submit" onClick={deletePost}>{localeContext.localize("CONTINUE")}</Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
         <Dialog open={confirmLockOpen} onOpenChange={setConfirmLockOpen}>
             <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
-                    <DialogTitle>Are you sure you want to {props.locked ? "Unlock" : "Lock"} this post?</DialogTitle>
+                    <DialogTitle>{localeContext.localize("LOCK_CONFIRM").replace("ACTION", props.locked ? localeContext.localize("LOCK_ACTION_UNLOCK") : localeContext.localize("LOCK_ACTION_LOCK"))}</DialogTitle>
                     <DialogDescription>
-                        Users will no longer have the ability to add comments or leave a reaction to the post or its comments. This action can be reversed
+                        {localeContext.localize("LOCK_CONFIRM_TEXT")}
                     </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>
                     <DialogClose asChild>
-                        <Button type="submit" variant={"secondary"}>Cancel</Button>
+                        <Button type="submit" variant={"secondary"}>{localeContext.localize("CANCEL")}</Button>
                     </DialogClose>
-                    <Button type="submit" onClick={lockOrUnlockPost}>Yes</Button>
+                    <Button type="submit" onClick={lockOrUnlockPost}>{localeContext.localize("CONTINUE")}</Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>

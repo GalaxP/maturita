@@ -60,7 +60,7 @@ const [post, setPost] = useState<PostSchema>({author:{id:"", displayName:"", isM
                 post_data("/post/"+post._id+"/comment", {body: comment, token:token}, {}, true)
                 .then((res)=> {
                     toast({
-                        description: "Your comment has been sent.",
+                        description: localizeContext.localize("COMMENT_SUCCES"),
                     })
                     //setSubmitted(true)
                     setComment('');
@@ -70,8 +70,8 @@ const [post, setPost] = useState<PostSchema>({author:{id:"", displayName:"", isM
                 .catch((err)=> {
                     toast({
                         variant: "destructive",
-                        title: "Uh oh! Something went wrong.",
-                        description: "There was a problem with your request.",
+                        title: localizeContext.localize("ERROR_GENERIC"),
+                        description: localizeContext.localize("ERROR_GENERIC_DESCRIPTION"),
                     })
                 })
             })
@@ -88,8 +88,8 @@ const [post, setPost] = useState<PostSchema>({author:{id:"", displayName:"", isM
                 .catch(()=>{
                     toast({
                         variant: "destructive",
-                        title: "Uh oh! Something went wrong.",
-                        description: "There was a problem with your request.",
+                        title: localizeContext.localize("ERROR_GENERIC"),
+                        description: localizeContext.localize("ERROR_GENERIC_DESCRIPTION"),
                     })
                 })
             })
@@ -129,7 +129,7 @@ const [post, setPost] = useState<PostSchema>({author:{id:"", displayName:"", isM
     <div className="mt-6">
         <Post props={post} showLinkToPost={false}/>
         <div className="w-11/12 lg:w-[700px] sm:w-11/12 mx-auto mt-5" >
-            <InteractiveTextArea disabled={post.locked} buttonText="Comment" comment={comment} isAuthenticated={authContext?.isAuthenticated} setComment={(e)=>setComment(e)} submitComment={submitComment} placeholder="Type your comment here." id={id ? "textarea"+ id : ""} key={post._id ? "textarea"+ post._id : ""}/>
+            <InteractiveTextArea disabled={post.locked} buttonText={localizeContext.localize("COMMENT_VERB")} comment={comment} isAuthenticated={authContext?.isAuthenticated} setComment={(e)=>setComment(e)} submitComment={submitComment} placeholder={localizeContext.localize("COMMENT_PLACEHOLDER")} id={id ? "textarea"+ id : ""} key={post._id ? "textarea"+ post._id : ""}/>
             <div className="text-lg font-semibold my-2">{post.comment_length} {post.comment_length !== 1 ? localizeContext.localize("COMMENT_COUNT_P") : localizeContext.localize("COMMENT_COUNT_S")}</div>
             {comments}
         </div>

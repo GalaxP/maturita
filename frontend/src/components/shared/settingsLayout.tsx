@@ -2,28 +2,34 @@ import { Separator } from "../../components/ui/separator";
 import { Button } from "../../components/ui/button";
 import { LoginForm } from "components/forms/loginForm";
 import { useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import LocalizationContext from "contexts/LocalizationContext";
 
-const pages = {
-    Profile: {
-        "Title": "Profile Settings",
-        "Description": "This is where you can change your profile settings.",
-        "Url": "/edit"
-    },
-    Account: {
-        "Title": "Account Settings",
-        "Description": "This is where you can change your account settings.",
-        "Url": "/edit"
-    },
-    Security: {
-        "Title": "Security Settings",
-        "Description": "This is where you can change your security settings.",
-        "Url": "/security"
-    }
-}
+
 
 
 export const SettingsLayout = ({children, page} : {children: React.ReactNode, page: keyof typeof pages}) => {
     const navigate = useNavigate();
+    const localeContext = useContext(LocalizationContext)
+
+    const pages = {
+        Profile: {
+            "Title": localeContext.localize("PAGES_PROFILE_TITLE"),
+            "Nav Title": localeContext.localize("PAGES_PROFILE_NAV_TITLE"),
+            "Description": localeContext.localize("PAGES_PROFILE_DESCRIPTION"),
+            "Url": "/edit"
+        },
+        /*Account: {
+            "Title": "Account Settings",
+            "Description": "This is where you can change your account settings.",
+            "Url": "/edit"
+        },
+        Security: {
+            "Title": "Security Settings",
+            "Description": "This is where you can change your security settings.",
+            "Url": "/security"
+        }*/
+    }
 
     return <>
         <div className="pt-2 h-full sm:p-10">
@@ -32,10 +38,10 @@ export const SettingsLayout = ({children, page} : {children: React.ReactNode, pa
                     {Object.keys(pages).map((_page)=>{
                         return _page === page ? 
                         <Button key={_page} className="justify-start bg-muted" variant={"ghost"} onClick={()=>{navigate("/account"+pages[_page].Url)}}>
-                        {_page}
+                        {pages[_page]["Nav Title"]}
                         </Button>
                         : <Button key={_page} className="justify-start hover:bg-transparent hover:underline" variant={"ghost"} onClick={()=>{navigate("/account"+pages[_page as keyof typeof pages].Url)}}>
-                        {_page}
+                        {pages[_page as keyof typeof pages]["Nav Title"]}
                     </Button>
                     })}
                 </nav>

@@ -65,8 +65,7 @@ const User = () => {
                         </CardHeader>
                         <CardContent>
                             <div>
-                                {user.posts_length} posts
-                                {}
+                                {user.posts_length} {localizeContext.localize("POSTS_L")} 
                             </div>
                         </CardContent>
                     </Card>
@@ -96,8 +95,7 @@ const User = () => {
                         </CardHeader>
                         <CardContent>
                             <div>
-                                {user.posts_length} posts
-                                {}
+                                {user.posts_length} {localizeContext.localize("POSTS_L")} 
                             </div>
                         </CardContent>
                     </Card>

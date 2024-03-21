@@ -16,6 +16,8 @@ import { AuthContextType } from "schemas/authSchema"
 import { Loader2 } from "lucide-react"
 import { AiOutlineGoogle } from "react-icons/ai"
 import { Textarea } from "../../components/ui/textarea"
+import { useContext } from "react"
+import LocalizationContext from "contexts/LocalizationContext"
  
 const formSchema = z.object({
     firstName: z.string().nonempty(),
@@ -29,6 +31,15 @@ interface props {
     isLoading : boolean
 }
 export function ContactForm({handleSubmit, isLoading}: props) {
+    const localeContext = useContext(LocalizationContext)
+
+    const formSchema = z.object({
+        firstName: z.string({required_error: localeContext.localize("FIELD_REQUIRED")}).nonempty(),
+        lastName: z.string({required_error: localeContext.localize("FIELD_REQUIRED")}).nonempty(),
+        title: z.string({required_error: localeContext.localize("FIELD_REQUIRED")}).nonempty(),
+        body: z.string({required_error: localeContext.localize("FIELD_REQUIRED")}).nonempty(),
+        email: z.string({required_error: localeContext.localize("FIELD_REQUIRED")}).email().nonempty()
+    })
 
     const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema)
@@ -47,7 +58,7 @@ export function ContactForm({handleSubmit, isLoading}: props) {
                 name="firstName"
                 render={({ field }) => (
                 <FormItem>
-                    <FormLabel>First Name</FormLabel>
+                    <FormLabel>{localeContext.localize("FIRST_NAME")}</FormLabel>
                     <FormControl>
                     <Input disabled={isLoading} {...field} />
                     </FormControl>
@@ -61,7 +72,7 @@ export function ContactForm({handleSubmit, isLoading}: props) {
                 name="lastName"
                 render={({ field }) => (
                 <FormItem>
-                    <FormLabel>Last Name</FormLabel>
+                    <FormLabel>{localeContext.localize("LAST_NAME")}</FormLabel>
                     <FormControl>
                     <Input disabled={isLoading} {...field} />
                     </FormControl>
@@ -71,32 +82,6 @@ export function ContactForm({handleSubmit, isLoading}: props) {
             />
             <FormField
                 control={form.control}
-                name="title"
-                render={({ field }) => (
-                <FormItem>
-                    <FormLabel>Title</FormLabel>
-                    <FormControl>
-                    <Input disabled={isLoading} {...field} />
-                    </FormControl>
-                    <FormMessage />
-                </FormItem>
-                )}
-            />
-            <FormField
-            control={form.control}
-                name="body"
-                render={({ field }) => (
-                <FormItem>
-                    <FormLabel>Body</FormLabel>
-                    <FormControl>
-                    <Textarea disabled={isLoading} {...field}/>
-                    </FormControl>
-                    <FormMessage />
-                </FormItem>
-                )}
-            />
-            <FormField
-            control={form.control}
                 name="email"
                 render={({ field }) => (
                 <FormItem>
@@ -109,10 +94,37 @@ export function ContactForm({handleSubmit, isLoading}: props) {
                 )}
             />
 
+            <FormField
+                control={form.control}
+                name="title"
+                render={({ field }) => (
+                <FormItem>
+                    <FormLabel>{localeContext.localize("TITLE")}</FormLabel>
+                    <FormControl>
+                    <Input disabled={isLoading} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+                )}
+            />
+            <FormField
+            control={form.control}
+                name="body"
+                render={({ field }) => (
+                <FormItem>
+                    <FormLabel>{localeContext.localize("BODY")}</FormLabel>
+                    <FormControl>
+                    <Textarea disabled={isLoading} {...field}/>
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+                )}
+            />
+
         </div>
         <Button type="submit" disabled={isLoading} variant={"default"} className="mt-6 d:w-28 sm:w-full ">
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" /> }
-            Contact Us
+            {localeContext.localize("CONTACT_US")}
         </Button>
       </form>
     </Form>

@@ -101,7 +101,6 @@ export function CreateCommunityForm({handleSubmit, isLoading}: props) {
                       regex.test(i.target.value) 
                       ? 
                       checkAvailabilityDebounced(i.target.value).then(()=>{
-                        console.log(regex.test(i.target.value)+" "+i.target.value);
                         if(!regex.test(i.target.value)){
                           setChecking(false); 
                           form.setError("name", {message:localeContext.localize("COMMUNITY_ERROR_FORMAT")});

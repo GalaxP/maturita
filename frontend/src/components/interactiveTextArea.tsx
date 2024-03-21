@@ -12,7 +12,7 @@ const InteractiveTextArea = ({isAuthenticated, comment, setComment, submitCommen
     <div role="textbox" className="flex border border-input bg-secondary p-2 items-center justify-end border-t-0 rounded-md-t-0">
         <CharacterCounter currentLength={comment.length} characterLimit={500} showAt={10}/>
         {extraButton}
-        <Button disabled={!isAuthenticated || comment.length === 0 || comment.length > 500 || disabled} className={"w-24 ml-2 h-"+customButtonHeight} onClick={submitComment} variant={"round"}>{isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" /> } {buttonText}</Button>
+        <Button disabled={!isAuthenticated || comment.length === 0 || comment.length > 500 || disabled} className={"w-auto ml-2 h-"+customButtonHeight} onClick={submitComment} variant={"round"}>{isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" /> } {buttonText}</Button>
     </div>
     </div>
 

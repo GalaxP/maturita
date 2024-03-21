@@ -3,8 +3,8 @@ import { SettingsLayout } from "components/shared/settingsLayout"
 
 export const Security = () => {
     return <>
-        <SettingsLayout page={"Security"}>
+        {/* <SettingsLayout page={"Security"}>
             <CreateCommunityForm handleSubmit={()=>{}} isLoading={false}/>
-        </SettingsLayout>
+        </SettingsLayout> */}
     </>
 }

@@ -41,6 +41,10 @@ export const table = {
         MONTHS_S: "m",
         YEARS_S: "r",
         AGO: "pred",
+        
+        COOKIE_TITLE: "Používame cookies",
+        COOKIE_MESSAGE: "Súbory cookie nám pomáhajú poskytovať lepší zážitok z našej webovej stránky. Používaním našej webovej stránky súhlasíte s používaním cookies.",
+        COOKIE_ACCEPT: "Prijať",
 
         LOCK: "Zamknúť",
         LOCKED_DESCRIPTION: "Tento príspevok bol zamknutý moderátormi tejto komunity",
@@ -64,6 +68,7 @@ export const table = {
         INVALID_EMAIL: "Zadajte platnú emailovú adresu",
         FIELD_REQUIRED: "Toto pole je povinné",
         ERROR_GENERIC: "Niečo sa pokazilo",
+        ERROR_GENERIC_DESCRIPTION: "Vyskytol sa problém s vašou požiadavkou.",
 
         PASSWORD: "Heslo",
         PASSWORD_PLACEHOLDER: "Zadajte vaše heslo",
@@ -141,9 +146,42 @@ export const table = {
         COMMUNITY_NO_TAGS: "Pre túto komunitu neexistujú žiadne štítky. Požiadajte moderátorov tejto komunity, aby ich pridali",
         MEMBER: "členov",
 
+        CONTACT_US: "Kontaktujte nás",
+
         ALREADY_MOD: "Tento používateľ je už moderátorom tejto komunity.",
         ADD_MOD_CONFIRM: "Naozaj chcete pridať používateľa ako moderátora?",
         ADD_MOD_CONFIRM_TEXT: "Ste si istý, že chcete pridať používateľa 'USER' ako moderátora tejto komunity?",
+
+        CONTINUE: "Pokračovať",
+        CANCEL: "Zrušiť",
+
+        LOCK_CONFIRM: "Naozaj chcete ACTION tento príspevok?",
+        LOCK_ACTION_LOCK: "zamknúť",
+        LOCK_ACTION_UNLOCK: "odomknúť",
+        LOCK_CONFIRM_TEXT: "Ak je príspevok zamknutý, používatelia nebudú mať možnosť pridávať komentáre alebo zanechávať reakcie na príspevok alebo jeho komentáre. Túto akciu je možné vrátiť späť.",
+
+        DELETE_CONFIRM: "Naozaj chcete odstrániť svoj príspevok?",
+        DELETE_CONFIRM_TEXT: "Táto akcia sa nedá vrátiť späť.",
+
+        PAGES_PROFILE_TITLE: "Nastavenia profilu",
+        PAGES_PROFILE_NAV_TITLE: "Profil",
+        PAGES_PROFILE_DESCRIPTION: "Tu môžete zmeniť nastavenia vášho profilu.",
+
+        EMAIL_CHANGE_CONFIRM: "Naozaj chcete zmeniť svoju e-mailovú adresu?",
+        EMAIL_CHANGE_TEXT: "Toto si vynúti odhlásenie a budete sa musieť znova prihlásiť s novým e-mailom.",
+        EMAIL_TAKEN: "Táto emailová adresa už bola zaregistrovaná",
+        CHANGE_EMAIL: "Zmeniť Emailovú adresu",
+        NEW_EMAIL: "Vyberte si novú emailovú adresu",
+
+        BUTTON_SAVE: "Uložiť",
+
+        COMMENT_SUCCES: "Váš komentár bol odoslaný.",
+        COMMENT_VERB: "Komentovať",
+        COMMENT_PLACEHOLDER: "Sem napíšte komentár.",
+        REPLY_PLACEHOLDER: "Sem napíšte odpoveď na komentár.",
+        REPLY_VERB: "Odpovedať",
+
+        ORIGINAL_POSTER: "Autor",
     },
     en: {
         LOGIN: "Login",
@@ -166,12 +204,12 @@ export const table = {
         PRIVACY_POLICY: "Privacy Policy",
         TERMS_OF_SERVICE: "Terms of Service",
         NEWSLETTER: "Newsletter",
-        SECONDS_L: "Seconds",
-        MINUTES_L: "Minutes",
-        HOURS_L: "Hours",
-        DAYS_L: "Days",
-        MONTHS_L: "Months",
-        YEARS_L: "Years",
+        SECONDS_L: "seconds",
+        MINUTES_L: "minutes",
+        HOURS_L: "hours",
+        DAYS_L: "days",
+        MONTHS_L: "months",
+        YEARS_L: "years",
         SECONDS_S: "s",
         MINUTES_S: "m",
         HOURS_S: "h",
@@ -180,10 +218,16 @@ export const table = {
         YEARS_S: "y",
         AGO: "ago",
 
-        LOCK: "lock",
+        COOKIE_TITLE: "We use cookies",
+        COOKIE_MESSAGE: "Cookies help us deliver the best experience on our website. By using our website, you agree to the use of cookies.",
+        COOKIE_ACCEPT: "Accept",
+
+        CONTACT_US: "Contact us",
+
+        LOCK: "Lock",
         LOCKED_DESCRIPTION: "This post has been locked by the moderators of this community",
-        UNLOCK: "unlock",
-        DELETE: "delete",
+        UNLOCK: "Unlock",
+        DELETE: "Delete",
 
         CREATE_COMMUNITY_DESCRIPTION: "Create a place for people with similar interest.",
         COMMUNITY_NAME: "Community Name",
@@ -201,7 +245,8 @@ export const table = {
 
         INVALID_EMAIL: "Enter a valid email address",
         FIELD_REQUIRED: "This field is required",
-        ERROR_GENERIC: "something went wrong.",
+        ERROR_GENERIC: "Something went wrong.",
+        ERROR_GENERIC_DESCRIPTION: "There was a problem with your request.",
 
         PASSWORD: "Password",
         PASSWORD_PLACEHOLDER: "Enter your password",
@@ -281,8 +326,41 @@ export const table = {
         NAME_LONG: "Name cannot be longer than 15 characters.",
         ALREADY_MOD: "This user is already a moderator of this community.",
 
+        CONTINUE: "Continue",
+        CANCEL: "Cancel",
+
+
+
         ADD_MOD_CONFIRM: "Are you sure you want to add a user as a moderator?",
         ADD_MOD_CONFIRM_TEXT: "Are you sure that you want to add the user 'USER' as a moderator of this community?",
+
+        LOCK_CONFIRM: "Are you sure you want to ACTION this post?",
+        LOCK_CONFIRM_TEXT: "If the post is locked, users will no longer have the ability to add comments or leave a reaction to the post or its comments. This action can be reversed.",
+        LOCK_ACTION_LOCK: "lock",
+        LOCK_ACTION_UNLOCK: "unlock",
+
+        DELETE_CONFIRM: "Are you sure you want to delete your post?",
+        DELETE_CONFIRM_TEXT: "This action cannot be reversed.",
+
+        PAGES_PROFILE_TITLE: "Profile Settings",
+        PAGES_PROFILE_NAV_TITLE: "Profile",
+        PAGES_PROFILE_DESCRIPTION: "This is where you can change your profile settings.",
+
+        BUTTON_SAVE: "Save",
+
+        EMAIL_CHANGE_CONFIRM: "Are you sure you want to change your email address?",
+        EMAIL_CHANGE_TEXT: "This is going to force a log out and you are going to have to log back in with the new email.",
+        EMAIL_TAKEN: "This email address has already been registered",
+        NEW_EMAIL: "Choose a new email address",
+        CHANGE_EMAIL: "Change Email",
+
+        COMMENT_SUCCES: "Your comment has been sent.",
+        COMMENT_VERB: "Comment",
+        COMMENT_PLACEHOLDER: "Type your comment here.",
+        REPLY_PLACEHOLDER: "Type your reply here.",
+        REPLY_VERB: "Reply",
+
+        ORIGINAL_POSTER: "Original Poster",
     }
 }
 const supports_flag = supportsFlagEmoji();

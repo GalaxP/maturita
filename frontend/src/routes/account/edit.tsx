@@ -16,6 +16,7 @@ import { Pencil } from "lucide-react";
 import { useDocumentTitle } from "hooks/setDocuemntTitle";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "components/ui/dialog";
 import { Input } from "components/ui/input";
+import LocalizationContext from "contexts/LocalizationContext";
 declare var grecaptcha:any
 
 const Edit = () => {
@@ -27,31 +28,13 @@ const Edit = () => {
     const [confirmOpen, setConfirmOpen] = useState(false)
 
     const [loading, setLoading] = useState(false)
+
+    const localeContext = useContext(LocalizationContext)
     
     useEffect(()=>{
 
     }, [error])
 
-    const onSubmit = (e:{avatar: File}) => {
-        console.log(error)
-        console.log(e.avatar.size>1024*1024)
-        var formData = new FormData();
-        formData.append("avatar", e.avatar)
-        if(e.avatar.size>1024*1024) {setError({field: "avatar", message: "File is too big! it has to be under 1Mb"}); return}
-        else {
-            setError({field: "", message: ""});
-            if(e) post_data("/account/upload", formData, {}, true, {"Content-type":"multipart/form-data"}).then((res)=>{
-                toast({
-                    description: "Saved",
-                })
-            }).catch((err)=> {
-                toast({
-                    description: err.response.data,
-                    variant: "destructive"
-                })
-            })
-        }
-    }
 
     const handleSubmit = (email:string) => {
         setNewEmail(email)
@@ -73,12 +56,12 @@ const Edit = () => {
                 .catch((err)=>{
                     if(err.response.status===409) {
                         toast({
-                            description: "email has already been registered",
+                            description: localeContext.localize("EMAIL_TAKEN"),
                             variant: "destructive"
                         })
                     } else {
                         toast({
-                            description: "something went wrong",
+                            description: localeContext.localize("ERROR_GENERIC"),
                             variant: "destructive"
                         })
                     }
@@ -112,17 +95,17 @@ const Edit = () => {
                 <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
                     <DialogContent className="sm:max-w-[425px]">
                         <DialogHeader>
-                            <DialogTitle>Are you sure you want to change your email?</DialogTitle>
+                            <DialogTitle>{localeContext.localize("EMAIL_CHANGE_CONFIRM")}</DialogTitle>
                             <DialogDescription>
-                                This is going to force a log out and you are going to have to back in with the new email.
+                                { localeContext.localize("EMAIL_CHANGE_TEXT") }
                             </DialogDescription>
                         </DialogHeader>
                         <Input disabled readOnly value={newEmail}></Input>
                         <DialogFooter>
                             <DialogClose asChild>
-                                <Button type="submit" variant={"secondary"}>Cancel</Button>
+                                <Button type="submit" variant={"secondary"}>{localeContext.localize("CANCEL")}</Button>
                             </DialogClose>
-                            <Button type="submit" onClick={changeEmail}>Change Email</Button>
+                            <Button type="submit" onClick={changeEmail}>{localeContext.localize("CHANGE_EMAIL")}</Button>
                         </DialogFooter>
                     </DialogContent>
                 </Dialog>

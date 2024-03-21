@@ -211,14 +211,14 @@ const Community = ({about}: {about?:boolean}) => {
                     <AlertDialog open={confirm} onOpenChange={setConfirm}>
                         <AlertDialogContent>
                             <AlertDialogHeader>
-                            <AlertDialogTitle>{localeContext.localize("ADD_MOD_CONFIRM")}</AlertDialogTitle>
-                            <AlertDialogDescription>
-                                {localeContext.localize("ADD_MOD_CONFIRM_TEXT").replace("USER", mod.displayName)}
-                            </AlertDialogDescription>
+                                <AlertDialogTitle>{localeContext.localize("ADD_MOD_CONFIRM")}</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                    {localeContext.localize("ADD_MOD_CONFIRM_TEXT").replace("USER", mod.displayName)}
+                                </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
-                            <AlertDialogCancel onClick={()=>{setModeratorLoading(false)}}>Cancel</AlertDialogCancel>
-                            <AlertDialogAction onClick={()=>confirmAddModerator(mod.id)}>Continue</AlertDialogAction>
+                                <AlertDialogCancel onClick={()=>{setModeratorLoading(false)}}>{localeContext.localize("CANCEL")}</AlertDialogCancel>
+                                <AlertDialogAction onClick={()=>confirmAddModerator(mod.id)}>{localeContext.localize("CONTINUE")}</AlertDialogAction>
                             </AlertDialogFooter>
                         </AlertDialogContent>
                     </AlertDialog>
