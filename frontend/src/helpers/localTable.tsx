@@ -182,6 +182,16 @@ export const table = {
         REPLY_VERB: "Odpovedať",
 
         ORIGINAL_POSTER: "Autor",
+
+        CHANGE_AVATAR_USER: "Zmeniť profilovú fotku",
+        CHANGE_AVATAR_COMMUNITY: "Zmeniť profilovú fotku komunity",
+        CHANGE_AVATAR_TEXT_USER: "Nahrajte fotografiu, ktorá sa použije ako avatar vášho profilu",
+        CHANGE_AVATAR_TEXT_COMMUNITY: "Nahrajte fotografiu, ktorá sa použije ako avatar tejto komunity",
+        DRAG_AND_DROP: "Presuňte myšou alebo kliknite sem",
+        MAX_FILE_SIZE: "Maximálna veľkosť súboru je SIZE",
+        FILE_NOT_IMAGE: "Súbor musí byť obrázok",
+        FILE_TOO_BIG: "Súbor musí byť menší ako SIZE",
+        TOO_MANY_FILES: "Nahrať môžete maximálne jeden súbor"
     },
     en: {
         LOGIN: "Login",
@@ -361,6 +371,16 @@ export const table = {
         REPLY_VERB: "Reply",
 
         ORIGINAL_POSTER: "Original Poster",
+
+        CHANGE_AVATAR_USER: "Change User Avatar",
+        CHANGE_AVATAR_COMMUNITY: "Change Community Avatar",
+        CHANGE_AVATAR_TEXT_USER: "Upload a photo that will be used as the avatar for your profile",
+        CHANGE_AVATAR_TEXT_COMMUNITY: "Upload a photo that will be used as the avatar for the community",
+        DRAG_AND_DROP: "Drag and drop or click here",
+        MAX_FILE_SIZE: "Max file size is SIZE",
+        FILE_NOT_IMAGE: "File must be an image",
+        FILE_TOO_BIG: "File must be smaller than SIZE",
+        TOO_MANY_FILES: "You can only upload one file"
     }
 }
 const supports_flag = supportsFlagEmoji();

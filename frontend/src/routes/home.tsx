@@ -15,6 +15,7 @@ import HomeSkeleton from "../components/skeleton/home";
 import { JSX } from "react/jsx-runtime";
 import { Skeleton } from "components/ui/skeleton";
 import LocalizationContext from "contexts/LocalizationContext";
+import { useToast } from "components/ui/use-toast";
 
 const Home = ({openNewsletter}: {openNewsletter: ()=>void}) => {
   const [loaded, setLoaded] = useState(false);
@@ -26,6 +27,7 @@ const Home = ({openNewsletter}: {openNewsletter: ()=>void}) => {
   const [cursor, setCursor] = useState<string>()
   const [reachedEnd, setReachedEnd] = useState(false)
   const [fetching, setFetching] = useState(false)
+  const { toast } = useToast()
   const localeContext = useContext(LocalizationContext)
 
   const depth = 15
@@ -69,7 +71,8 @@ const Home = ({openNewsletter}: {openNewsletter: ()=>void}) => {
         setCursor(btoa(res.data[res.data.length-1]._id));
         setLoaded(true)
         setFetching(false)
-      }).catch((err)=>{setError(err);console.log(err); setLoaded(true);setFetching(false)})
+        setError(undefined)
+      }).catch((err)=>{toast({variant: "destructive", title: localeContext.localize("ERROR_GENERIC")});setError(err);setLoaded(true);setFetching(false)})
     //}, 2000);
   }
 
@@ -90,7 +93,7 @@ const Home = ({openNewsletter}: {openNewsletter: ()=>void}) => {
     <div className="flex flex-row w-full justify-center"> 
       <ul className="w-11/12 lg:w-[650px] sm:w-11/12 space-y-2" onScroll={(e)=>console.log(e)}>
         {auth?.isAuthenticated &&<li key={"submit"} className="w-full"> <CreatePost/></li>}
-        {posts.map((post) => {
+        {!error && posts.map((post) => {
           return <li key={post._id} className="w-full"><Post key={post._id} showLinkToPost={true} width="w-full" props={post}/> </li>
         })}
         { 
@@ -101,6 +104,7 @@ const Home = ({openNewsletter}: {openNewsletter: ()=>void}) => {
 
                             )
         } 
+        {loaded && error && <div className="w-full text-center"><span className="text-destructive">🤦‍♂️{localeContext.localize("ERROR_GENERIC")}</span></div>}
       </ul>
       <div className="w-[300px] hidden sm:hidden md:hidden lg:block ml-6 space-y-2">
         <Card>

@@ -66,7 +66,7 @@ const Comment = (comment: IComment) => {
                     .catch(()=>{
                         toast({
                             variant: "destructive",
-                            title: "Uh oh! Something went wrong.",
+                            title: localizeContext.localize("ERROR_GENERIC"),
                         })
                         setVoting(false)
                     })
@@ -80,7 +80,7 @@ const Comment = (comment: IComment) => {
                     .catch(()=>{
                         toast({
                             variant: "destructive",
-                            title: "Uh oh! Something went wrong.",
+                            title: localizeContext.localize("ERROR_GENERIC"),
                         })
                         setVoting(false)
                     })
@@ -94,7 +94,7 @@ const Comment = (comment: IComment) => {
                     .catch(()=>{
                         toast({
                             variant: "destructive",
-                            title: "Uh oh! Something went wrong.",
+                            title: localizeContext.localize("ERROR_GENERIC"),
                         })
                         setVoting(false)
                     })
@@ -119,7 +119,11 @@ const Comment = (comment: IComment) => {
                     <TooltipProvider>
                         <Tooltip>
                             <TooltipTrigger asChild>
-                                <>{prettyDate(new Date(comment.createdAt).getTime(), localizeContext)} ago</>
+                                <>
+                                    <div className="hidden xs:block">{localizeContext.getLocale()==="sk"  && localizeContext.localize("AGO")} {prettyDate(new Date(comment.createdAt).getTime(), localizeContext)} {localizeContext.getLocale()!=="sk"  && localizeContext.localize("AGO")}</div> 
+                                    <div className="block xs:hidden">{localizeContext.getLocale()==="sk"  && localizeContext.localize("AGO")} {prettyDate(new Date(comment.createdAt).getTime(), localizeContext, true)} {localizeContext.getLocale()!=="sk"  && localizeContext.localize("AGO")}</div> 
+                                </>
+
                             </TooltipTrigger>
                             <TooltipContent>
                                 {new Date(comment.createdAt).toLocaleDateString() + " " + new Date(comment.createdAt).toLocaleTimeString()}

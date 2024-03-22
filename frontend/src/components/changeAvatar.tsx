@@ -1,11 +1,12 @@
 import { Upload } from "lucide-react"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog"
 import { Input } from "./ui/input"
-import { EventHandler, useEffect, useState } from "react"
+import { EventHandler, useContext, useEffect, useState } from "react"
 import { Slider } from "./ui/slider"
 import { Button } from "./ui/button"
 import { post_data } from "helpers/api"
 import { useToast } from "./ui/use-toast"
+import LocalizationContext from "contexts/LocalizationContext"
 
 
 export const ChangeAvatar = ({children, type, community_name, changeAvatar}: {children: React.ReactNode, type:"community" | "user", community_name?: string, changeAvatar: (arg0: string)=>void} ) => {
@@ -30,6 +31,8 @@ export const ChangeAvatar = ({children, type, community_name, changeAvatar}: {ch
     const [open, setOpen] = useState(false)
     const { toast } = useToast()
 
+    const localeContext = useContext(LocalizationContext)
+
     useEffect(()=>{
 
     }, [ widthShift, heightShift, size])
@@ -39,8 +42,8 @@ export const ChangeAvatar = ({children, type, community_name, changeAvatar}: {ch
         setError("")
 
         const avatar = file[0]
-        if(avatar.type !== "image/png" && avatar.type !== "image/jpeg") return setError("File must be an image")
-        if(avatar.size > 1024 * 1024) return setError("File must smaller than 1Mb")
+        if(avatar.type !== "image/png" && avatar.type !== "image/jpeg" && avatar.type !== "image/heic") return setError(localeContext.localize("FILE_NOT_IMAGE"))
+        if(avatar.size > 1024 * 1024) return setError(localeContext.localize("FILE_TOO_BIG").replace("SIZE", "1Mb"))
         setInputFile(avatar)
         previewImage(avatar)
     }
@@ -210,23 +213,35 @@ export const ChangeAvatar = ({children, type, community_name, changeAvatar}: {ch
     reader.readAsDataURL(dataURItoBlob(imageSrc as string));
   }
 
+  function dropHandler(ev:DragEvent) {
+    ev.preventDefault();
+    if(ev.dataTransfer == null) return
+    if (ev.dataTransfer.items) {
+      // Use DataTransferItemList interface to access the file(s)
+      if(ev.dataTransfer.files.length > 1) return setError(localeContext.localize("TOO_MANY_FILES"))
+      setError("")
+    
+      handleImageSubmit(ev.dataTransfer.files)
+    }
+  }
+
     return <Dialog open={open} onOpenChange={()=>{reset(); setOpen(o=>!o)}}>
     <DialogTrigger asChild>{children}</DialogTrigger>
     <DialogContent>
       <DialogHeader>
-        <DialogTitle>Change {type === "community" ? "Community" : "User"} Avatar</DialogTitle>
+        <DialogTitle>{type === "community" ? localeContext.localize("CHANGE_AVATAR_COMMUNITY") : localeContext.localize("CHANGE_AVATAR_USER")}</DialogTitle>
         <DialogDescription>
-          Upload a photo that will be used as the avatar for {type === "community" ? "the community" : "your profile"}
+          {type === "community" ? localeContext.localize("CHANGE_AVATAR_TEXT_COMMUNITY") : localeContext.localize("CHANGE_AVATAR_TEXT_USER")}
         </DialogDescription>
       </DialogHeader>
-      <Input id="avatar-input" accept=".png,.jpg,.jpeg" type="file" className="hidden" onChange={(e:any)=>handleImageSubmit(e.currentTarget.files)}></Input>
+      <Input id="avatar-input" accept=".png,.jpg,.jpeg,.heic" type="file" className="hidden" onChange={(e:any)=>handleImageSubmit(e.currentTarget.files)}></Input>
       {!inputFile ? <>
-        <div className="border-dashed border-2 flex flex-col justify-center items-center p-20 cursor-pointer" onClick={()=>{document.getElementById("avatar-input")?.click()}}>
-            <div className="p-1">
+        <div className="border-dashed border-2 flex flex-col justify-center items-center p-20 cursor-pointer" onDragOver={(event) => event.preventDefault()} onDrop={(event:any)=>dropHandler(event)} onClick={()=>{document.getElementById("avatar-input")?.click()}}>
+            <div className="p-1 flex flex-row items-center">
                 <Upload className="inline-block"/>
-                <p className="ml-1 inline-block text-lg font-semibold">Drag and drop or click here</p>
+                <p className="ml-1 inline-block text-[16.5px] font-semibold">{localeContext.localize("DRAG_AND_DROP")}</p>
             </div>
-            <p className="">(Max file size is 1Mb)</p>
+            <p className="">({localeContext.localize("MAX_FILE_SIZE").replace("SIZE", "1Mb")})</p>
         </div>
       </> : <>
       <div className="border-dashed border-2 flex flex-col justify-center items-center cursor-grab" onMouseLeave={handleMouseUp} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} onMouseMove={handleMouseMove}>
