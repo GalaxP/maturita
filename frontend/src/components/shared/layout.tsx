@@ -137,7 +137,7 @@ const Layout = ({children, openNewsletter}: LayoutProps) => {
                             </Button>
                         } 
                         
-                    <div>
+                    <div className="mr-2">
                         <LocaleSwitcher/>
                     </div>
                     <ModeToggle></ModeToggle>

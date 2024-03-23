@@ -19,7 +19,7 @@ const CreatePost = ({defaultCommunity}: {defaultCommunity?: string}) => {
                 <div className="flex flex-row items-center space-x-2">
                     <Avatar className="shadow-md cursor-pointer ">
                         <AvatarImage src={GetAvatar(auth?.getUser())} alt="@shadcn" />
-                        <AvatarFallback>CN</AvatarFallback>
+                        <AvatarFallback></AvatarFallback>
                     </Avatar>
                     <Input readOnly placeholder={localeContext.localize("CREATE_POST")} onClick={()=>{ defaultCommunity ? navigate("/submit?comm="+defaultCommunity) : navigate("/submit")}}/>
                 </div>

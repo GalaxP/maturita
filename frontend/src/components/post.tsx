@@ -18,6 +18,7 @@ import { Badge } from "./ui/badge";
 import { Lock, MoreHorizontal, Trash } from "lucide-react";
 import { AspectRatio } from "./ui/aspect-ratio";
 import LocalizationContext from "contexts/LocalizationContext";
+import { Skeleton } from "./ui/skeleton";
 
 declare var grecaptcha:any
 
@@ -40,6 +41,7 @@ const Post = ({props, showLinkToPost, width, showCommunity=true}: Iprop) => {
     const [confirmLockOpen, setConfirmLockOpen] = useState(false)
     const navigate = useNavigate()
     const { toast } = useToast()
+    const [imageLoading, setImageLoading] = useState(true)
 
     const localeContext = useContext(LocalizationContext)
 
@@ -146,7 +148,7 @@ const Post = ({props, showLinkToPost, width, showCommunity=true}: Iprop) => {
                 title: "Uh oh! Something went wrong.",
             })
         }
-    }, [error])
+    }, [error, imageLoading])
 
     const openConfirmBox = () => {
         setConfirmOpen(true)
@@ -317,11 +319,17 @@ const Post = ({props, showLinkToPost, width, showCommunity=true}: Iprop) => {
                 
                 {
                     props.photos && props.photos.length > 0 &&
-                    <div aria-description="donothing" className="aspect-[0.9] object-contain max-h-[450px] bg-accent cursor-pointer" style={{marginTop: "1rem"}}>
-                        <a aria-description="donothing" href={props.photos[0]} target="_blank">
-                            <img aria-description="donothing" className="aspect-square w-full max-h-[450px] object-contain h-full" src={props.photos[0]} onError={(e:any)=>{e.target.src=process.env.REACT_APP_API_URL+"/cdn/404.png"}}/>
-                        </a>
-                    </div>
+                    <>
+                        {imageLoading && <Skeleton className="w-full h-full aspect-[0.9] object-contain max-h-[450px]"></Skeleton>}
+                    
+                        <div aria-description="donothing" className={"aspect-[0.9] object-contain max-h-[450px] bg-accent cursor-pointer "+(imageLoading ? "hidden" : "")} style={{marginTop: "1rem"}}>
+                            <a aria-description="donothing" href={props.photos[0]} target="_blank">
+                                
+                                <img onLoad={()=>{setImageLoading(false)}} aria-description="donothing" className="aspect-square w-full max-h-[450px] object-contain h-full " src={props.photos[0]} onError={(e:any)=>{e.target.src=process.env.REACT_APP_API_URL+"/cdn/404.png"}}/>
+                            </a>
+                        </div>
+
+                    </>
                 }
                 <p className="break-words whitespace-pre-line">{props.body}</p>
             </CardHeader>
