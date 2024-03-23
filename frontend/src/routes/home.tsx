@@ -92,10 +92,6 @@ const Home = ({openNewsletter}: {openNewsletter: ()=>void}) => {
   return ( loaded ?
     
   <div className="mt-6 anchor-none">
-    <Avatar className="mt-2 shadow-md cursor-pointer">
-                <AvatarImage src={"/mejk"} alt="@shadcn" />
-                <AvatarFallback>CN</AvatarFallback>
-        </Avatar>
     <div className="flex flex-row w-full justify-center"> 
       <ul className="w-11/12 lg:w-[650px] sm:w-11/12 space-y-2" onScroll={(e)=>console.log(e)}>
         {auth?.isAuthenticated &&<li key={"submit"} className="w-full"> <CreatePost/></li>}
