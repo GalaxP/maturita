@@ -191,7 +191,11 @@ export const table = {
         MAX_FILE_SIZE: "Maximálna veľkosť súboru je SIZE",
         FILE_NOT_IMAGE: "Súbor musí byť obrázok",
         FILE_TOO_BIG: "Súbor musí byť menší ako SIZE",
-        TOO_MANY_FILES: "Nahrať môžete maximálne jeden súbor"
+        TOO_MANY_FILES: "Nahrať môžete maximálne jeden súbor",
+
+        THEME_LIGHT: "Svetlý",
+        THEME_DARK: "Tmavý",
+        THEME_SYSTEM: "Systém"
     },
     en: {
         LOGIN: "Login",
@@ -380,7 +384,11 @@ export const table = {
         MAX_FILE_SIZE: "Max file size is SIZE",
         FILE_NOT_IMAGE: "File must be an image",
         FILE_TOO_BIG: "File must be smaller than SIZE",
-        TOO_MANY_FILES: "You can only upload one file"
+        TOO_MANY_FILES: "You can only upload one file",
+        
+        THEME_LIGHT: "Light",
+        THEME_DARK: "Dark",
+        THEME_SYSTEM: "System"
     }
 }
 const supports_flag = supportsFlagEmoji();

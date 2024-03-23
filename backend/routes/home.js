@@ -252,7 +252,7 @@ router.post('/subscribe', async (req, res, next) => {
   };
   
   emailTransporter.sendMail(mailOptions, function(error, info){
-    if(error) {return next(createError.InternalServerError());console.log(error)}
+    if(error) {return next(createError.InternalServerError())}
   });
 
   await sub.save().then(()=> {

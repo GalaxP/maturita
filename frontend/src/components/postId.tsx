@@ -64,7 +64,7 @@ const [post, setPost] = useState<PostSchema>({author:{id:"", displayName:"", isM
                     })
                     //setSubmitted(true)
                     setComment('');
-                    post.comments?.unshift({author: {avatar:authContext?.getUser().user.avatar, displayName: authContext?.getUser().user.displayName, id:authContext?.getUser().user.uid}, body:comment, comments: [], createdAt: new Date(), id: res.data, votes_dislikes:0, votes_likes: 0})
+                    post.comments?.unshift({author: {avatar:authContext?.getUser().user.avatar, displayName: authContext?.getUser().user.displayName, id:authContext?.getUser().user.uid}, body:comment, comments: [], createdAt: new Date(), id: res.data, votes_dislikes:0, votes_likes: 0, disabled: false, isOp: false, offset:0, showLine: false})
                     setPost(post);
                 })
                 .catch((err)=> {
@@ -110,7 +110,7 @@ const [post, setPost] = useState<PostSchema>({author:{id:"", displayName:"", isM
             /*if(depth > 0) comments.push(<div className="w-2 h-32 bg-primary"></div>)*/
             let comment = <div className="flex flex-row space-x-2 flex-shrink" key={"wrapper "+comm.id}>
                 {generateLines(depth)}
-                <Comment disbled={post.locked} isOp={comm.author.id === post.author.id} showLine={comm.comments !== undefined} onReply={(id, body)=>reply(comm.id, body)} _id={comm.id} author={comm.author} body={comm.body} createdAt={comm.createdAt} offset={depth} votes_dislikes={comm.votes_dislikes} votes_likes={comm.votes_likes} user_vote={comm.user_vote} key={comm.id} />
+                <Comment disabled={post.locked} isOp={comm.author.id === post.author.id} showLine={comm.comments !== undefined} onReply={(id, body)=>reply(comm.id, body)} _id={comm.id} author={comm.author} body={comm.body} createdAt={comm.createdAt} offset={depth} votes_dislikes={comm.votes_dislikes} votes_likes={comm.votes_likes} user_vote={comm.user_vote} key={comm.id} />
             </div>
             comments.push(comment)
             if(comm.comments && comm.comments.length > 0) recursiveComment(comm.comments, depth+1);
@@ -119,7 +119,7 @@ const [post, setPost] = useState<PostSchema>({author:{id:"", displayName:"", isM
 
     if(post.comments && post.comments.length>0) {
         post.comments.map((comm:IComment)=>{
-            comments.push(<Comment disbled={post.locked} isOp={comm.author.id === post.author.id} showLine={comm.comments !== undefined} onReply={(id, body)=>reply(comm.id, body)} _id={comm.id} author={comm.author} body={comm.body} createdAt={comm.createdAt} offset={0} votes_dislikes={comm.votes_dislikes} votes_likes={comm.votes_likes} user_vote={comm.user_vote} key={comm.id}/>)
+            comments.push(<Comment disabled={post.locked} isOp={comm.author.id === post.author.id} showLine={comm.comments !== undefined} onReply={(id, body)=>reply(comm.id, body)} _id={comm.id} author={comm.author} body={comm.body} createdAt={comm.createdAt} offset={0} votes_dislikes={comm.votes_dislikes} votes_likes={comm.votes_likes} user_vote={comm.user_vote} key={comm.id}/>)
             if(comm.comments && comm.comments.length > 0) recursiveComment(comm.comments, 1);
         })
     }

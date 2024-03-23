@@ -18,6 +18,7 @@ require('dotenv').config()
 
 const multer = require('multer');
 const Community = require('../schemas/community');
+const Log = require('../schemas/log');
 const storage = multer.diskStorage({
   destination: function(req, file, callback) {
     callback(null, process.env.AVATAR_PATH);
@@ -28,7 +29,7 @@ const storage = multer.diskStorage({
 });
 const upload = multer({storage: storage, fileFilter: function (req, file, callback) {
     var ext = path.extname(file.originalname).toLowerCase();
-    if(ext !== '.png' && ext !== '.jpg' && ext !== '.jpeg') {
+    if(ext !== '.png' && ext !== '.jpg' && ext !== '.jpeg' && ext !== '.heic') {
         return callback('Only images are allowed')
     }
     callback(null, true)
@@ -93,7 +94,7 @@ router.post('/login', verifyRecaptcha("login"), async function(req, res, next) {
     const authResult  = await user.isValidPassword(body.password);
     if(authResult) {
         const accessToken = await jwt.signAccessToken(user.uid, "local")
-        const refreshToken = await jwt.signRefreshToken(user.uid, "local")
+        const refreshToken = await jwt.signRefreshToken(user.uid, "local", req)
         res.cookie("refreshToken", refreshToken, {httpOnly:true, sameSite:"lax", maxAge: 30 * 24 * 60 * 60 * 1000}) //30days
         res.send({
             message: "success",
@@ -101,6 +102,20 @@ router.post('/login', verifyRecaptcha("login"), async function(req, res, next) {
             provider: "local",
             accessToken: accessToken
         })
+        const userAgent = req.headers['user-agent'];
+        const remoteIP =  req.headers['x-forwarded-for'] || req.socket.remoteAddress 
+
+        const _log = new Log({
+            type: "login",
+            data: {
+                uid: user.uid,
+                remoteIP: remoteIP,
+                userAgent: userAgent
+            }
+        })
+        try {
+            _log.save()
+        } catch {console.error(Date.now().toLocaleString()+" failed to log!")}
     }
     else {
         return next(createError.Unauthorized("Invalid Credentials"))
@@ -111,9 +126,9 @@ router.post("/refresh-token"/*, rateLimiterUsingThirdParty*/, async function (re
     try {
         const refreshToken = req.cookies.refreshToken;
         if (!refreshToken) {res.clearCookie("refreshToken");res.clearCookie("account");res.redirect(process.env.CLIENT_DOMAIN+"account/logout")}
-        const token = await jwt.verifyRefreshToken(refreshToken).catch((err)=>{res.clearCookie("refreshToken");res.clearCookie("account");throw err});
+        const token = await jwt.verifyRefreshToken(refreshToken, req).catch((err)=>{res.clearCookie("refreshToken");res.clearCookie("account");throw err});
         const accessToken = await jwt.signAccessToken(token.aud, token.provider);
-        const refreshToken_ = await jwt.signRefreshToken(token.aud, token.provider).catch((err)=>{res.clearCookie("refreshToken");res.clearCookie("account");return next(res.redirect(process.env.CLIENT_DOMAIN))});
+        const refreshToken_ = await jwt.signRefreshToken(token.aud, token.provider, req).catch((err)=>{res.clearCookie("refreshToken");res.clearCookie("account");return next(res.redirect(process.env.CLIENT_DOMAIN))});
         res.cookie("refreshToken", refreshToken_, {httpOnly:true, sameSite:"lax", maxAge: 30 * 24 * 60 * 60 * 1000})
         //res.cookie("accessToken", accessToken, {httpOnly:true, sameSite:"lax"})
         
@@ -121,6 +136,21 @@ router.post("/refresh-token"/*, rateLimiterUsingThirdParty*/, async function (re
             message: "success",
             accessToken: accessToken
         })
+
+        const userAgent = req.headers['user-agent'];
+        const remoteIP =  req.headers['x-forwarded-for'] || req.socket.remoteAddress 
+
+        const _log = new Log({
+            type: "refreshToken",
+            data: {
+                uid: token.aud,
+                remoteIP: remoteIP,
+                userAgent: userAgent
+            }
+        })
+        try {
+            _log.save()
+        } catch {console.error(Date.now().toLocaleString()+" failed to log!")}
     } catch (err) {
         next(err);
     }
@@ -130,13 +160,28 @@ router.post("/logout", async function (req, res, next) {
     try {
         const refreshToken = req.cookies.refreshToken;
         if (!refreshToken) throw createError.BadRequest();
-        const token = await jwt.verifyRefreshToken(refreshToken);
+        const token = await jwt.verifyRefreshToken(refreshToken, req);
         Token.deleteMany({ uid: token.aud }).catch((err) => {
           throw createError.InternalServerError();
         });
         res.clearCookie("refreshToken")
         res.clearCookie("accessToken")
         res.sendStatus(204);
+
+        const userAgent = req.headers['user-agent'];
+        const remoteIP =  req.headers['x-forwarded-for'] || req.socket.remoteAddress 
+
+        const _log = new Log({
+            type: "logout",
+            data: {
+                uid: token.aud,
+                remoteIP: remoteIP,
+                userAgent: userAgent
+            }
+        })
+        try {
+            _log.save()
+        } catch {console.error(Date.now().toLocaleString()+" failed to log!")}
     } catch (error) {
         next(error);
     }
@@ -211,7 +256,7 @@ router.post('/google/callback', async (req,res)=> {
     const user_json = JSON.stringify({user: user_pick, provider:"google"})
 
     const accessToken = await jwt.signAccessToken(payload.sub, "google")
-    const refreshToken = await jwt.signRefreshToken(payload.sub, "google").catch((err)=>{next(createError.InternalServerError())});
+    const refreshToken = await jwt.signRefreshToken(payload.sub, "google", req).catch((err)=>{next(createError.InternalServerError())});
     
     res.cookie("refreshToken", refreshToken, {httpOnly:true, sameSite:"lax", maxAge: 30 * 24 * 60 * 60 * 1000})
     res.redirect(process.env.CLIENT_DOMAIN + "google/callback?user=" + encodeURIComponent(user_json) + "&token="+accessToken)

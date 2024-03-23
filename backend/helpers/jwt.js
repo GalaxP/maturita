@@ -38,7 +38,7 @@ const signAccessToken = (userId, provider) => {
     })
 }
 
-const signRefreshToken = (userId, provider) => {
+const signRefreshToken = (userId, provider, req) => {
     return new Promise(async(resolve, reject)=>{
         const options = {
             expiresIn: "30d",
@@ -52,10 +52,15 @@ const signRefreshToken = (userId, provider) => {
             if(err) 
                 return reject(createError.InternalServerError());
 
+            const userAgent = req.headers['user-agent'];
+            const remoteIP =  req.headers['x-forwarded-for'] || req.socket.remoteAddress
+
             const _token = new tokenModel({
                 token: token,
                 uid: userId,
                 expireAt: Date.now() + 30 * 24 * 60 * 60 * 1000, //30 days
+                userAgent: userAgent,
+                remoteIP: remoteIP,
             })
             q.push({token: _token }, (err) => {if(err){ return reject(err); }})
             /*
@@ -100,7 +105,7 @@ const verifyAccessTokenIfProvided = (req, res, next) => {
     });
 }
 
-const verifyRefreshToken = (refreshToken) => {
+const verifyRefreshToken = (refreshToken, req) => {
     return new Promise((resolve, reject) => {
         jwt.verify(
           refreshToken,
@@ -115,6 +120,9 @@ const verifyRefreshToken = (refreshToken) => {
                 return reject(createError.InternalServerError());
               }
             );
+            const userAgent = req.headers['user-agent'];
+            const remoteIP =  req.headers['x-forwarded-for'] || req.socket.remoteAddress 
+            if(userAgent !== refreshTokenDb.userAgent || remoteIP !== refreshTokenDb.remoteIP) return reject(createError.Unauthorized());
             if (refreshTokenDb === null)
               return reject(createError.Unauthorized());
   

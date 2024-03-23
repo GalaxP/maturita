@@ -10,9 +10,11 @@ import {
 } from "./dropdown-menu"
 import { useContext } from "react"
 import { ThemeContext } from "contexts/ThemeContext"
+import LocalizationContext from "contexts/LocalizationContext"
  
 export function ModeToggle() {
   const { setTheme } = useContext(ThemeContext)
+  const localeContext = useContext(LocalizationContext)
  
   return (
     <DropdownMenu>
@@ -25,13 +27,13 @@ export function ModeToggle() {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem onClick={() => setTheme("light")}>
-          Light
+          {localeContext.localize("THEME_LIGHT")}
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => setTheme("dark")}>
-          Dark
+          {localeContext.localize("THEME_DARK")}
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => setTheme("system")}>
-          System
+          {localeContext.localize("THEME_SYSTEM")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

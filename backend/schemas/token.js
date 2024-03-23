@@ -16,6 +16,18 @@ const TokenSchema = new Schema({
     type: Date,
     required: true,
   },
+  userAgent: {
+    type: String,
+    required: true
+  },
+  remoteIP: {
+    type: String,
+    required: true
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now
+  }
 });
 
 

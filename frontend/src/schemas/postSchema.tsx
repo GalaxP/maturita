@@ -1,4 +1,7 @@
 export interface IComment {
+    showLine: boolean | undefined
+    offset: number
+    
     id: string
     body: string
     author: {id: string, displayName:string, avatar:string}
@@ -7,6 +10,8 @@ export interface IComment {
     votes_dislikes: number
     user_vote? : number
     comments: IComment[]
+    isOp: boolean
+    disabled: boolean
 }
 export interface PostSchema {
     _id?: string
