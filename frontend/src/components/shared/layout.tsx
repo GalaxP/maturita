@@ -25,6 +25,7 @@ import { Drawer,
 import { HiOutlineUserGroup } from "react-icons/hi";
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "components/ui/sheet";
 import { Command } from "components/ui/command";
+import { ModeToggle } from "components/ui/modeToggle";
 type LayoutProps = {
     children: React.ReactNode
     openNewsletter: boolean;
@@ -44,8 +45,8 @@ const Layout = ({children, openNewsletter}: LayoutProps) => {
     }, [openNewsletter])
 
     const navigate = useNavigate();
-    return <>
-        <header className="sticky top-0 z-50 w-full border-b px-2 bg-white">
+    return <div>
+        <header className="sticky top-0 z-50 w-full border-b px-2 bg-background">
             <div className="h-full py-2 flex justify-between">
                 <div className="flex flex-grow mr-2 items-center">
                     <Sheet>
@@ -139,6 +140,7 @@ const Layout = ({children, openNewsletter}: LayoutProps) => {
                     <div>
                         <LocaleSwitcher/>
                     </div>
+                    <ModeToggle></ModeToggle>
                     <div className="flex items-center mx-2">
                         {auth?.isAuthenticated ? <UserNav displayName={auth?.getUser()?.user && auth?.getUser()?.user?.displayName} email={auth?.getUser().user && auth?.getUser()?.user?.email} avatar={GetAvatar(auth?.getUser())} />: <Button variant={"ghost"} onClick={()=>navigate("/account/login")}><User2 strokeWidth={1.5} className="mr-1"></User2>{localeContext.localize("LOGIN")}</Button>}
                     </div>
@@ -150,7 +152,7 @@ const Layout = ({children, openNewsletter}: LayoutProps) => {
         {children}
         <CookieConsent/>
         <NewsLetter toggleNewsletter={openNewsletter}/>
-    </>
+    </div>
 }
 
 export default Layout

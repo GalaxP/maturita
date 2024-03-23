@@ -54,7 +54,7 @@ app.use(function (err, req, res, next) {
     console.log(new Date().toLocaleString('sk')+": "+err.status + " " +err.message+" " + req.path);
     err.message = err.status == 500 || err.status == undefined ? "Internal Server Error" : err.message;
     //res.render("error");
-    res.send({ error: { status: err.status, message: err.message } });
+    try {res.send({ error: { status: err.status, message: err.message } })} catch {};
 });
 
 app.listen(PORT, () => console.log("server started"))

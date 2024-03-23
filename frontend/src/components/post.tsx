@@ -251,7 +251,7 @@ const Post = ({props, showLinkToPost, width, showCommunity=true}: Iprop) => {
                             <AvatarImage src={GetCommunityAvatar(props.community.avatar)} alt="@shadcn" />
                             <AvatarFallback>AVATAR</AvatarFallback>
                         </Avatar>
-                        <Link to={"/community/"+props.community.name} className="hover:underline py-auto text-black flex-inline flex-row max-w-[5rem] xs:max-w-none overflow-clip" key={props._id+ "community"}>
+                        <Link to={"/community/"+props.community.name} className="text-accent-foreground hover:underline py-auto flex-inline flex-row max-w-[5rem] xs:max-w-none overflow-clip" key={props._id+ "community"}>
                     {props.community.name}</Link>
                     <span className="dot-separator mx-1"></span></>}
 
@@ -261,7 +261,7 @@ const Post = ({props, showLinkToPost, width, showCommunity=true}: Iprop) => {
                         </Avatar>
                     </>}
 
-                    <Link to={"/user/"+props.author.id} className="hover:underline max-w-[6rem] xs:max-w-none overflow-clip" key={props._id+" user"}>{props.author.displayName}</Link> 
+                    <Link to={"/user/"+props.author.id} className="hover:underline max-w-[6rem] xs:max-w-none overflow-clip " key={props._id+" user"}>{props.author.displayName}</Link> 
                     
                     <span className="dot-separator mx-1"></span>
                     <TooltipProvider>
@@ -293,7 +293,7 @@ const Post = ({props, showLinkToPost, width, showCommunity=true}: Iprop) => {
                             <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
                                 <DropdownMenuTrigger asChild>
                                     <Button className="" size={"ultra_sm"} variant={"ghost"}>
-                                        <MoreHorizontal color={"black"} />
+                                        <MoreHorizontal  />
                                     </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent>
@@ -317,7 +317,7 @@ const Post = ({props, showLinkToPost, width, showCommunity=true}: Iprop) => {
                 
                 {
                     props.photos && props.photos.length > 0 &&
-                    <div aria-description="donothing" className="aspect-[0.9] object-contain max-h-[450px] bg-primary-foreground cursor-pointer" style={{marginTop: "1rem"}}>
+                    <div aria-description="donothing" className="aspect-[0.9] object-contain max-h-[450px] bg-accent cursor-pointer" style={{marginTop: "1rem"}}>
                         <a aria-description="donothing" href={props.photos[0]} target="_blank">
                             <img aria-description="donothing" className="aspect-square w-full max-h-[450px] object-contain h-full" src={props.photos[0]} onError={(e:any)=>{e.target.src=process.env.REACT_APP_API_URL+"/cdn/404.png"}}/>
                         </a>

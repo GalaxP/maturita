@@ -167,7 +167,7 @@ const Community = ({about}: {about?:boolean}) => {
     }
 
     return ( loaded ? <>
-            <div className="px-0 w-full bg-slate-50 p-4" > 
+            <div className="px-0 w-full bg-accent p-4" > 
                 <div className="w-11/12 lg:max-w-[975px] m:w-11/12 sm:w-11/12 mx-auto">
                     <div className="flex flex-row text-center">
                         <div className="peer">
@@ -242,7 +242,7 @@ const Community = ({about}: {about?:boolean}) => {
                                             <ArrowBigUp className="mr-1" strokeWidth={1.5} size={25}/>
                                             {localeContext.localize("BEST")}
                                         </Button>
-                                        <div className={"absolute bg-white shadow-md "+ (sortToggle ? "block" : "hidden")}>
+                                        <div className={"absolute bg-accent shadow-md "+ (sortToggle ? "block" : "hidden")}>
                                             <Button variant={sortBy.timeFrame==="day" ? "secondary" : "outline"} className="block w-full border-0 text-left" onClick={()=>{setSortBy({type: "best", timeFrame: "day"}); setSortToggle(c=>!c)}} >{localeContext.localize("TODAY")}</Button>
                                             <Button variant={sortBy.timeFrame==="week" ? "secondary" : "outline"}  className="block w-full border-0 text-left" onClick={()=>{setSortBy({type: "best", timeFrame: "week"}); setSortToggle(c=>!c)}} >{localeContext.localize("WEEK")}</Button>
                                             <Button variant={sortBy.timeFrame==="month" ? "secondary" : "outline"}  className="block w-full border-0 text-left" onClick={()=>{setSortBy({type: "best", timeFrame: "month"}); setSortToggle(c=>!c)}}>{localeContext.localize("MONTH")}</Button>

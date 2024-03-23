@@ -54,7 +54,7 @@ const Register = () => {
         })
     }
 
-    return <div className="m-0 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+    return <div className="m-0 h-[85vh] flex items-center">
          <div className="mx-auto w-[350px] ">
             <RegisterForm handleSubmit={onSubmit} isLoading={isLoading} setError={error}/>
         </div>

@@ -47,6 +47,7 @@ import InteractiveTextArea from "components/interactiveTextArea"
 import { AddButton } from "components/ui/add-button"
 import { Progress } from "components/ui/progress"
 import LocalizationContext from "contexts/LocalizationContext"
+import { ThemeContext } from "contexts/ThemeContext"
 declare var grecaptcha:any
 
 const _formSchema = z.object({
@@ -109,7 +110,7 @@ export function SubmitForm({handleSubmit, isLoading, defaultCommunity, showMyCom
     members: 0
   },], isEmpty : false})
   const [image, setImage] = useState<File>()
-
+  const themeProvider = useContext(ThemeContext)
   const [uploadProgress, setUploadProgress] = useState(0)
   const handleImageUpload = (file: File) => {
     setUploadProgress(0)
@@ -239,14 +240,14 @@ export function SubmitForm({handleSubmit, isLoading, defaultCommunity, showMyCom
     handleSubmit(values)
   }
 
-  const contrastingColor = (hex: string) => {
+  const contrastingColor = (hex: string, dark?: boolean) => {
     const r = parseInt(hex.slice(1, 3), 16);
     const g = parseInt(hex.slice(3, 5), 16);
     const b = parseInt(hex.slice(5, 7), 16);
     if ((r*0.299 + g*0.587 + b*0.114) > 186 ) {
-        return "black"
+        return dark ? "white" : "black"
     }
-    return "white"
+    return dark ? "black" : "white"
 }
 
   useEffect(()=>{
@@ -309,7 +310,7 @@ export function SubmitForm({handleSubmit, isLoading, defaultCommunity, showMyCom
                                 <AvatarImage src={GetCommunityAvatar(community.avatar)} />
                                 <AvatarFallback>NA</AvatarFallback>
                               </Avatar>
-                              <span className="text-black font-semibold max-w-[125px] overflow-clip">{community.label}</span>
+                              <span className="text-accent-foreground font-semibold max-w-[125px] overflow-clip">{community.label}</span>
                               <span className="dot-separator mx-1"></span>
                               {community.members} {localeContext.localize("MEMBERS")}
                               <Check className={cn("ml-auto h-4 w-4", community.value === field.value ? "opacity-100" : "opacity-0")}/>
@@ -337,7 +338,7 @@ export function SubmitForm({handleSubmit, isLoading, defaultCommunity, showMyCom
                                 <AvatarImage src={GetCommunityAvatar(community.avatar)} alt="@shadcn" />
                                 <AvatarFallback>NA</AvatarFallback>
                               </Avatar>
-                              <span className="text-black font-semibold max-w-[125px] overflow-clip">{community.label}</span>
+                              <span className="text-accent-foreground font-semibold max-w-[125px] overflow-clip">{community.label}</span>
                               <span className="dot-separator mx-1"></span>
                               {community.members} {localeContext.localize("MEMBERS")}
                               <Check className={cn("ml-auto h-4 w-4", community.value === field.value ? "opacity-100" : "opacity-0")}/>
@@ -399,7 +400,7 @@ export function SubmitForm({handleSubmit, isLoading, defaultCommunity, showMyCom
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>        
-                        <Button role="combobox" disabled={form.getValues("community") ? false : true} style={{backgroundColor: selectedTag.color, color: field.value ? contrastingColor(selectedTag.color ) : "black"}} variant={"round_outline"} className={"font-semibold text-white"}>
+                        <Button role="combobox" disabled={form.getValues("community") ? false : true} style={{backgroundColor: selectedTag.color, color: field.value ? contrastingColor(selectedTag.color) : "auto"}} variant={"round_outline"} className={"font-semibold text-accent-foreground"}>
                               <Tag strokeWidth={1.8} size={20} className="mr-2"></Tag>
                             {field.value ? field.value : localeContext.localize("TAG")}
                             <ChevronDown strokeWidth={1.3} className="ml-auto"></ChevronDown>
@@ -421,7 +422,7 @@ export function SubmitForm({handleSubmit, isLoading, defaultCommunity, showMyCom
                                 setSelectedTag({color: tag.color, name: tag.name})
                               }}
                             >
-                              <Badge className={"h-5 ml-1 text-center text-white"} style={{backgroundColor: tag.color, color: contrastingColor(tag.color)}} variant={"secondary"}>{tag.name}</Badge>
+                              <Badge className={"h-5 ml-1 text-center text-accent-foreground"} style={{backgroundColor: tag.color, color: contrastingColor(tag.color)}} variant={"secondary"}>{tag.name}</Badge>
                               <Check className={cn("ml-auto h-4 w-4", form.getValues().tag === tag.name ? "opacity-100" : "opacity-0")}/>
                             </CommandItem>
                           ))

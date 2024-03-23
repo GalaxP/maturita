@@ -58,7 +58,7 @@ const Login = () => {
         });
     }
 
-    return <div className="m-0 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+    return <div className="m-0 h-[85vh] flex items-center">
         <div className="mx-auto w-[350px]">
             <LoginForm handleSubmit={onSubmit} isLoading={isLoading} googleSignIn={googleLogin} incorrectCredentials={error}/>
 

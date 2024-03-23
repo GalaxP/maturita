@@ -19,6 +19,7 @@ import { lazyLoad } from "routes/lazyLoad";
 import { Security } from "routes/account/security";
 import User from "routes/user";
 import HomeSkeleton from "components/skeleton/home";
+import { ThemeContextProvider } from "contexts/ThemeContext";
 
 const Register = lazyLoad("routes/account/register")
 const PostId = lazyLoad("components/postId", "PostId")
@@ -37,39 +38,41 @@ function App() {
     <>
         <AuthContextProvider>
           <LocalizationContextProvider>
-            <Suspense fallback={<HomeSkeleton></HomeSkeleton>}>
-              <Router>
-                <Layout openNewsletter={openNewsletter}>
-                <Routes>
-                  <Route path='/' element={<Home openNewsletter={()=>{setOpenNewsletter(true)}}/>}></Route>
-                  <Route path='account'>
-                    <Route path='register' element={<Register/> }></Route>
-                    <Route path='login' element={<Login/> }></Route>
-                    <Route path='logout' element={<Logout/> } ></Route>
-                    <Route path='edit' element={ <ProtectedRoute><Edit/></ProtectedRoute>} ></Route>
-                    <Route path='security' element={ <ProtectedRoute><Security/></ProtectedRoute>} ></Route>
-                  </Route>
-                  <Route path="submit" element={<ProtectedRoute><Submit/></ProtectedRoute>}></Route>
-                  <Route path="community/:community" element={<Community/>}></Route>
-                  <Route path="community/:community/about" element={<Community about/>}></Route>
-                  <Route path="user/:userId" element={<User/>}></Route>
-                  <Route path="/post/:postId" element={<PostId/>}></Route>
-                  <Route path="/search" element={<Search/>}></Route>
-                  <Route path="/contact" element={<Contact/>}></Route>
-                  <Route path="/admin" element={<AdminRoute/>}></Route>
+            <ThemeContextProvider>
+              <Suspense fallback={<HomeSkeleton></HomeSkeleton>}>
+                <Router>
+                  <Layout openNewsletter={openNewsletter}>
+                  <Routes>
+                    <Route path='/' element={<Home openNewsletter={()=>{setOpenNewsletter(true)}}/>}></Route>
+                    <Route path='account'>
+                      <Route path='register' element={<Register/> }></Route>
+                      <Route path='login' element={<Login/> }></Route>
+                      <Route path='logout' element={<Logout/> } ></Route>
+                      <Route path='edit' element={ <ProtectedRoute><Edit/></ProtectedRoute>} ></Route>
+                      <Route path='security' element={ <ProtectedRoute><Security/></ProtectedRoute>} ></Route>
+                    </Route>
+                    <Route path="submit" element={<ProtectedRoute><Submit/></ProtectedRoute>}></Route>
+                    <Route path="community/:community" element={<Community/>}></Route>
+                    <Route path="community/:community/about" element={<Community about/>}></Route>
+                    <Route path="user/:userId" element={<User/>}></Route>
+                    <Route path="/post/:postId" element={<PostId/>}></Route>
+                    <Route path="/search" element={<Search/>}></Route>
+                    <Route path="/contact" element={<Contact/>}></Route>
+                    <Route path="/admin" element={<AdminRoute/>}></Route>
 
-                  <Route path="/terms-of-service" element={<TOS/>}></Route>
-                  <Route path="/privacy-policy" element={<PrivacyPolicy/>}></Route>
+                    <Route path="/terms-of-service" element={<TOS/>}></Route>
+                    <Route path="/privacy-policy" element={<PrivacyPolicy/>}></Route>
 
-                  <Route path='google'>
-                    <Route path='callback' element={<Callback/>}></Route>
-                  </Route>
-                  <Route path='*' element={<h1>404</h1>}></Route>
-                </Routes>
-                </Layout>
-                
-              </Router>
-            </Suspense>
+                    <Route path='google'>
+                      <Route path='callback' element={<Callback/>}></Route>
+                    </Route>
+                    <Route path='*' element={<h1>404</h1>}></Route>
+                  </Routes>
+                  </Layout>
+                  
+                </Router>
+              </Suspense>
+            </ThemeContextProvider>
           </LocalizationContextProvider>
         </AuthContextProvider>
       <Toaster/>
