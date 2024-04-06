@@ -1,8 +1,10 @@
 import { ContactForm } from "components/forms/contactForm"
 import { post_data } from "helpers/api"
-import { useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { useToast } from "components/ui/use-toast"
 import { useNavigate } from "react-router-dom"
+import LocalizationContext from "contexts/LocalizationContext"
+import { useDocumentTitle } from "hooks/setDocuemntTitle"
 declare var grecaptcha:any
 declare var google:any
 
@@ -10,6 +12,9 @@ export const Contact = () => {
     const [loading, setLoading] = useState(false)
     const { toast } = useToast();
     const navigate = useNavigate()
+
+    const localeContext = useContext(LocalizationContext)
+    const [documentTitle, setDocumentTitle] = useDocumentTitle(localeContext.localize("TITLE_CONTACT"))
 
     useEffect(()=> {
 

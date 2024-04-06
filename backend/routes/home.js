@@ -45,8 +45,6 @@ router.post('/post', verifyAccessToken, verifyRecaptcha("post"), async function 
       res.send("success");
     }).catch((err)=>{
       if(err) {
-        //console.log(err)
-        console.log(err)
         err.status = 500;
         return next(createError.InternalServerError());
       }

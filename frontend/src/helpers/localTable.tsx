@@ -76,6 +76,9 @@ export const table = {
         ADDITIONAL_LOGIN_OPTIONS: "ALEBO POKRAČUJTE CEZ",
         REGISTER_PROMPT: "Ešte nemáte u nás účet?",
         REGISTER_HERE: "Zaregistrujte sa tu.",
+        REGISTER_SUCCESS: "Účet úspešne vytvorený",
+        REGISTER_USER_ALREADY_EXISTS: "Používateľ s týmto menom už exituje",
+        REGISTER_EMAIL_ALREADY_EXISTS: "Používateľ s touto emailovou adresou už exituje",
         INCORRECT_CREDENTIALS: "nesprávne prihlasovacie údaje",
 
         FIRST_NAME: "Meno",
@@ -195,7 +198,16 @@ export const table = {
 
         THEME_LIGHT: "Svetlý",
         THEME_DARK: "Tmavý",
-        THEME_SYSTEM: "Systém"
+        THEME_SYSTEM: "Systém",
+
+        TITLE_REGISTER: "Registrácia",
+        TITLE_LOGIN: "Prihlásenie",
+        TITLE_ACCOUNT_SETTINGS: "Nastavenia účtu",
+        TITLE_SEARCH: "Hľadať",
+        TITLE_SUBMIT: "Vytvoriť príspevok",
+        TITLE_CONTACT: "Kontakt",
+        TITLE_USER: "Používateľ USER",
+        TITLE_COMMUNITY: "Komunita COMMUNITY",
     },
     en: {
         LOGIN: "Login",
@@ -268,6 +280,9 @@ export const table = {
         ADDITIONAL_LOGIN_OPTIONS: "OR CONTINUE WITH",
         REGISTER_PROMPT: "Don't have an account?",
         REGISTER_HERE: "Register here.",
+        REGISTER_SUCCESS: "Account successfully created",
+        REGISTER_USER_ALREADY_EXISTS: "A user with this user name already exists",
+        REGISTER_EMAIL_ALREADY_EXISTS: "A user with this email address already exists",
         INCORRECT_CREDENTIALS: "Email or Password is incorrect",
 
         FIRST_NAME: "First Name",
@@ -388,7 +403,16 @@ export const table = {
         
         THEME_LIGHT: "Light",
         THEME_DARK: "Dark",
-        THEME_SYSTEM: "System"
+        THEME_SYSTEM: "System",
+
+        TITLE_REGISTER: "Register",
+        TITLE_LOGIN: "Login",
+        TITLE_ACCOUNT_SETTINGS: "Account Settings",
+        TITLE_SEARCH: "Search",
+        TITLE_SUBMIT: "Submit",
+        TITLE_CONTACT: "Contact",
+        TITLE_USER: "User USER",
+        TITLE_COMMUNITY: "Community COMMUNITY",
     }
 }
 const supports_flag = supportsFlagEmoji();

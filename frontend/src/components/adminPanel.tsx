@@ -43,7 +43,6 @@ const AdminPanel = () => {
         .then((res)=>{
             if(res.status === 200) {
                 setMessages(res.data)
-                console.log(res.data)
             }
         }).catch(()=>{})
     }, [])

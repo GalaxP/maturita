@@ -57,8 +57,8 @@ const checkAvailability = (communityName: string) => {
 
 const checkAvailabilityDebounced = debouncePromise(checkAvailability, 500);
 const formSchema = z.object({
-  name: z.string().nonempty({message: "Required"}).max(40),
-  description: z.string().nonempty({message: "Required"})
+  name: z.string().nonempty().max(40),
+  description: z.string().nonempty()
 })
 
 interface props {
@@ -73,10 +73,15 @@ export function CreateCommunityForm({handleSubmit, isLoading}: props) {
 
   const localeContext = useContext(LocalizationContext)
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema)
+  const _formSchema = z.object({
+    name: z.string().nonempty({message: localeContext.localize("FIELD_REQUIRED")}).max(40),
+    description: z.string().nonempty({message: localeContext.localize("FIELD_REQUIRED")})
   })
-  function onSubmit(values: z.infer<typeof formSchema>) {
+
+  const form = useForm<z.infer<typeof _formSchema>>({
+    resolver: zodResolver(_formSchema)
+  })
+  function onSubmit(values: z.infer<typeof _formSchema>) {
     if(error) return
     handleSubmit(values)
   }
@@ -142,7 +147,7 @@ export function CreateCommunityForm({handleSubmit, isLoading}: props) {
         </div>
         <Button type="submit" disabled={isLoading} className="w-full mt-6">
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" /> }
-            Create
+            {localeContext.localize("CREATE")}
         </Button>       
       </form>
     </Form>

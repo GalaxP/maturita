@@ -123,7 +123,6 @@ const Post = ({props, showLinkToPost, width, showCommunity=true}: Iprop) => {
                 case "button" :
                     break;
                 case "a":
-                    //console.log(e.target)
                     break;
                 default:
                     switch(e.target.ariaDescription) {
@@ -191,7 +190,6 @@ const Post = ({props, showLinkToPost, width, showCommunity=true}: Iprop) => {
             window.location.reload()
         })
         .catch((err:any)=>{
-            console.log(err)
             toast({
                 variant: "destructive",
                 title: "Uh oh! Something went wrong.",

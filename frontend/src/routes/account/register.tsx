@@ -3,13 +3,15 @@ import { post_data } from "../../helpers/api";
 import { RegisterForm } from "components/forms/registerForm";
 import { useToast } from "../../components/ui/use-toast"
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { UseFormReturn, useForm } from "react-hook-form";
+import LocalizationContext from "contexts/LocalizationContext";
 
 declare var grecaptcha:any
 
 const Register = () => {
-    const [documentTitle, setDocumentTitle] = useDocumentTitle("Register")
+    const localeContext = useContext(LocalizationContext)
+    const [documentTitle, setDocumentTitle] = useDocumentTitle(localeContext.localize("TITLE_REGISTER"))
     const [isLoading, setIsLoading] = useState(false)
     const { toast } = useToast()
     const navigate = useNavigate();
@@ -23,21 +25,21 @@ const Register = () => {
                     if(res.status===200) {
                         setIsLoading(false)
                         toast({
-                            description: "Account successfully created.",
+                            description: localeContext.localize("REGISTER_SUCCESS"),
                         })
                         navigate("/")
                     }
                     }).catch((err)=>{
                         if(err.response?.status === 409) {
                             if(err.response.data?.error?.message?.split(" ")[0]==="email") {
-                                setError({field: "email", message:"A user with this email address already exists"})
+                                setError({field: "email", message:localeContext.localize("REGISTER_EMAIL_ALREADY_EXISTS")})
                             } else if(err.response.data?.error?.message?.split(" ")[0]==="username") {
-                                setError({field: "displayName", message:"A user with this user name address already exists"})
+                                setError({field: "displayName", message:localeContext.localize("REGISTER_USER_ALREADY_EXISTS")})
                             }
                             else {
                                 toast({
                                     variant: "destructive",
-                                    title: "Uh oh! Something went wrong.",
+                                    title: localeContext.localize("ERROR_GENERIC"),
                                 })
                             }
                             //form.setError("displayName", {message: "already exists"})
@@ -45,7 +47,7 @@ const Register = () => {
                         else {
                             toast({
                                 variant: "destructive",
-                                title: "Uh oh! Something went wrong.",
+                                title: localeContext.localize("ERROR_GENERIC"),
                             })
                         }
                         setIsLoading(false)

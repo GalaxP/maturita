@@ -1,7 +1,10 @@
+import LocalizationContext from "contexts/LocalizationContext"
 import { useDocumentTitle } from "hooks/setDocuemntTitle"
+import { useContext } from "react"
 
 const TermsOfService = () => {
-    const documentTitle = useDocumentTitle("Terms Of Service")
+    const localeContext = useContext(LocalizationContext)
+    const documentTitle = useDocumentTitle(localeContext.localize("TERMS_OF_SERVICE"))
     return <h2>tos</h2>
 }
 

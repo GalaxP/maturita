@@ -49,33 +49,6 @@ const post_data = async function(path:string, data:any, options?:AxiosRequestCon
             })
         }
     })
-    /*
-    if(sendToken) {
-        var response = new Promise<AxiosResponse<"", "">>(() => { });;
-        if(accessToken != "") {
-            response = await axios.post(api_url+path, data, {...options, headers: {Authorization: "Bearer "+ accessToken} })
-            .catch(async (err)=> {
-                if(err.response.status===401) {
-                    await refresh_token()
-                    .then(()=>{
-                        console.log('shrex')
-                        response = axios.post(api_url+path, data, {...options, headers: {Authorization: "Bearer "+ accessToken} })
-                    })
-                    .catch((err)=> {return response})
-                } else { return err;}
-            })
-        } else {
-            await refresh_token()
-            .then(()=>{
-                response = axios.post(api_url+path, data, {...options, headers: {Authorization: "Bearer "+ accessToken} })
-                return response
-            })
-            .catch((err)=> {console.log(err); return err})
-        }
-        return response;
-    } else {
-        return axios.post(api_url+path, data, options)
-    }*/
 }
 
 const get_data = function(path:string, options?:AxiosRequestConfig, sendToken?:boolean) {
@@ -138,8 +111,6 @@ const refresh_token = function() {
             }
         })
         .catch((err)=>{
-            //TODO: FIGURE OUT WHAT TO DO IF THIS FAILS
-            //PROBABLY SHOULD FORCE LOG OUT
             cookies.remove("account", { 
                 path:"/",
                 sameSite: "strict",

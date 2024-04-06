@@ -45,7 +45,6 @@ const [post, setPost] = useState<PostSchema>({author:{id:"", displayName:"", isM
                 //if(err.response.status === 429)
                 setIsLoading(false)
                 setError(true)
-                console.log(error)
             }
         })
         

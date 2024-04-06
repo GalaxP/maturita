@@ -14,10 +14,10 @@ const Login = () => {
     const auth = useContext(AuthContext);
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false)
-    const [documentTitle, setDocumentTitle] = useDocumentTitle("Login")
     const [error, setError] = useState(false)
     //const [isInitialized, ]
     const localeContext = useContext(LocalizationContext)
+    const [documentTitle, setDocumentTitle] = useDocumentTitle(localeContext.localize("TITLE_LOGIN"))
 
     useEffect(()=>{
         google.accounts.id.initialize({

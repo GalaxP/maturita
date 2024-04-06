@@ -19,17 +19,18 @@ import { useToast } from "components/ui/use-toast";
 import { Avatar, AvatarFallback, AvatarImage } from "components/ui/avatar";
 
 const Home = ({openNewsletter}: {openNewsletter: ()=>void}) => {
+  const localeContext = useContext(LocalizationContext)
+  
   const [loaded, setLoaded] = useState(false);
   const [posts, setPosts] = useState<PostSchema[]>([{author:{id:"",displayName:"", avatar:"", provider: ""}, title:"", locked:false, createdAt: new Date(), body:"", _id:"", community: {name: "", avatar:""}, votes_likes:0, votes_dislikes:0, user_vote:0, comments:[], comment_length :0}]);
   const [error, setError] = useState();
   const auth = useContext(AuthContext)
   const navigate = useNavigate()
-  const [documentTitle, setDocumentTitle] = useDocumentTitle("Home")
+  const [documentTitle, setDocumentTitle] = useDocumentTitle(localeContext.localize("HOME"))
   const [cursor, setCursor] = useState<string>()
   const [reachedEnd, setReachedEnd] = useState(false)
   const [fetching, setFetching] = useState(false)
   const { toast } = useToast()
-  const localeContext = useContext(LocalizationContext)
 
   const depth = 15
 
@@ -87,13 +88,11 @@ const Home = ({openNewsletter}: {openNewsletter: ()=>void}) => {
     })
   }
   
-  
-  
   return ( loaded ?
     
   <div className="mt-6 anchor-none">
     <div className="flex flex-row w-full justify-center"> 
-      <ul className="w-11/12 lg:w-[650px] sm:w-11/12 space-y-2" onScroll={(e)=>console.log(e)}>
+      <ul className="w-11/12 lg:w-[650px] sm:w-11/12 space-y-2">
         {auth?.isAuthenticated &&<li key={"submit"} className="w-full"> <CreatePost/></li>}
         {!error && posts.map((post) => {
           return <li key={post._id} className="w-full"><Post key={post._id} showLinkToPost={true} width="w-full" props={post}/> </li>
@@ -143,6 +142,7 @@ const Home = ({openNewsletter}: {openNewsletter: ()=>void}) => {
             <Link to="/contact">{localeContext.localize("CONTACT")}</Link>
             <Link to="/privacy-policy">{localeContext.localize("PRIVACY_POLICY")}</Link>
             <Link to="/terms-of-service">{localeContext.localize("TERMS_OF_SERVICE")}</Link>
+            <Link to="https://github.com/GalaxP/maturita" target="_blank">Github</Link>
             <a href="#newsletter" onClick={()=>{openNewsletter();localStorage.removeItem("newsletter");return false;}}>{localeContext.localize("NEWSLETTER")}</a>
             </div>
           </CardContent>

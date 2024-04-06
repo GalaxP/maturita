@@ -20,16 +20,16 @@ import LocalizationContext from "contexts/LocalizationContext";
 declare var grecaptcha:any
 
 const Edit = () => {
+    const localeContext = useContext(LocalizationContext)
+
     const [error, setError] = useState({field: "", message: ""})
     const { toast } = useToast()
     const auth = useContext(AuthContext)
-    const documentTitle = useDocumentTitle("Account Settings")
+    const documentTitle = useDocumentTitle(localeContext.localize("TITLE_ACCOUNT_SETTINGS"))
     const [newEmail, setNewEmail] = useState("")
     const [confirmOpen, setConfirmOpen] = useState(false)
 
     const [loading, setLoading] = useState(false)
-
-    const localeContext = useContext(LocalizationContext)
     
     useEffect(()=>{
 

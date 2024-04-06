@@ -48,6 +48,8 @@ import { AddButton } from "components/ui/add-button"
 import { Progress } from "components/ui/progress"
 import LocalizationContext from "contexts/LocalizationContext"
 import { ThemeContext } from "contexts/ThemeContext"
+import { CreateCommunityForm } from "./createCommunityForm"
+import Home from "routes/home"
 declare var grecaptcha:any
 
 const _formSchema = z.object({
@@ -112,6 +114,7 @@ export function SubmitForm({handleSubmit, isLoading, defaultCommunity, showMyCom
   const [image, setImage] = useState<File>()
   const themeProvider = useContext(ThemeContext)
   const [uploadProgress, setUploadProgress] = useState(0)
+  const [createCommunityLoading, setCreateCommunityLoading] = useState(false)
   const handleImageUpload = (file: File) => {
     setUploadProgress(0)
     form.clearErrors("photos")
@@ -161,7 +164,7 @@ export function SubmitForm({handleSubmit, isLoading, defaultCommunity, showMyCom
           setMyCommunities({communities: _community, isEmpty: res.data.length > 0 ? false : true})
           form.setValue("tag", "")
         }
-      }).catch((err)=>{console.log(err)})
+      }).catch((err)=>{})
       //return
     }
     if(defaultCommunity) {
@@ -182,12 +185,17 @@ export function SubmitForm({handleSubmit, isLoading, defaultCommunity, showMyCom
       //if(uploadProgress>100) setUploadProgress(0)
     }
   }, [])
-  const createCommunity = () => {
-    post_data("/community/create", {name: communityName, description: communityDescription}, {}, true)
+  
+  const createCommunity = (values: {description: string, name: string}) => {
+    setCreateCommunityLoading(true)
+    post_data("/community/create", {name: values.name, description: values.description}, {}, true)
     .then(()=>{
-      navigate("/community/" + communityName)
+      setCreateCommunityLoading(false)
+      //navigate("/community/" + values.name)
+      setShowNewTeamDialog(false)
     })
     .catch((err)=>{
+      setCreateCommunityLoading(false)
       alert('something went wrong')
     })
   }
@@ -248,7 +256,7 @@ export function SubmitForm({handleSubmit, isLoading, defaultCommunity, showMyCom
         return dark ? "white" : "black"
     }
     return dark ? "black" : "white"
-}
+  }
 
   useEffect(()=>{
   }, [communities])
@@ -357,12 +365,13 @@ export function SubmitForm({handleSubmit, isLoading, defaultCommunity, showMyCom
                             </CommandItem>
                           </DialogTrigger>
                         </CommandGroup>
-                      </Command>
+                      </Command> 
                     </PopoverContent>
                   </Popover>
                   
                   <DialogContent>
-                    <DialogHeader>
+                    <CreateCommunityForm handleSubmit={(e)=>createCommunity(e)} isLoading={createCommunityLoading}></CreateCommunityForm>
+                    {/* <DialogHeader>
                       <DialogTitle>Create a new community</DialogTitle>
                       <DialogDescription>
                         Create a new comunity.
@@ -382,9 +391,10 @@ export function SubmitForm({handleSubmit, isLoading, defaultCommunity, showMyCom
                       </div>
                     <DialogFooter>
                       <Button type="submit" onClick={()=>{if(communityDescription !== "" && isAvailable){createCommunity()} }}>Confirm</Button>
-                    </DialogFooter>
+                    </DialogFooter> */}
                   </DialogContent>
                 </Dialog>
+                
 
                 <FormMessage/>
               </FormItem>

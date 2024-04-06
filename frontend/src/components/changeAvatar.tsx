@@ -57,7 +57,7 @@ export const ChangeAvatar = ({children, type, community_name, changeAvatar}: {ch
             image.onload = function (imageEvent) {
                 // Resize the image
                 var canvas = document.createElement('canvas'),
-                    max_size = 458,// TODO : pull max size from a site config
+                    max_size = 458,
                     width = image.width,
                     height = image.height;
                 if (width > height) {
@@ -181,11 +181,8 @@ export const ChangeAvatar = ({children, type, community_name, changeAvatar}: {ch
 
         canvas.getContext('2d')?.drawImage(image, widthShift+((initialWidth-size)/2), heightShift+((initialHeight-size)/2), size, size, 0, 0, size, size);
         var dataUrl = canvas.toDataURL(inputFile?.type);
-        //console.log(dataUrl);
         var avatarBlob = dataURItoBlob(dataUrl);
         var avatar = new File([avatarBlob], inputFile.name, {type: inputFile.type});
-        //setCroppedImage(dataUrl);
-        //console.log(avatar);
         let data = new FormData()
         data.append("avatar", avatar)
 

@@ -12,6 +12,7 @@ import { NoResult } from "components/noResult";
 import { Skeleton } from "components/ui/skeleton";
 import SearchSkeleton from "components/skeleton/search";
 import LocalizationContext from "contexts/LocalizationContext";
+import { useDocumentTitle } from "hooks/setDocuemntTitle";
 
 declare var grecaptcha:any
 
@@ -25,6 +26,7 @@ export const Search = () => {
     const navigate = useNavigate()
 
     const localeContext = useContext(LocalizationContext)
+    const [documentTitle, setDocumentTitle] = useDocumentTitle(localeContext.localize("TITLE_SEARCH"))
 
     useEffect(()=>{
         const searchQuery = searchParams.get("q")

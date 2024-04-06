@@ -4,13 +4,15 @@ import { useContext, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useDocumentTitle } from "hooks/setDocuemntTitle";
 import { SubmitForm } from "../components/forms/submitForm"
+import LocalizationContext from "contexts/LocalizationContext";
  
 declare var grecaptcha:any
 
 const Submit = () => {
     const auth = useContext(AuthContext)
     const navigate = useNavigate()
-    const [documentTitle, setDocumentTitle] = useDocumentTitle("Submit")
+    const localeContext = useContext(LocalizationContext)
+    const [documentTitle, setDocumentTitle] = useDocumentTitle(localeContext.localize("TITLE_SUBMIT"))
     const [commParams] = useSearchParams();
     const [isLoading, setIsLoading] = useState(false)
     const comm = commParams.get("comm")
