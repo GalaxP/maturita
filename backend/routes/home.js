@@ -303,13 +303,14 @@ router.post('/sendNewsletter', verifyAccessToken, isAuthorized('admin'), async (
   const result = await newsLetterSchema.validateAsync(req.body).catch((err)=>{
     return next(createError.BadRequest(err.message))
   })
+  if(!result) return next(createError.BadRequest())
 
   const subscribers = await Subscriber.find({verified: true})
   for(let subscriber of subscribers) {
     var mailOptions = {
       from: 'alex.petras@outlook.com',
       to: subscriber.email,
-      subject: 'NewsLetter',
+      subject: 'NewsLetter maturita-forum.sk',
       BroadcastChannel: '',
       html: getNewsletterBody(result.message, result.title, subscriber.token)
     };

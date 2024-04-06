@@ -19,7 +19,7 @@ const signAccessToken = (userId, provider) => {
     return new Promise(async (resolve, reject)=>{
         const options = {
             expiresIn: "10m",
-            issuer: "odporuc.sk",
+            issuer: "api.maturita-forum.sk",
             audience: userId
         };
         const user = await User.findOne({uid: userId})

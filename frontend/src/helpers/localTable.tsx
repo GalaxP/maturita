@@ -208,6 +208,9 @@ export const table = {
         TITLE_CONTACT: "Kontakt",
         TITLE_USER: "Používateľ USER",
         TITLE_COMMUNITY: "Komunita COMMUNITY",
+
+        NEWSLETTER_SEND: "Odoslať Newsletter",
+        NEWSLETTER_SEND_SUCCES: "Newsletter bol úspešne odoslaný",
     },
     en: {
         LOGIN: "Login",
@@ -413,6 +416,9 @@ export const table = {
         TITLE_CONTACT: "Contact",
         TITLE_USER: "User USER",
         TITLE_COMMUNITY: "Community COMMUNITY",
+
+        NEWSLETTER_SEND: "Send newsletter",
+        NEWSLETTER_SEND_SUCCES: "Newsletter was sent successfully",
     }
 }
 const supports_flag = supportsFlagEmoji();

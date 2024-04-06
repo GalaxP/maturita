@@ -11,6 +11,9 @@ import { Button } from "./ui/button";
 import { DataTable } from "./ui/dataTable";
 import { columns } from "schemas/contactSchema";
 import { DataTablePagination } from "./ui/dataTablePagination";
+import LocalizationContext from "contexts/LocalizationContext";
+import { NewsLetterForm } from "./forms/newsLetterForm";
+import { toast, useToast } from "./ui/use-toast";
 declare var grecaptcha:any
 
 interface IMessage {
@@ -31,6 +34,9 @@ const AdminPanel = () => {
     const [users, setUsers] = useState<[{uid: string, displayName: string, avatar: string, provider: string, posts: number}]>()
     const [searchQuery, setSearchQuery] = useState("")
     const documentTitle = useDocumentTitle("Admin Panel")
+    const localeContext = useContext(LocalizationContext)
+    const [newsletterLoading, setNewsletterLoading] = useState(false)
+    const { toast } = useToast()
 
     const [messages, setMessages] = useState<IMessage[]>([])
 
@@ -55,7 +61,7 @@ const AdminPanel = () => {
                     setUsers(res.data)
                 })
                 .catch((err)=>{
-        
+                    
                 })
             });
         });
@@ -64,15 +70,30 @@ const AdminPanel = () => {
 
     }
 
-    const readMessage = (id: string) => {
-        post_data("/mesesage/"+id+"/read", {}, {}, true)
+    const sendNewsletter = (data: { message: string; title: string; }) => {
+        setNewsletterLoading(true)
+
+        post_data("/sendNewsletter", {message: data.message, title: data.title}, {}, true)
         .then((res)=>{
-            alert("marked as read")
+            if(res.status===200) {
+                toast({
+                    variant: "default",
+                    description: localeContext.localize("NEWSLETTER_SEND_SUCCES")
+                })
+                setNewsletterLoading(false)
+
+            }
+            setNewsletterLoading(false)
         })
-        .catch(()=>{
-            alert('something has gone wrong')
+        .catch(()=> {
+            toast({
+                variant: "destructive",
+                description: localeContext.localize("ERROR_GENERIC")
+            })
+            setNewsletterLoading(false)
         })
     }
+
     return  <div className="w-11/12 flex flex-col justify-center mx-auto mt-6"> 
     
     <div className="w-full">
@@ -95,7 +116,9 @@ const AdminPanel = () => {
         }): <h2>no results</h2>}
 
         <DataTable columns={columns} data={messages} usePagination></DataTable>
-      
+        <div className="w-3/4 mx-auto">
+            <NewsLetterForm handleSubmit={(e)=>sendNewsletter(e)} isLoading={newsletterLoading}></NewsLetterForm>
+        </div>
     </div>
 }
 

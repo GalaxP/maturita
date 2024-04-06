@@ -326,7 +326,7 @@ getNewsletterBody = (message, title, token) => {
     </tr>
     <tr>
       <td class="mailpoet_text mailpoet_padded_vertical mailpoet_padded_side" valign="top" style="border-collapse:collapse;padding-top:10px;padding-bottom:10px;padding-left:20px;padding-right:20px;word-break:break-word;word-wrap:break-word">
-        <h1 style="margin:0 0 9px;mso-ansi-font-size:30px;color:#111111;font-family:'Trebuchet MS','Lucida Grande','Lucida Sans Unicode','Lucida Sans',Tahoma,sans-serif;font-size:30px;line-height:48px;mso-line-height-alt:48px;text-align:center;padding:0;font-style:normal;font-weight:normal"><strong>Newsletter  </strong></h1>
+        <h1 style="margin:0 0 9px;mso-ansi-font-size:30px;color:#111111;font-family:'Trebuchet MS','Lucida Grande','Lucida Sans Unicode','Lucida Sans',Tahoma,sans-serif;font-size:30px;line-height:48px;mso-line-height-alt:48px;text-align:center;padding:0;font-style:normal;font-weight:normal"><strong>${title}  </strong></h1>
 <br>
 <table style="border-collapse:collapse;border-spacing:0;mso-table-lspace:0;mso-table-rspace:0" width="100%" cellpadding="0">
       <tbody><tr>
